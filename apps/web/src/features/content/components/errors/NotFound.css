@@ -1,0 +1,33 @@
+.not-found {
+  display: grid;
+  grid-template-rows: 2rem 1fr;
+  min-height: 100dvh;
+}
+
+.not-found__sheet {
+  margin: 0 1.5rem 1.5rem;
+  padding: 2rem;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 1rem;
+}
+
+/* The host's 404 page prints the address that was asked for, as the Machine's `ls` would. */
+.not-found__path {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  max-width: 100%;
+  overflow-x: auto;
+  border: var(--rule-thin);
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.not-found__sheet h1 {
+  font-size: 2.25rem;
+  font-variation-settings: "wdth" 125;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}

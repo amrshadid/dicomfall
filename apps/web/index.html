@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A free, open-source browser game that teaches DICOM, the medical imaging standard. Learn DICOM from the first byte to the network, with go-dicom running in your browser." />
+    <meta name="author" content="Amr Shadid" />
+    <meta name="theme-color" content="#eeeee9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141514" media="(prefers-color-scheme: dark)" />
+    <!-- The drawn icon for browsers; the bitmaps for search results and home screens, which want fixed sizes. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" sizes="48x48" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- The public site's address, for search engines and for the card a shared link shows.
+         These must be absolute, so they name the public site whatever host serves this build. -->
+    <link rel="canonical" href="https://dicomfall.shadid.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DICOMFall" />
+    <meta property="og:url" content="https://dicomfall.shadid.dev/" />
+    <meta property="og:title" content="DICOMFall: Learn DICOM from the first byte to the network." />
+    <meta property="og:description" content="A free, open-source browser game that teaches DICOM, the medical imaging standard. Learn DICOM from the first byte to the network, with go-dicom running in your browser." />
+    <meta property="og:image" content="https://dicomfall.shadid.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DICOMFall title screen: the name cut by a section line where the File Meta ends, a New game button, and the contents" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DICOMFall: Learn DICOM from the first byte to the network." />
+    <meta name="twitter:description" content="A free, open-source browser game that teaches DICOM, the medical imaging standard. Learn DICOM from the first byte to the network, with go-dicom running in your browser." />
+    <meta name="twitter:image" content="https://dicomfall.shadid.dev/og.png" />
+    <meta name="twitter:image:alt" content="DICOMFall title screen: the name cut by a section line where the File Meta ends, a New game button, and the contents" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "DICOMFall",
+        "url": "https://dicomfall.shadid.dev/",
+        "description": "A free, open-source browser game that teaches DICOM, the medical imaging standard. Learn DICOM from the first byte to the network, with go-dicom running in your browser.",
+        "image": "https://dicomfall.shadid.dev/og.png",
+        "genre": "Educational",
+        "about": "DICOM (Digital Imaging and Communications in Medicine), the standard for medical images",
+        "gamePlatform": "Web browser",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "license": "https://opensource.org/license/mit",
+        "sameAs": "https://github.com/amrshadid/dicomfall",
+        "author": {
+          "@type": "Person",
+          "name": "Amr Shadid",
+          "url": "https://shadid.dev"
+        }
+      }
+    </script>
+    <title>DICOMFall: Learn DICOM from the first byte to the network.</title>
+    <script>
+      // The theme chosen in Settings, before the first paint, so the loading sheet doesn't flash
+      // the other one. The key is STORAGE_KEYS.SETTINGS from @dicomfall/core, written out because
+      // this runs before any module; it reads the value as savedThemeOf() in shared/utils/not-found
+      // does: settings written before version 1 have no `state` wrapper.
+      try {
+        const saved = JSON.parse(localStorage.getItem('dicomfall:v1:settings') || 'null')
+        const theme = saved?.state ? saved.state.theme : saved?.theme
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+    </script>
+    <style>
+      /* The loading sheet: the manual's frame while the game's script arrives. React replaces it. */
+      :root { --ground: #eeeee9; --sheet: #fafaf7; --ink: #141414; --ink-2: #55554f; --red: #c8201a; }
+      :root[data-theme='dark'] { --ground: #141514; --sheet: #1c1e1d; --ink: #eaeae4; --ink-2: #a3a39b; --red: #ff6a5c; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) { --ground: #141514; --sheet: #1c1e1d; --ink: #eaeae4; --ink-2: #a3a39b; --red: #ff6a5c; }
+      }
+      body { margin: 0; background: var(--ground); }
+      /* The title screen's frame (ScreenFrame.css, Title.css): a 2.5rem running head, the sheet, a 2rem foot. */
+      .boot { box-sizing: border-box; height: 100dvh; min-height: 34rem; padding: 0 1.5rem; display: grid; grid-template-rows: 2.5rem minmax(0, 1fr) 2rem; color: var(--ink); font: 600 0.8125rem/1 Archivo, 'Helvetica Neue', Arial, sans-serif; }
+      .boot__head { display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+      .boot__head span:nth-child(2) { text-transform: none; font-weight: 500; font-size: 0.875rem; }
+      .boot__sheet { border: 2px solid var(--ink); background: var(--sheet); display: grid; place-content: center; justify-items: center; gap: 1.25rem; }
+      .boot__name { font: 800 clamp(2.5rem, 7vw, 5rem)/1 system-ui, sans-serif; letter-spacing: -0.03em; margin: 0; }
+      .boot__line { position: relative; width: min(22rem, 60vw); height: 2px; background: repeating-linear-gradient(90deg, var(--ink-2) 0 6px, transparent 6px 10px); overflow: hidden; }
+      .boot__line::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 30%; background: var(--red); animation: boot-run 1.4s ease-in-out infinite; }
+      .boot__note { color: var(--ink-2); margin: 0; font: 500 0.75rem/1 ui-monospace, 'IBM Plex Mono', Menlo, monospace; }
+      @keyframes boot-run { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+      @media (prefers-reduced-motion: reduce) { .boot__line::after { animation: none; width: 100%; opacity: 0.5; } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot" role="status" aria-label="Loading DICOMFall">
+        <header class="boot__head" aria-hidden="true">
+          <span>DICOMFALL(10)</span>
+          <span>DICOMFall Imaging Manual</span>
+          <span>DICOMFALL(10)</span>
+        </header>
+        <div class="boot__sheet">
+          <p class="boot__name" aria-hidden="true">DICOMFall</p>
+          <div class="boot__line" aria-hidden="true"></div>
+          <p class="boot__note">Opening the manual…</p>
+        </div>
+      </div>
+    </div>
+    <!-- The game is drawn by its script. Without it, this says what the game is and where its source is. -->
+    <noscript>
+      <main style="max-width: 40rem; margin: 4rem auto; padding: 0 1.5rem; font: 1rem/1.6 system-ui, sans-serif">
+        <h1>DICOMFall</h1>
+        <p>DICOMFall is a free, open-source browser game that teaches DICOM, the standard behind medical images, from the first byte of a file to the network. You follow one synthetic CT image from disk into an archive: inspect the evidence, predict what will happen, act, and check the result.</p>
+        <p>The tools are real: go-dicom runs on Linux in an emulated PC inside your browser, and every value you read is its own reading of the bytes. There is nothing to install and no server, and your progress stays in your browser.</p>
+        <p>
+          DICOMFall needs JavaScript and a desktop browser. The source is on
+          <a href="https://github.com/amrshadid/dicomfall">GitHub</a>, under the MIT license. Made by
+          <a href="https://shadid.dev">Amr Shadid</a>.
+        </p>
+      </main>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

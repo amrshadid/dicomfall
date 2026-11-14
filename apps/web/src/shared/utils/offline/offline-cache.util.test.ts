@@ -1,0 +1,98 @@
+import { describe, expect, it } from 'vitest'
+import { SW_MANIFEST_TOKEN } from './offline-cache.constants'
+import {
+  appCacheName,
+  injectSwManifest,
+  isStaleAppCache,
+  type OfflineRequest,
+  offlineRouteOf,
+  precacheFiles,
+} from './offline-cache.util'
+
+const SCOPE = 'https://dicomfall.example/'
+
+const get = (path: string, extra: Partial<OfflineRequest> = {}): OfflineRequest => ({
+  method: 'GET',
+  url: new URL(path, SCOPE).href,
+  mode: 'cors',
+  ...extra,
+})
+
+describe('precacheFiles', () => {
+  it('keeps the shell and hashed files, sorted, without maps or the worker', () => {
+    const files = precacheFiles([
+      'assets/index-Drmk3EdP.js',
+      'index.html',
+      'assets/index-Drmk3EdP.js.map',
+      'sw.js',
+      '/favicon.svg',
+      'favicon.svg',
+    ])
+    expect(files).toEqual(['assets/index-Drmk3EdP.js', 'favicon.svg', 'index.html'])
+  })
+
+  it('leaves out the files only search engines and link previews read', () => {
+    expect(precacheFiles(['index.html', 'og.png', 'robots.txt', 'sitemap.xml'])).toEqual(['index.html'])
+  })
+})
+
+describe('app caches', () => {
+  it('names one cache per build and drops only older builds', () => {
+    const current = appCacheName('a1b2c3')
+    expect(current).toBe('dicomfall-app-a1b2c3')
+    expect(isStaleAppCache('dicomfall-app-0ld', current)).toBe(true)
+    expect(isStaleAppCache(current, current)).toBe(false)
+    expect(isStaleAppCache('dicomfall-other-v1', current)).toBe(false)
+  })
+})
+
+describe('injectSwManifest', () => {
+  const manifest = { version: 'v1', files: ['index.html', "it's.js"] }
+
+  it('puts the manifest where the token was, whatever quotes the minifier chose', () => {
+    for (const quote of ["'", '"', '`']) {
+      const code = `const m=JSON.parse(${quote}${SW_MANIFEST_TOKEN}${quote});`
+      const injected = injectSwManifest(code, manifest)
+      expect(injected).not.toBeNull()
+      const literal = injected?.slice('const m=JSON.parse('.length, -2) ?? ''
+      expect(JSON.parse(JSON.parse(literal))).toEqual(manifest)
+    }
+  })
+
+  it('is null when the worker lost its token', () => {
+    expect(injectSwManifest('const m = 1', manifest)).toBeNull()
+    expect(injectSwManifest(`x${SW_MANIFEST_TOKEN}`, manifest)).toBeNull()
+  })
+})
+
+describe('offlineRouteOf', () => {
+  it('serves page loads from the shell', () => {
+    expect(offlineRouteOf(get('/', { mode: 'navigate' }), SCOPE)).toBe('shell')
+    expect(offlineRouteOf(get('/index.html', { mode: 'navigate' }), SCOPE)).toBe('shell')
+  })
+
+  it('leaves any other address to the host: its 404 page, or a file such as robots.txt', () => {
+    expect(offlineRouteOf(get('/does-not-exist', { mode: 'navigate' }), SCOPE)).toBe('pass')
+    expect(offlineRouteOf(get('/robots.txt', { mode: 'navigate' }), SCOPE)).toBe('pass')
+  })
+
+  it('caches the app files, and leaves the worker, other origins and writes alone', () => {
+    expect(offlineRouteOf(get('/assets/index-Drmk3EdP.js'), SCOPE)).toBe('asset')
+    expect(offlineRouteOf(get('/sw.js'), SCOPE)).toBe('pass')
+    expect(offlineRouteOf(get('https://fonts.example/a.woff2'), SCOPE)).toBe('pass')
+    expect(offlineRouteOf(get('/assets/x.js', { method: 'POST' }), SCOPE)).toBe('pass')
+  })
+
+  it("passes Microsoft Clarity's tag and uploads straight to the network", () => {
+    expect(offlineRouteOf(get('https://www.clarity.ms/tag/abc123'), SCOPE)).toBe('pass')
+    expect(offlineRouteOf(get('https://scripts.clarity.ms/0.8.0/clarity.js'), SCOPE)).toBe('pass')
+    expect(offlineRouteOf(get('https://k.clarity.ms/collect', { method: 'POST' }), SCOPE)).toBe('pass')
+  })
+
+  it('works under a sub-path base', () => {
+    const scope = `${SCOPE}dicomfall/`
+    expect(offlineRouteOf(get('/dicomfall/assets/a.js'), scope)).toBe('asset')
+    expect(offlineRouteOf(get('/dicomfall/', { mode: 'navigate' }), scope)).toBe('shell')
+    expect(offlineRouteOf(get('/other/assets/a.js'), scope)).toBe('pass')
+  })
+})

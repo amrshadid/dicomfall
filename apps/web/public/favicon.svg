@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img">
+  <title>DICOMFall</title>
+  <style>
+    .sheet { fill: #fafaf7; }
+    .ink { fill: #141414; }
+    .hatch { stroke: #141414; }
+    .edge { stroke: #141414; }
+    .section { stroke: #c8201a; }
+    @media (prefers-color-scheme: dark) {
+      .sheet { fill: #1c1e1d; }
+      .ink { fill: #eaeae4; }
+      .hatch { stroke: #eaeae4; }
+      .edge { stroke: #eaeae4; }
+      .section { stroke: #ff6a5c; }
+    }
+  </style>
+  <defs>
+    <!-- A D with the K's and the P's stem and height; the section line is where the File Meta ends. -->
+    <path id="d" fill-rule="evenodd" d="M7 5H15.5C21.8 5 26 9.3 26 15.5S21.8 26 15.5 26H7ZM12 9.5V21.5H15.3C18.9 21.5 21 19.2 21 15.5S18.9 9.5 15.3 9.5Z" />
+    <pattern id="hatching" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line class="hatch" x1="0" y1="0" x2="0" y2="3" stroke-width="1" />
+    </pattern>
+    <clipPath id="above"><rect width="32" height="16" /></clipPath>
+    <clipPath id="below"><rect y="16" width="32" height="16" /></clipPath>
+  </defs>
+  <rect class="sheet" width="32" height="32" rx="0" />
+  <use href="#d" class="ink" clip-path="url(#above)" />
+  <use href="#d" fill="url(#hatching)" clip-path="url(#below)" />
+  <use href="#d" class="edge" fill="none" stroke-width="1" clip-path="url(#below)" />
+  <line class="section" x1="2" y1="16" x2="30" y2="16" stroke-width="1.6" stroke-dasharray="5 1.5 1.5 1.5" />
+</svg>

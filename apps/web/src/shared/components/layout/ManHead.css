@@ -1,0 +1,40 @@
+.df-man-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  height: 2rem;
+  font-variation-settings: "wdth" 75;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.df-man-head > :first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.df-man-head > :last-child {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.df-man-head > :nth-child(2) {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Both page names in a running head are set in caps, as man(1) prints them. */
+.df-man-head--head > :first-child,
+.df-man-head--head > :last-child,
+.df-man-head--head .df-man-head__title {
+  text-transform: uppercase;
+}
+
+.df-man-head--foot > :nth-child(2) {
+  font-size: 0.8125rem;
+}

@@ -1,0 +1,42 @@
+.df-tabs {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.df-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-right: var(--rule);
+  background: var(--soft);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.df-tabs--file .df-tab {
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+}
+
+.df-tabs--view .df-tab {
+  font-weight: 500;
+}
+
+.df-tab[aria-selected="true"] {
+  background: var(--sheet);
+  font-weight: 600;
+  box-shadow: inset 0 -4px 0 var(--red);
+}
+
+.df-tab:focus-visible {
+  outline-offset: -3px;
+}
+
+.df-tab__mark {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--ink);
+}

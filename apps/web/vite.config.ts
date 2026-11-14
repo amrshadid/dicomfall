@@ -1,0 +1,129 @@
+import { createHash } from 'node:crypto'
+import { readdirSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { runInNewContext } from 'node:vm'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import { type Connect, defineConfig, type Plugin } from 'vite'
+// A relative path: the config is loaded before the app's aliases exist.
+import { injectSwManifest, precacheFiles, SW_FILE } from './src/shared/utils/offline/index.ts'
+
+const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url))
+// The release version lives in the root package.json, the one file a release bumps.
+const APP_VERSION: string = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')).version
+const PUBLIC_DIR = fileURLToPath(new URL('./public/', import.meta.url))
+// For crawlers and link previews, never read by the game: the share image alone would add about
+// 70 KB to every player's install.
+const NOT_FOR_PLAYERS = new Set(['og.png', 'robots.txt', 'sitemap.xml'])
+
+function publicFiles(dir = PUBLIC_DIR, prefix = ''): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = `${prefix}${entry.name}`
+    if (NOT_FOR_PLAYERS.has(path)) {
+      return []
+    }
+    return entry.isDirectory() ? publicFiles(`${dir}${entry.name}/`, `${path}/`) : [path]
+  })
+}
+
+// The version hashes the precached files, so every new build installs a new worker.
+function serviceWorker(): Plugin {
+  return {
+    name: 'dicomfall:service-worker',
+    apply: 'build',
+    buildStart() {
+      this.emitFile({ type: 'chunk', id: src('sw.ts'), fileName: SW_FILE })
+    },
+    generateBundle: {
+      order: 'post',
+      handler(_options, bundle) {
+        const worker = bundle[SW_FILE]
+        if (worker?.type !== 'chunk') {
+          return this.error(`${SW_FILE} is missing from the build`)
+        }
+        if (worker.imports.length > 0 || worker.dynamicImports.length > 0) {
+          return this.error(`${SW_FILE} imports ${worker.imports.join(', ')}: it must share no module with the app`)
+        }
+        const files = precacheFiles([...Object.keys(bundle), ...publicFiles()])
+        const hash = createHash('sha256')
+        for (const file of files) {
+          const output = bundle[file]
+          hash.update(file)
+          hash.update(
+            output ? (output.type === 'chunk' ? output.code : output.source) : readFileSync(PUBLIC_DIR + file)
+          )
+        }
+        const code = injectSwManifest(worker.code, { version: hash.digest('hex').slice(0, 12), files })
+        if (code === null) {
+          return this.error(`${SW_FILE} lost its manifest token`)
+        }
+        try {
+          // A worker that throws while it loads never registers, and the game silently loses
+          // offline play: run its top level here, where that fails the build.
+          runInNewContext(code, {
+            self: { registration: { scope: 'https://dicomfall.invalid/' }, addEventListener() {} },
+          })
+        } catch (error) {
+          return this.error(
+            `${SW_FILE} throws when it loads: ${error instanceof Error ? error.message : String(error)}`
+          )
+        }
+        worker.code = code
+      },
+    },
+  }
+}
+
+// Vite answers every page address with the game, as a single-page app. A static host serves
+// 404.html for an address that is no file of the site: do the same locally, in dev and preview,
+// so the page can be seen before it ships. Files (a dot in the last segment) and Vite's own
+// paths keep their usual answer.
+function notFoundPage(): Plugin {
+  const rewrite: Connect.NextHandleFunction = (req, res, next) => {
+    const path = (req.url ?? '/').split('?')[0] ?? '/'
+    const last = path.slice(path.lastIndexOf('/') + 1)
+    const isPage = req.method === 'GET' && (req.headers.accept ?? '').includes('text/html')
+    if (!isPage || path === '/' || path === '/index.html' || last.includes('.') || path.startsWith('/@')) {
+      next()
+      return
+    }
+    req.url = '/404.html'
+    res.statusCode = 404
+    next()
+  }
+  return {
+    name: 'dicomfall:not-found-page',
+    configureServer(server) {
+      server.middlewares.use(rewrite)
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(rewrite)
+    },
+  }
+}
+
+export default defineConfig({
+  // For a host that serves the site under a sub-path; Vercel serves it at the root.
+  base: process.env.DF_BASE ?? '/',
+  // The one place the version is written is the root package.json; Settings and the status lines print it.
+  define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
+  plugins: [react(), tailwindcss(), serviceWorker(), notFoundPage()],
+  build: {
+    rolldownOptions: {
+      // A static host serves 404.html for an address that is no file of the site.
+      input: { main: src('../index.html'), notFound: src('../404.html') },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': src(''),
+      '@shared': src('shared'),
+      '@features': src('features'),
+      '@app': src('app'),
+      '@pages': src('pages'),
+    },
+  },
+  worker: {
+    format: 'es',
+  },
+})

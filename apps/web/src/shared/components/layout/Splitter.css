@@ -1,0 +1,53 @@
+/* The divider is the 2px rule between two panels; its hit area reaches a few pixels to each side. */
+.df-splitter {
+  position: relative;
+  z-index: 2;
+  background: var(--ink);
+  touch-action: none;
+}
+
+.df-splitter--vertical {
+  width: 2px;
+  cursor: col-resize;
+}
+
+.df-splitter--horizontal {
+  height: 2px;
+  cursor: row-resize;
+}
+
+.df-splitter::before {
+  content: "";
+  position: absolute;
+}
+
+.df-splitter--vertical::before {
+  inset: 0 -0.3125rem;
+}
+
+.df-splitter--horizontal::before {
+  inset: -0.3125rem 0;
+}
+
+.df-splitter:hover,
+.df-splitter:focus-visible,
+.df-resizing .df-splitter:active {
+  background: var(--red);
+  box-shadow: 0 0 0 1px var(--red);
+  outline: none;
+}
+
+/* While dragging, the cursor stays and no text gets selected, wherever the pointer goes. */
+.df-resizing {
+  user-select: none;
+}
+
+.df-resizing--vertical,
+.df-resizing--vertical * {
+  cursor: col-resize;
+}
+
+.df-resizing--horizontal,
+.df-resizing--horizontal * {
+  cursor: row-resize;
+}

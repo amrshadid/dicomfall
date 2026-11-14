@@ -1,0 +1,140 @@
+/* Takes the room the bar leaves; its width never depends on the labels, so measuring it can't loop. */
+.df-rail {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  /* A last resort that never triggers when the measure is right: clipped beats drawn under the Hint button. */
+  overflow: hidden;
+}
+
+/* Room for the current square's outline at either end, inside the clip. */
+.df-rail__list {
+  display: flex;
+  align-items: center;
+  padding: 0 0.25rem;
+}
+
+.df-rail__measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.df-rail__measure .df-rail__list {
+  width: max-content;
+}
+
+.df-rail__step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.df-rail__step + .df-rail__step::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  background: var(--ink);
+  margin: 0 0.625rem 0 0.125rem;
+}
+
+.df-rail__step--current + .df-rail__step::before,
+.df-rail__step--future + .df-rail__step::before {
+  background: none;
+  border-top: 2px dashed var(--ink-2);
+  height: 0;
+}
+
+.df-rail__sq {
+  width: 0.875rem;
+  height: 0.875rem;
+  border: var(--rule);
+  flex: none;
+}
+
+.df-rail__step--done .df-rail__sq {
+  background: var(--ink);
+}
+
+.df-rail__step--current {
+  color: var(--red);
+  font-weight: 800;
+}
+
+.df-rail__step--current .df-rail__sq {
+  background: var(--red);
+  border-color: var(--red);
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.df-rail__step--future {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.df-rail__step button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  background: none;
+  padding: 0.25rem 0;
+  font-weight: inherit;
+  color: inherit;
+  text-underline-offset: 4px;
+}
+
+/* Done steps read as steps, not links; hover, keyboard focus and a look back mark them in red. */
+.df-rail__step button:hover,
+.df-rail__step button:focus-visible,
+.df-rail__step--reviewing button {
+  outline: none;
+  text-decoration: underline 2px;
+  color: var(--red);
+}
+
+/* Without a label the square is the target, so it carries the red too. */
+.df-rail__step--reviewing button .df-rail__sq {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.df-rail__step button:hover .df-rail__sq,
+.df-rail__step button:focus-visible .df-rail__sq {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.df-rail__step button:focus-visible .df-rail__sq {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* A bare square is a small target: the padding widens what a click can hit, the margin keeps the measured width. */
+.df-rail__step--bare button {
+  padding: 0.375rem 0.25rem;
+  margin: 0 -0.25rem;
+}
+
+.df-rail__list--current .df-rail__step + .df-rail__step::before,
+.df-rail__list--marks .df-rail__step + .df-rail__step::before {
+  width: 0.75rem;
+  margin: 0 0.25rem 0 0;
+}
+
+@media (max-width: 85rem) {
+  .df-rail__list--full .df-rail__step + .df-rail__step::before {
+    width: 0.875rem;
+    margin: 0 0.5rem 0 0;
+  }
+}

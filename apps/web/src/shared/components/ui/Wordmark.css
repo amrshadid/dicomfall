@@ -1,0 +1,13 @@
+.df-wordmark {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.df-wordmark__text {
+  font-family: var(--face);
+  /* DICOMFall's name is wider than its sister games' names: set narrower, it reaches the same height under the same max-height cap. */
+  font-variation-settings: "wdth" 110;
+  font-weight: 800;
+  letter-spacing: -6px;
+}
