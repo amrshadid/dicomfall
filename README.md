@@ -13,7 +13,9 @@ repository. DICOMFall is the third game in a series, after
 [Kernelfall](https://github.com/amrshadid/kernelfall) (the Linux kernel) and
 [Peerfall](https://github.com/amrshadid/peerfall) (FRRouting).
 
-> **Status:** early development. Nothing is playable yet.
+> **Status:** early development, at [dicomfall.shadid.dev](https://dicomfall.shadid.dev). Stages 1
+> and 2 are written, fact-checked and recorded on the Machine; their mission screen is being
+> finished for the first alpha.
 
 ## What you'll learn
 

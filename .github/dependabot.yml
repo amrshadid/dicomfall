@@ -27,3 +27,11 @@ updates:
       production:
         dependency-type: production
         update-types: [minor, patch]
+
+  # The fixture generator is Go, on go-dicom's released module.
+  - package-ecosystem: gomod
+    directory: /packages/fixtures
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "build(deps)"
