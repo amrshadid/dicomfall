@@ -1,0 +1,80 @@
+{
+ "mission": "one-name-many-values",
+ "version": 1,
+ "run": "first-value-only",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "image-type",
+     "value": "ORIGINAL"
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {
+     "image-type": "ORIGINAL"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "pixel-spacing",
+     "value": "5"
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {
+     "image-type": "ORIGINAL",
+     "pixel-spacing": "5"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "image-type": false,
+  "pixel-spacing": false
+ }
+}

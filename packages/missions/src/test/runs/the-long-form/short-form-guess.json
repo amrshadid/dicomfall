@@ -1,0 +1,84 @@
+{
+ "mission": "the-long-form",
+ "version": 1,
+ "run": "short-form-guess",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "predict": {
+     "objective": "after-version",
+     "offset": 152
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {
+     "after-version": 152
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 1452,
+     "to": 1456
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 1452,
+     "to": 1456
+    },
+    "answers": {},
+    "predictions": {
+     "after-version": 152
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "after-version": false,
+  "pixel-length": true
+ }
+}

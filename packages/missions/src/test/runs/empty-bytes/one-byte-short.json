@@ -1,0 +1,107 @@
+{
+ "mission": "empty-bytes",
+ "version": 1,
+ "run": "one-byte-short",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "hexdump -C /lab/ct-explicit-le.dcm | head -n 10"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 0,
+     "to": 127
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 0,
+     "to": 127
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 128,
+     "to": 132
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 128,
+     "to": 132
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "preamble": false,
+  "prefix": true
+ }
+}

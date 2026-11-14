@@ -1,0 +1,77 @@
+{
+ "mission": "what-the-file-says",
+ "version": 1,
+ "run": "modality-only",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "go-dicom show /lab/ct-explicit-le.dcm"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "modality",
+     "value": "CT"
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {
+     "modality": "CT"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "modality": true,
+  "patient-name": false
+ }
+}

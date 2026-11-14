@@ -1,0 +1,108 @@
+{
+ "mission": "four-bytes-of-name",
+ "version": 1,
+ "run": "both",
+ "passes": true,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "go-dicom tag-doc 0010,0020"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 628,
+     "to": 632
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 628,
+     "to": 632
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "predict": {
+     "objective": "id-offset",
+     "offset": 898
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 628,
+     "to": 632
+    },
+    "answers": {},
+    "predictions": {
+     "id-offset": 898
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "modality-tag": true,
+  "id-offset": true
+ }
+}

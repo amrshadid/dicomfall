@@ -201,66 +201,66 @@ named earlier is only named there: explained in one line, never relied on. Numbe
 missions (1.4 is stage 1's fourth; B.1 is the Bridge's first). Stage 4 terms are listed
 because the bridge names them.
 
-| Term                                      | Means                                                                                                   | Taught |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ |
-| DICOM                                     | the standard for medical images and the information about them, in files and on networks                | 1.1    |
-| DICOM file                                | a file that holds one DICOM object, laid out as PS3.10 says                                             | 1.1    |
-| element (data element)                    | one entry of an object: a tag naming it, and its value                                                  | 1.1    |
-| byte, hexadecimal                         | a byte is 8 bits, written as two hex digits from `00` to `FF`                                           | 1.2    |
-| offset                                    | where a byte sits, counted from the start of the file, from 0                                           | 1.2    |
-| text in bytes                             | a text value's characters stored one byte each, readable in the hex pane's text column                  | 1.2    |
-| Part 10 file (DICOM File Format)          | preamble, prefix, File Meta Information, then the Data Set (PS3.10 §7)                                  | 1.3    |
-| preamble                                  | the first 128 bytes; DICOM gives them no meaning, and unused they are all `00`                          | 1.3    |
-| DICM prefix                               | the four letters `DICM` at offsets 128 to 131 that mark a DICOM file                                    | 1.3    |
+| Term                                      | Means                                                                                                                                                                                         | Taught |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| DICOM                                     | the standard for medical images and the information about them, in files and on networks                                                                                                      | 1.1    |
+| DICOM file                                | a file that holds one DICOM object, laid out as PS3.10 says                                                                                                                                   | 1.1    |
+| element (data element)                    | one entry of an object: a tag naming it, and its value                                                                                                                                        | 1.1    |
+| byte, hexadecimal                         | a byte is 8 bits, written as two hex digits from `00` to `FF`                                                                                                                                 | 1.2    |
+| offset                                    | where a byte sits, counted from the start of the file, from 0                                                                                                                                 | 1.2    |
+| text in bytes                             | a text value's characters stored one byte each, readable in the hex pane's text column                                                                                                        | 1.2    |
+| Part 10 file (DICOM File Format)          | preamble, prefix, File Meta Information, then the Data Set (PS3.10 §7)                                                                                                                        | 1.3    |
+| preamble                                  | the first 128 bytes; DICOM gives them no meaning, and unused they are all `00`                                                                                                                | 1.3    |
+| DICM prefix                               | the four letters `DICM` at offsets 128 to 131 that mark a DICOM file                                                                                                                          | 1.3    |
 | File Meta Information                     | the elements of group 0002 that describe the file itself; always Explicit VR Little Endian. PS3.10 counts the preamble and prefix as part of it; the game names the group 0002 elements alone | 1.4    |
-| group length                              | (0002,0000): how many bytes of group 0002 follow it                                                     | 1.4    |
-| Data Set                                  | the object's own elements, after the File Meta Information                                              | 1.4    |
-| transfer syntax                           | the rules a Data Set is encoded by: VR written or not, byte order, compression                          | 1.5    |
-| UID                                       | a unique identifier: numbers joined by dots, at most 64 characters (PS3.5 §9)                           | 1.5    |
-| little endian                             | a number stored least significant byte first: 2 is `02 00`                                              | 1.5    |
-| tag                                       | an element's number, (group,element), four hex digits each                                              | 2.1    |
-| tag order                                 | elements of a Data Set sit in increasing tag order                                                      | 2.1    |
-| data dictionary                           | the list of every standard tag with its name, keyword, VR and VM (PS3.6)                                | 2.1    |
-| VR (Value Representation)                 | two letters that say what kind of value follows: `PN` a person's name, `UI` a UID, `US` a 16-bit number | 2.2    |
-| value length                              | how many bytes the value takes; always even, except the undefined length `FFFFFFFF`                     | 2.2    |
-| padding                                   | the byte added to an odd value to make it even: a space for text, `00` for a UID                        | 2.2    |
-| long form                                 | the explicit layout of OB, OW, SQ, UN, UT and others: two reserved bytes, then a 4-byte length          | 2.3    |
-| binary VRs (OB, OW)                       | values that are raw bytes or 16-bit words, not text                                                     | 2.3    |
-| VM (Value Multiplicity)                   | how many values an element holds, separated by `\` in text                                              | 2.4    |
-| explicit VR                               | each element carries its VR in the bytes                                                                | 2.5    |
-| implicit VR                               | elements carry no VR; the reader takes it from the dictionary                                           | 2.5    |
-| default transfer syntax                   | Implicit VR Little Endian, which every DICOM implementation must support                                | 2.5    |
-| same object, other bytes                  | two transfer syntaxes encode the same values differently                                                | 2.6    |
-| sequence (SQ)                             | an element whose value is a list of items                                                               | 2.7    |
-| item                                      | one entry of a sequence: a small set of elements of its own, tag (FFFE,E000)                            | 2.7    |
-| undefined length                          | length `FFFFFFFF`: the value ends at a delimitation item instead                                        | 2.7    |
-| information model                         | patient, study, series, instance: how DICOM files real-world things                                     | 3.1    |
-| study                                     | one examination of one patient, named by its Study Instance UID (0020,000D)                             | 3.1    |
-| series                                    | the instances of a study made in one run of one modality, named by its Series Instance UID (0020,000E)  | 3.2    |
-| SOP Instance UID                          | (0008,0018): the name of one object, unique in the world                                                | 3.3    |
-| UID root                                  | a UID's first components, which say who made it; `1.2.840.10008` is DICOM's own                         | 3.3    |
-| instance number                           | (0020,0013): a number for people to order instances by; not unique                                      | 3.3    |
-| SOP Class                                 | what kind of object it is, by UID: CT Image Storage is `1.2.840.10008.5.1.4.1.1.2`                      | 3.4    |
-| IOD                                       | the definition of which elements an object of a kind must hold (PS3.3)                                  | 3.4    |
-| Media Storage SOP Class and Instance UIDs | (0002,0002) and (0002,0003): the File Meta Information's copy of the object's class and instance        | 3.4    |
-| Rows, Columns                             | (0028,0010), (0028,0011): the image's height and width in pixels                                        | 3.5    |
-| Photometric Interpretation                | (0028,0004): how pixel values become colour; `MONOCHROME2` is greyscale, low is dark                    | 3.5    |
-| Pixel Data                                | (7FE0,0010): the image's pixel values                                                                   | 3.5    |
-| Bits Allocated, Bits Stored               | the bits each pixel takes in the file, and how many of them hold the value                              | 3.6    |
-| Pixel Representation                      | (0028,0103): `0` unsigned, `1` two's complement                                                         | 3.6    |
-| Rescale Slope and Intercept               | turn a stored value into the CT value: slope × value + intercept, in Hounsfield units                   | 3.6    |
-| DIMSE message                             | what one AE sends another: a Command Set, sometimes followed by a Data Set                              | B.1    |
-| Command Set                               | the elements of group 0000 that say what to do with the Data Set                                        | B.1    |
-| File Meta stays on disk                   | group 0002 belongs to files only and is never sent                                                      | B.1    |
-| negotiated transfer syntax                | the syntax both AEs accepted for a presentation context; the Data Set travels in it                     | B.2    |
-| Command Set encoding                      | a Command Set is always encoded as Implicit VR Little Endian                                            | B.2    |
-| stored encoding                           | the receiver chooses the transfer syntax of the file it writes                                          | B.2    |
-| AE title                                  | named in B.1; taught in stage 4                                                                         | 4      |
-| association                               | named in B.1; taught in stage 4                                                                         | 4      |
-| SCU, SCP                                  | named in B.1; taught in stage 4                                                                         | 4      |
-| presentation context                      | named in B.1; taught in stage 4                                                                         | 4      |
-| C-STORE                                   | named in B.1; taught in stage 4                                                                         | 4      |
-| PDU                                       | named in B.1; taught in stage 4                                                                         | 4      |
+| group length                              | (0002,0000): how many bytes of group 0002 follow it                                                                                                                                           | 1.4    |
+| Data Set                                  | the object's own elements, after the File Meta Information                                                                                                                                    | 1.4    |
+| transfer syntax                           | the rules a Data Set is encoded by: VR written or not, byte order, compression                                                                                                                | 1.5    |
+| UID                                       | a unique identifier: numbers joined by dots, at most 64 characters (PS3.5 §9)                                                                                                                 | 1.5    |
+| little endian                             | a number stored least significant byte first: 2 is `02 00`                                                                                                                                    | 1.5    |
+| tag                                       | an element's number, (group,element), four hex digits each                                                                                                                                    | 2.1    |
+| tag order                                 | elements of a Data Set sit in increasing tag order                                                                                                                                            | 2.1    |
+| data dictionary                           | the list of every standard tag with its name, keyword, VR and VM (PS3.6)                                                                                                                      | 2.1    |
+| VR (Value Representation)                 | two letters that say what kind of value follows: `PN` a person's name, `UI` a UID, `US` a 16-bit number                                                                                       | 2.2    |
+| value length                              | how many bytes the value takes; always even, except the undefined length `FFFFFFFF`                                                                                                           | 2.2    |
+| padding                                   | the byte added to an odd value to make it even: a space for text, `00` for a UID                                                                                                              | 2.2    |
+| long form                                 | the explicit layout of OB, OW, SQ, UN, UT and others: two reserved bytes, then a 4-byte length                                                                                                | 2.3    |
+| binary VRs (OB, OW)                       | values that are raw bytes or 16-bit words, not text                                                                                                                                           | 2.3    |
+| VM (Value Multiplicity)                   | how many values an element holds, separated by `\` in text                                                                                                                                    | 2.4    |
+| explicit VR                               | each element carries its VR in the bytes                                                                                                                                                      | 2.5    |
+| implicit VR                               | elements carry no VR; the reader takes it from the dictionary                                                                                                                                 | 2.5    |
+| default transfer syntax                   | Implicit VR Little Endian, which every DICOM implementation must support                                                                                                                      | 2.5    |
+| same object, other bytes                  | two transfer syntaxes encode the same values differently                                                                                                                                      | 2.6    |
+| sequence (SQ)                             | an element whose value is a list of items                                                                                                                                                     | 2.7    |
+| item                                      | one entry of a sequence: a small set of elements of its own, tag (FFFE,E000)                                                                                                                  | 2.7    |
+| undefined length                          | length `FFFFFFFF`: the value ends at a delimitation item instead                                                                                                                              | 2.7    |
+| information model                         | patient, study, series, instance: how DICOM files real-world things                                                                                                                           | 3.1    |
+| study                                     | one examination of one patient, named by its Study Instance UID (0020,000D)                                                                                                                   | 3.1    |
+| series                                    | the instances of a study made in one run of one modality, named by its Series Instance UID (0020,000E)                                                                                        | 3.2    |
+| SOP Instance UID                          | (0008,0018): the name of one object, unique in the world                                                                                                                                      | 3.3    |
+| UID root                                  | a UID's first components, which say who made it; `1.2.840.10008` is DICOM's own                                                                                                               | 3.3    |
+| instance number                           | (0020,0013): a number for people to order instances by; not unique                                                                                                                            | 3.3    |
+| SOP Class                                 | what kind of object it is, by UID: CT Image Storage is `1.2.840.10008.5.1.4.1.1.2`                                                                                                            | 3.4    |
+| IOD                                       | the definition of which elements an object of a kind must hold (PS3.3)                                                                                                                        | 3.4    |
+| Media Storage SOP Class and Instance UIDs | (0002,0002) and (0002,0003): the File Meta Information's copy of the object's class and instance                                                                                              | 3.4    |
+| Rows, Columns                             | (0028,0010), (0028,0011): the image's height and width in pixels                                                                                                                              | 3.5    |
+| Photometric Interpretation                | (0028,0004): how pixel values become colour; `MONOCHROME2` is greyscale, low is dark                                                                                                          | 3.5    |
+| Pixel Data                                | (7FE0,0010): the image's pixel values                                                                                                                                                         | 3.5    |
+| Bits Allocated, Bits Stored               | the bits each pixel takes in the file, and how many of them hold the value                                                                                                                    | 3.6    |
+| Pixel Representation                      | (0028,0103): `0` unsigned, `1` two's complement                                                                                                                                               | 3.6    |
+| Rescale Slope and Intercept               | turn a stored value into the CT value: slope × value + intercept, in Hounsfield units                                                                                                         | 3.6    |
+| DIMSE message                             | what one AE sends another: a Command Set, sometimes followed by a Data Set                                                                                                                    | B.1    |
+| Command Set                               | the elements of group 0000 that say what to do with the Data Set                                                                                                                              | B.1    |
+| File Meta stays on disk                   | group 0002 belongs to files only and is never sent                                                                                                                                            | B.1    |
+| negotiated transfer syntax                | the syntax both AEs accepted for a presentation context; the Data Set travels in it                                                                                                           | B.2    |
+| Command Set encoding                      | a Command Set is always encoded as Implicit VR Little Endian                                                                                                                                  | B.2    |
+| stored encoding                           | the receiver chooses the transfer syntax of the file it writes                                                                                                                                | B.2    |
+| AE title                                  | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
+| association                               | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
+| SCU, SCP                                  | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
+| presentation context                      | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
+| C-STORE                                   | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
+| PDU                                       | named in B.1; taught in stage 4                                                                                                                                                               | 4      |
 
 ## 10. Words the stories avoid
 

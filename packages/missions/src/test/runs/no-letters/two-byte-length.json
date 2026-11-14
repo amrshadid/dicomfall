@@ -1,0 +1,114 @@
+{
+ "mission": "no-letters",
+ "version": 1,
+ "run": "two-byte-length",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 872,
+     "to": 892
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 872,
+     "to": 892
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 876,
+     "to": 878
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 876,
+     "to": 878
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "predict": {
+     "objective": "next-implicit",
+     "offset": 890
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 876,
+     "to": 878
+    },
+    "answers": {},
+    "predictions": {
+     "next-implicit": 890
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "name-implicit": true,
+  "length-implicit": false,
+  "next-implicit": false
+ }
+}

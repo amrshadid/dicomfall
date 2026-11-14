@@ -1,0 +1,86 @@
+{
+ "mission": "the-same-object-twice",
+ "version": 1,
+ "run": "explicit-offset",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 248,
+     "to": 250
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 248,
+     "to": 250
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "predict": {
+     "objective": "pixel-moved",
+     "offset": 1444
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 248,
+     "to": 250
+    },
+    "answers": {},
+    "predictions": {
+     "pixel-moved": 1444
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "meta-vr": true,
+  "pixel-moved": false
+ }
+}

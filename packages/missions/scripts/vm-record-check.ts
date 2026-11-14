@@ -47,7 +47,8 @@ function hexdumpLine(offset: number): string {
 
 // The scene asks for two commands: the first is its own block's, the second changes the lab before
 // the listing. One block's line is longer than the console is wide, and one needs go-dicom.
-const LONG = 'ls -d /lab/ct.dcm /lab/copy.dcm /lab/fixtures/ct-explicit-le.dcm /lab/fixtures/ct-implicit-le.dcm'
+const LONG =
+  'ls -d /lab/ct.dcm /lab/copy.dcm /usr/share/dicomfall/fixtures/ct-explicit-le.dcm /usr/share/dicomfall/fixtures/ct-implicit-le.dcm'
 const ADDED = `> **The Preamble:** Type \`hexdump -C /lab/ct.dcm | head -n 3\`.
 
 ---
@@ -135,9 +136,12 @@ try {
     'a line wider than the console is recorded without its echo',
     long !== undefined &&
       !long.body.includes('ls -d') &&
-      ['/lab/ct.dcm', '/lab/copy.dcm', '/lab/fixtures/ct-explicit-le.dcm', '/lab/fixtures/ct-implicit-le.dcm'].every(
-        (path) => long.body.includes(path)
-      ),
+      [
+        '/lab/ct.dcm',
+        '/lab/copy.dcm',
+        '/usr/share/dicomfall/fixtures/ct-explicit-le.dcm',
+        '/usr/share/dicomfall/fixtures/ct-implicit-le.dcm',
+      ].every((path) => long.body.includes(path)),
     long?.body
   )
   check(

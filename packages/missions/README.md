@@ -9,9 +9,27 @@ with its file and field.
 > (`appContent()`, then `configureGame({ content: loaded.value.game })`); the screens live in
 > `apps/web/src/features/`.
 
-> **Golden runs arrive with the Machine.** Recording a mission's `solution.yaml` on the real image,
-> the flow that runs a mission against the lab, and judging its checks live all need
-> `@dicomfall/machine`, which does not exist yet.
+## Golden runs and live judging
+
+`pnpm --filter @dicomfall/missions vm:golden [mission-id …]` (`scripts/golden-runs.ts`, after
+`pnpm vm:image`) boots the image in Node and plays every run of each mission's `solution.yaml`
+on its own clean lab: `shell` lines typed at the AE's console as the recorder types them (each
+line's exit status read after it; non-zero fails the run unless the change says `fails: true`),
+`select`, `answer` and `predict` as the player's actions. It judges the mission's checks with
+go-dicom's readings taken on the Machine, as live play does: once the lab has settled, then after
+each change, merged so a met objective stays met. It prints a table and exits 1 when a run is not
+judged as its solution says, when the lab as it starts meets an objective, or when a line failed.
+A run judged as its solution says is written to `src/test/runs/<mission-id>/<run-id>.json` (its
+steps: each change, the player's actions after it and the readings judged against), with go-dicom's
+readings once per mission in `readings.json`; `src/test/golden-runs.test.ts` judges them again
+without a VM. Each mission's log, with what every line printed:
+`node_modules/.cache/dicomfall-golden/<mission-id>.log`.
+
+The app judges live with `createMissionJudge(mission, reader)`: `start()` once the lab is built,
+then `judge(actions, reread)` after each finished command (`reread: true`, since a command may
+change the files) and after each selection or answer (`false`). `createLiveJudge` collapses quick
+requests into one judging at a time. The `reader` is the Machine: `readShow` and `run`, which
+`useMachineControls()` gives.
 
 ## Structure
 
@@ -26,7 +44,9 @@ content/
     ├── mission.yaml          → the lab, objectives and checks, three hints, chips, Codex cards, concepts, skills
     └── story.md              → Scene · See it · Build it · Watch it · Debrief · Real world
 scripts/
-└── content-report.ts         → pnpm content:report: every mission against the budgets, and the chain of concepts
+├── content-report.ts         → pnpm content:report: every mission against the budgets, and the chain of concepts
+├── record.ts                 → pnpm vm:record: fills each story's recorded blocks from the Machine
+└── golden-runs.ts            → vm:golden: plays and judges every solution.yaml run on the Machine
 src/
 ├── types/definitions/
 │   ├── content.ts            → ContentFiles, LoadedContent, the content file names
@@ -36,11 +56,16 @@ src/
 │   ├── loader/               → loadContent (files → LoadedContent or every problem), appContent (the
 │   │                           repository's content, checked once), readYaml, CONTENT_FILES (Vite's glob),
 │   │                           readContentDir (the same files from disk, for Node; not in the barrel)
+│   ├── run/                  → validateSolution (solution.yaml), applyChange, readLab and readStart
+│   │                           (go-dicom's readings a mission's checks ask for), createMissionJudge,
+│   │                           createLiveJudge, recordReadings / rejudgeRun (recorded runs), and
+│   │                           createConsoleDriver (the recorder's typing, for vm:golden; not in the barrel)
 │   ├── story/                → parseStory, storyProblems, storySteps, slugify, sectionOf
 │   └── lint/                 → lintMission, countWords, countAsides, strayWords; the budgets, the banned
 │                               phrases, the vocabulary and ENFORCED_MISSIONS
 ├── test/                     → a valid content folder with two missions (fixture-content/), FIXTURE_FILES,
-│                               the content budget and concept chain tests (not exported)
+│                               the content budget and concept chain tests, the recorded golden runs
+│                               (runs/) and the test that judges them again (not exported)
 └── index.ts                  → exports the types and utils
 ```
 
@@ -70,5 +95,6 @@ src/
 ## Dependencies
 
 - `@dicomfall/core`: `Validated` results
-- `@dicomfall/game`: the content schemas, `createGameContent`, `conceptChain`
+- `@dicomfall/game`: the content schemas, `createGameContent`, `conceptChain`, `judgeMission`
+- `@dicomfall/machine`: the VM session, `readMachineShow`, and the lab's network for a mission
 - `yaml`: parses the content files

@@ -1,0 +1,102 @@
+{
+ "mission": "what-the-file-says",
+ "version": 1,
+ "run": "from-info",
+ "passes": true,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "go-dicom info /lab/ct-explicit-le.dcm"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "modality",
+     "value": "ct"
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {
+     "modality": "ct"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "patient-name",
+     "value": "FALLS^DICOM"
+    }
+   },
+   "actions": {
+    "selection": null,
+    "answers": {
+     "modality": "ct",
+     "patient-name": "FALLS^DICOM"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "modality": true,
+  "patient-name": true
+ }
+}

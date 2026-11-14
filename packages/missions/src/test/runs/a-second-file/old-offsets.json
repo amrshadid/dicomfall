@@ -1,0 +1,170 @@
+{
+ "mission": "a-second-file",
+ "version": 1,
+ "run": "old-offsets",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 0,
+     "to": 128
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 0,
+     "to": 128
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 128,
+     "to": 132
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 128,
+     "to": 132
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 132,
+     "to": 328
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 132,
+     "to": 328
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 328,
+     "to": 9638
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 328,
+     "to": 9638
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "ts-value",
+     "value": "1.2.840.10008.1.2"
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 328,
+     "to": 9638
+    },
+    "answers": {
+     "ts-value": "1.2.840.10008.1.2"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "preamble": true,
+  "prefix": true,
+  "file-meta": false,
+  "data-set": false,
+  "ts-value": true
+ }
+}

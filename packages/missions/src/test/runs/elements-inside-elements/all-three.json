@@ -1,0 +1,137 @@
+{
+ "mission": "elements-inside-elements",
+ "version": 1,
+ "run": "all-three",
+ "passes": true,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "go-dicom show /lab/ct-explicit-le.dcm",
+     "go-dicom show --top /lab/ct-explicit-le.dcm"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 754,
+     "to": 842
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 754,
+     "to": 842
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 766,
+     "to": 842
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 766,
+     "to": 842
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "nested-value",
+     "value": "DF-CT-PHANTOM"
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-explicit-le.dcm",
+     "from": 766,
+     "to": 842
+    },
+    "answers": {
+     "nested-value": "DF-CT-PHANTOM"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-explicit-le.dcm": {
+      "reading": "4c529913591b9a81"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "sequence": true,
+  "first-item": true,
+  "nested-value": true
+ }
+}

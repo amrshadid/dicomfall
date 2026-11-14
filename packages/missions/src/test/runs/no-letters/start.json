@@ -1,0 +1,32 @@
+{
+ "mission": "no-letters",
+ "version": 1,
+ "run": "start",
+ "passes": false,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "name-implicit": false,
+  "length-implicit": false,
+  "next-implicit": false
+ }
+}

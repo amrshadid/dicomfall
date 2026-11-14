@@ -1,0 +1,140 @@
+{
+ "mission": "read-any-element",
+ "version": 1,
+ "run": "all-three",
+ "passes": true,
+ "image": "51a632888692",
+ "goDicom": "1.9.0",
+ "steps": [
+  {
+   "change": null,
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "ae": "workstation",
+    "shell": [
+     "hexdump -C -s 800 -n 48 /lab/ct-implicit-le.dcm",
+     "go-dicom tag-doc 0008,0104"
+    ]
+   },
+   "actions": {
+    "selection": null,
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "select": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 806,
+     "to": 810
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 806,
+     "to": 810
+    },
+    "answers": {},
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "answer": {
+     "objective": "its-value",
+     "value": "CT phantom, synthetic"
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 806,
+     "to": 810
+    },
+    "answers": {
+     "its-value": "CT phantom, synthetic"
+    },
+    "predictions": {}
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  },
+  {
+   "change": {
+    "predict": {
+     "objective": "next",
+     "offset": 836
+    }
+   },
+   "actions": {
+    "selection": {
+     "file": "/lab/ct-implicit-le.dcm",
+     "from": 806,
+     "to": 810
+    },
+    "answers": {
+     "its-value": "CT phantom, synthetic"
+    },
+    "predictions": {
+     "next": 836
+    }
+   },
+   "readings": {
+    "files": {
+     "/lab/ct-implicit-le.dcm": {
+      "reading": "679421c37120f381"
+     }
+    },
+    "folders": {},
+    "start": {}
+   }
+  }
+ ],
+ "objectives": {
+  "its-tag": true,
+  "its-value": true,
+  "next": true
+ }
+}

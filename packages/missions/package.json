@@ -19,7 +19,8 @@
   "scripts": {
     "type-check": "tsc --noEmit -p .",
     "test": "vitest run",
-    "content:report": "node scripts/content-report.ts"
+    "content:report": "node scripts/content-report.ts",
+    "vm:golden": "node scripts/golden-runs.ts"
   },
   "dependencies": {
     "@dicomfall/core": "workspace:*",
