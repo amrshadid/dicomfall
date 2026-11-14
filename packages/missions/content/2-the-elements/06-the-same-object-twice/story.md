@@ -13,10 +13,9 @@
 ---
 
 ```recorded ls -l /lab
-total 20
+total 19
 -rw-r--r--    1 root     root          9648 Jan  1  1970 ct-explicit-le.dcm
 -rw-r--r--    1 root     root          9638 Jan  1  1970 ct-implicit-le.dcm
-drwxr-xr-x    3 root     root             0 Jan  1  1970 fixtures
 ```
 
 > **VR:** 9,648 bytes for the explicit file, 9,638 for the implicit one: ten bytes apart. The size column counts every byte, from the preamble to the last pixel. Ten bytes is little, for a file that dropped my letters from almost every element. Hold on to that. Now print the explicit file's elements: `go-dicom show /lab/ct-explicit-le.dcm`.

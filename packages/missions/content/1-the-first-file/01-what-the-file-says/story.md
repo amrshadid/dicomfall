@@ -15,7 +15,6 @@
 ```recorded ls -l /lab
 total 10
 -rw-r--r--    1 root     root          9648 Jan  1  1970 ct-explicit-le.dcm
-drwxr-xr-x    3 root     root             0 Jan  1  1970 fixtures
 ```
 
 > **The Preamble:** One file, `ct-explicit-le.dcm`, 9648 bytes long. A byte is the smallest piece a file is counted in; the next mission looks at them one by one. Now ask go-dicom, the tool you work with, for a summary: `go-dicom info /lab/ct-explicit-le.dcm`.

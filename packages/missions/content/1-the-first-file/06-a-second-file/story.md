@@ -38,10 +38,9 @@ Columns:         64
 ---
 
 ```recorded ls -l /lab
-total 20
+total 19
 -rw-r--r--    1 root     root          9648 Jan  1  1970 ct-explicit-le.dcm
 -rw-r--r--    1 root     root          9638 Jan  1  1970 ct-implicit-le.dcm
-drwxr-xr-x    3 root     root             0 Jan  1  1970 fixtures
 ```
 
 > **The Preamble:** 9648 bytes for the first file, 9638 for this one. Ten bytes gone, and apart from its Size line the summary did not change. Ten bytes is not much, yet it is enough to trip a reader that applies one file's rules to another. The same values, written as different bytes: somewhere, this file follows other rules. A file's name and its summary can both look right while its bytes say something else, which is why an engineer maps a file before trusting it. The map starts at offset 0, as always: `hexdump -C /lab/ct-implicit-le.dcm | head -n 10`.
