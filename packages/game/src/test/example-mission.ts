@@ -10,6 +10,33 @@ export const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1'
 /** CT Image Storage. */
 export const CT_IMAGE_STORAGE = '1.2.840.10008.5.1.4.1.1.2'
 
+/** The file stages' lab: one AE with no link, and the CT file. */
+export const EXAMPLE_LAB_YAML = {
+  aes: [{ name: 'workstation', title: 'WORKSTATION' }],
+  links: [],
+  files: [{ fixture: 'ct-explicit-le.dcm', to: '/lab/ct.dcm' }],
+  console: 'workstation',
+} as const
+
+/** A network stage's lab: a modality and an archive on one link, the archive's receiver started by the Machine. */
+export const WIRE_LAB_YAML = {
+  aes: [
+    { name: 'modality', title: 'MODALITY', address: '10.0.1.1/24' },
+    {
+      name: 'archive',
+      title: 'ARCHIVE',
+      address: '10.0.1.2/24',
+      start: ['go-dicom storescp -aet ARCHIVE -port 11112 -output /lab/archive/received'],
+    },
+  ],
+  links: [['modality', 'archive']],
+  files: [
+    { fixture: 'ct-explicit-le.dcm', to: '/lab/ct.dcm' },
+    { fixture: 'series/', to: '/lab/series/' },
+  ],
+  console: 'modality',
+} as const
+
 /**
  * A parsed `mission.yaml` that uses every field of the schema: find the File Meta Information of
  * a CT file, then its Transfer Syntax UID, and predict where that element starts.
@@ -27,6 +54,7 @@ export const EXAMPLE_MISSION_YAML = {
   teaches: ['transfer-syntax'],
   names: ['implicit-vr'],
   uses: ['file-meta-information'],
+  lab: EXAMPLE_LAB_YAML,
   objectives: [
     {
       id: 'find-the-meta',
@@ -47,7 +75,7 @@ export const EXAMPLE_MISSION_YAML = {
   hints: [
     { text: 'Everything after the DICM prefix starts with group 0002 for a while.' },
     { text: 'The File Meta Information is always Explicit VR Little Endian, whatever the data set uses.' },
-    { text: 'Print the meta elements and look for (0002,0010).', command: 'go-dicom show /lab/ct.dcm' },
+    { text: 'The Transfer Syntax UID is the element (0002,0010), in the rows of group 0002.' },
   ],
   chips: [{ command: 'go-dicom show /lab/ct.dcm', explain: 'print every element of the file, one per line' }],
   codex: [
@@ -98,7 +126,7 @@ export const FOLLOW_UP_MISSION: MissionDefinition = exampleMission({
 const HINTS = [
   { text: 'Two AEs have to agree before anything is sent.' },
   { text: 'An association offers presentation contexts; the receiver accepts or refuses each one.' },
-  { text: 'Ask the archive whether it is there.', command: 'go-dicom echoscu archive' },
+  { text: 'The archive’s answer to an echo is the first row of the Wire inspector.' },
 ]
 
 /** A parsed `mission.yaml` judged on the wire: one check of every wire kind. */
@@ -112,6 +140,7 @@ export const WIRE_MISSION_YAML = {
   prerequisites: [],
   teaches: [],
   uses: [],
+  lab: WIRE_LAB_YAML,
   objectives: [
     {
       id: 'echo',

@@ -3,14 +3,12 @@ import { EXAMPLE_MISSION } from '#test/index'
 import { hintsLeft, hintsUsed, nextHint, revealedHints } from '#utils/hints/hints.util'
 
 describe('a mission’s three hints', () => {
-  it('shows them in order, nudge, concept, spot, and only the spot names a command', () => {
+  it('shows them in order, nudge, concept, spot, as text alone', () => {
     expect(revealedHints(EXAMPLE_MISSION, 0)).toEqual([])
     expect(revealedHints(EXAMPLE_MISSION, 2).map((hint) => hint.tier)).toEqual(['nudge', 'concept'])
-    expect(revealedHints(EXAMPLE_MISSION, 2).some((hint) => hint.command !== undefined)).toBe(false)
     expect(revealedHints(EXAMPLE_MISSION, 3).at(-1)).toEqual({
       tier: 'spot',
-      text: 'Print the meta elements and look for (0002,0010).',
-      command: 'go-dicom show /lab/ct.dcm',
+      text: 'The Transfer Syntax UID is the element (0002,0010), in the rows of group 0002.',
     })
   })
 

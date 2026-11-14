@@ -7,7 +7,8 @@ const mission = (id: string, teaches: string[], uses: string[], names: string[] 
   exampleMission({ id, chapter, teaches, uses, names, codex: [] })
 
 // Past the foundation stages, so a concept the last mission teaches needs no later mission.
-const later = (): ChapterDefinition[] => exampleChapters().map((chapter) => ({ ...chapter, stage: chapter.stage + 2 }))
+const later = (): ChapterDefinition[] =>
+  exampleChapters().map((chapter) => ({ ...chapter, stage: (chapter.stage ?? 0) + 2 }))
 
 describe('conceptChain', () => {
   it('finds no break in a chain where each concept is taught before it is used', () => {

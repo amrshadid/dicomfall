@@ -34,14 +34,16 @@ src/
 │                               save state
 ├── types/definitions/
 │   ├── mission.ts            → MissionDefinition, ObjectiveDefinition, HintDefinition, CodexCard,
-│   │                           ChapterDefinition, RegionDefinition
-│   ├── checks.ts             → CheckDefinition (file and wire `check:` kinds), MissionVerdict
+│   │                           ChapterDefinition (stage or label, heading, numberPrefix), RegionDefinition
+│   ├── lab.ts                → LabDefinition: the AEs (name, AE title, address, start), links, files, console
+│   ├── checks.ts             → CheckDefinition (file and wire `check:` kinds, element paths, `sameAs`),
+│   │                           MissionVerdict
 │   ├── content.ts            → GameContent
 │   ├── codex.ts, field-guide.ts, concepts.ts, skills.ts, hints.ts
 │   └── progress.ts, saves.ts, store.ts, config.ts
 ├── utils/
-│   ├── validate/             → validateMission (mission.yaml), readCheck, validateChapters, validateSkills,
-│   │                           validateConcepts, validateFieldGuide
+│   ├── validate/             → validateMission (mission.yaml), readCheck, readLab, inLab, validateChapters,
+│   │                           validateSkills, validateConcepts, validateFieldGuide
 │   ├── content/              → createGameContent: ids, chapters, skills, concepts, cards and the Field Guide
 │   │                           checked together
 │   ├── codex/                → codexView, collectCodex, glossaryOf: cards hidden, seen or filed
@@ -51,8 +53,8 @@ src/
 │   ├── hints/                → revealedHints, nextHint, hintsUsed
 │   ├── progress/             → missionStatus, missionList, startMission, recordAttempt, replayMission, debrief…
 │   └── saves/                → readSaveFile, importSave, exportSave, migrations
-├── test/                     → example mission and chapters, a mission with every wire check, verdicts, fake
-│                               clock, memory storage, installTestGame (not exported)
+├── test/                     → example mission, labs and chapters, a mission with every wire check, verdicts,
+│                               fake clock, memory storage, installTestGame (not exported)
 └── index.ts                  → configureGame, setupGameListeners, cleanupGameListeners
 ```
 
@@ -65,9 +67,22 @@ src/
   (`selected`, `answer`, `offset`, `grouped`, `file`, `absent`) read the lab's disk through go-dicom.
   Wire checks (`association`, `rejected-context`, `status`, `received`, `subops`, `echo`) read the
   event stream and the servers' state. No check can see which command was typed.
-- **Checks by shape only:** `readCheck` validates each kind's fields (tags as `(0002,0010)`, UIDs as
-  PS3.5 writes them, 16-bit statuses, absolute lab paths). Whether a file, element or AE exists is for
-  the lab to say, and evaluating a check is not in this package.
+- **Checks by shape, then against the lab:** `readCheck` validates each kind's fields (tags as
+  `(0002,0010)`, paths into sequences as `(0008,1032)[0](0008,0100)` with `[0]` alone for the item,
+  `part` of an element, the Wire inspector's `message` and `set`, `grouped`'s `into` and `by`,
+  attributes `sameAs` another file's, UIDs as PS3.5 writes them, 16-bit statuses, paths under
+  `/lab/`). The mission then checks them against its lab: every file a check reads is one
+  `lab.files` copies, under a folder it copies, or under an AE's `/lab/<ae>/received/`; every AE a
+  check names is a lab AE; a wire check needs a link, and `echo` a link between its two AEs.
+  Whether an element is in a file is for the file to say, and evaluating a check is not in this
+  package.
+- **A lab in every mission:** `readLab` reads the AEs (kebab-case names, AE titles as VR AE allows
+  them, IPv4 addresses with a prefix length for linked AEs only, go-dicom `start` commands), the
+  links between known AEs on one network, the fixtures copied to `/lab/` (a folder to a folder,
+  no two overlapping) and the AE the console opens in.
+- **Stages and labels:** a chapter with a `label` (`Bridge`) is called by it and left out of the
+  stage numbers, so the stages after it keep theirs. Each chapter carries its `heading` (`Stage 2`
+  or `Bridge`) and its `numberPrefix`, and `numberOf` gives `2.3` or `B.1`.
 - **Verdicts from outside:** `recordAttempt(verdict)` keeps a verdict judged elsewhere as one more
   attempt and completes the mission the first time one passes. The debrief keeps the verdict it was
   shown with.
@@ -78,7 +93,8 @@ src/
   overwritten; with no storage the game plays in memory and `exportSave()` is the way out. Saves
   start at version 1, with the migration mechanism ready for the next.
 - **Free retries, staged hints:** attempts and hints used are recorded and never held against the
-  player. A mission's three hints go from where to look to a specific command.
+  player. A mission's three hints go from where to look to the exact spot, as text: a hint with a
+  `command` does not validate.
 - **Flows without React:** `createMissionActions()`, `createSaveActions()` and `revealHint()` are plain
   functions; the hooks only memoize them.
 

@@ -1,6 +1,7 @@
 import type { StringRule } from '@dicomfall/core/types'
 import type { CheckDefinition } from '#types/definitions/checks'
 import type { ConceptId } from '#types/definitions/concepts'
+import type { LabDefinition } from '#types/definitions/lab'
 import type { SkillId } from '#types/definitions/skills'
 
 export type MissionId = string
@@ -16,8 +17,17 @@ export const KEBAB_ID: StringRule = {
 /** A stage of the curriculum, as `chapters.yaml` lists it, and its title page in the Codex. */
 export interface ChapterDefinition {
   readonly id: ChapterId
-  /** Its place in the curriculum, from 1: the order of `chapters.yaml`. */
-  readonly stage: number
+  /**
+   * Its stage number, from 1, in the order of `chapters.yaml`, counting only chapters with no
+   * `label`; left out for a labelled chapter, so the stages after the Bridge keep their numbers.
+   */
+  readonly stage?: number
+  /** What the map and the Codex call a chapter that is not a numbered stage: `Bridge`. */
+  readonly label?: string
+  /** What the map and the Codex print for it: `Stage 2`, or the label. */
+  readonly heading: string
+  /** What its missions' numbers start with: the stage (`2` in `2.3`), or the label's initial (`B` in `B.1`). */
+  readonly numberPrefix: string
   readonly title: string
   readonly summary: string
   /** The stage's story in a few lines, for the Codex chapter's title page. */
@@ -47,11 +57,9 @@ export interface RegionDefinition {
   readonly missions: readonly MissionId[]
 }
 
-/** One of the mission's three hints: a nudge, then the concept, then the spot. Never the answer itself. */
+/** One of the mission's three hints: a nudge, then the concept, then the spot. Never a command, never the answer. */
 export interface HintDefinition {
   readonly text: string
-  /** What to type, on the third hint only, when pointing at the spot needs a command. */
-  readonly command?: string
 }
 
 /** A command "build it" offers as a button, with one line on what it does. */
@@ -125,6 +133,8 @@ export interface MissionDefinition {
   readonly names: readonly ConceptId[]
   /** Concepts an earlier mission taught that it relies on. */
   readonly uses: readonly ConceptId[]
+  /** The AEs, links and files the mission starts from; every check reads them. */
+  readonly lab: LabDefinition
   /** Commands "build it" offers as buttons. */
   readonly chips: readonly CommandChip[]
   /** The Codex cards it adds. */

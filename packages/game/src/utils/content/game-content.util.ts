@@ -246,7 +246,7 @@ export function createGameContent(parts: GameContentParts): Validated<GameConten
     chapters.flatMap((chapter) =>
       missions
         .filter((mission) => mission.chapter === chapter.id)
-        .map((mission, at): [MissionId, string] => [mission.id, `${chapter.stage}.${at + 1}`])
+        .map((mission, at): [MissionId, string] => [mission.id, `${chapter.numberPrefix}.${at + 1}`])
     )
   )
   const conceptsById = new Map(concepts.map((concept): [string, Concept] => [concept.id, concept]))

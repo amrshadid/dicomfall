@@ -31,7 +31,7 @@ export interface GameContent {
   /** The mission that earns the skill. */
   earnedIn(id: SkillId): MissionDefinition | undefined
   missionsIn(chapter: ChapterId): readonly MissionDefinition[]
-  /** `1.2`: the chapter's stage, then the mission's place in it, from 1. */
+  /** `1.2` or `B.1`: the chapter's `numberPrefix`, then the mission's place in it, from 1. */
   numberOf(id: MissionId): string | undefined
   concept(id: ConceptId): Concept | undefined
   /** A Codex card by id, with the mission that adds it. */

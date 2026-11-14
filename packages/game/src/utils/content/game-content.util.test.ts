@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  EXAMPLE_CHAPTERS_YAML,
   EXAMPLE_MISSION,
   EXAMPLE_REGION,
   EXAMPLE_SKILLS,
@@ -9,6 +10,7 @@ import {
 } from '#test/index'
 import type { RegionDefinition } from '#types/definitions/mission'
 import { createGameContent } from '#utils/content/game-content.util'
+import { validateChapters } from '#utils/validate/chapters.schema'
 
 const chapters = exampleChapters()
 
@@ -35,6 +37,24 @@ describe('createGameContent', () => {
     expect(content.ok && content.value.chapters).toBe(chapters)
     expect(content.ok && [FIRST, SECOND, 'find-an-element'].map(content.value.numberOf)).toEqual(['1.1', '1.2', '2.1'])
     expect(content.ok && content.value.card('implicit-vr')?.missionId).toBe(SECOND)
+  })
+
+  it("numbers a labelled chapter's missions by the label's initial, and the stages after it as before", () => {
+    const [first, second] = EXAMPLE_CHAPTERS_YAML.chapters
+    const labelled = validateChapters({
+      chapters: [first, { ...second, id: 'the-bridge', label: 'Bridge' }, { ...second, id: 'the-association' }],
+    })
+    if (!labelled.ok) {
+      throw new Error(labelled.errors.join('\n'))
+    }
+    const bridged = exampleMission({ id: 'no-envelope', chapter: 'the-bridge', codex: [], skills: ['bridge-skill'] })
+    const after = exampleMission({ id: 'first-contact', chapter: 'the-association', codex: [], skills: ['next-skill'] })
+    const content = createGameContent({ chapters: labelled.value, missions: [EXAMPLE_MISSION, bridged, after] })
+    expect(content.ok && [FIRST, 'no-envelope', 'first-contact'].map(content.value.numberOf)).toEqual([
+      '1.1',
+      'B.1',
+      '2.1',
+    ])
   })
 
   it('checks concepts, cards and the Field Guide against the missions', () => {
@@ -77,6 +97,8 @@ describe('createGameContent', () => {
     const bare = first && {
       id: first.id,
       stage: 1,
+      heading: 'Stage 1',
+      numberPrefix: '1',
       title: first.title,
       summary: first.summary,
       outcomes: [],

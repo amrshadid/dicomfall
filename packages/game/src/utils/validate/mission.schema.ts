@@ -1,5 +1,5 @@
 import type { StringRule, Validated } from '@dicomfall/core/types'
-import { Issues, ObjectReader, reportDuplicates } from '@dicomfall/core/utils'
+import { Issues, isRecord, joinPath, ObjectReader, reportDuplicates } from '@dicomfall/core/utils'
 import { CORE_CONCEPT_BUDGET } from '#types/definitions/concepts'
 import { HINT_TIERS } from '#types/definitions/hints'
 import {
@@ -12,6 +12,7 @@ import {
   type StoryRefs,
 } from '#types/definitions/mission'
 import { readCheck } from '#utils/validate/check.schema'
+import { readLab, reportLabUse } from '#utils/validate/lab.schema'
 
 const MISSION_KEYS = [
   'id',
@@ -26,6 +27,7 @@ const MISSION_KEYS = [
   'teaches',
   'names',
   'uses',
+  'lab',
   'objectives',
   'hints',
   'chips',
@@ -52,19 +54,20 @@ const ONE_LINE: StringRule = { pattern: /^[^\n\0]+$/, expected: 'one line' }
 /** About how long a mission takes a new player, in minutes. */
 const MINUTES = { min: 1, max: 120 } as const
 
-function readHint(hint: ObjectReader, tier: number): HintDefinition {
-  hint.rejectUnknownKeys(['text', 'command'])
-  const command = hint.optional('command', (key) => hint.string(key, ONE_LINE))
-  // The nudge and the concept teach; only pointing at the spot may name what to type.
-  if (command !== undefined && tier !== HINT_TIERS.length - 1) {
-    hint.issues.add(hint.pathOf('command'), `only the third hint (the ${HINT_TIERS.at(-1)}) may name a command`)
+function readHint(value: unknown, path: string, issues: Issues): HintDefinition {
+  // The acting is the player's: even the spot points at the place, never at what to type.
+  if (isRecord(value) && Object.hasOwn(value, 'command')) {
+    issues.add(joinPath(path, 'command'), 'no hint gives a command: point at the spot in its text instead')
+    const { command: _command, ...rest } = value
+    return readHint(rest, path, issues)
   }
-  return { text: hint.string('text'), ...(command !== undefined && { command }) }
+  const hint = new ObjectReader(value, path, issues)
+  hint.rejectUnknownKeys(['text'])
+  return { text: hint.string('text') }
 }
 
 function readHints(reader: ObjectReader): readonly HintDefinition[] {
-  let tier = 0
-  const hints = reader.list('hints', (value, path) => readHint(new ObjectReader(value, path, reader.issues), tier++))
+  const hints = reader.list('hints', (value, path) => readHint(value, path, reader.issues))
   if (reader.has('hints') && Array.isArray(reader.value('hints')) && hints.length !== HINT_TIERS.length) {
     reader.issues.add(
       'hints',
@@ -178,6 +181,7 @@ export function validateMission(raw: unknown): Validated<MissionDefinition> {
     teaches: reader.stringList('teaches', KEBAB_ID),
     names: reader.has('names') ? reader.stringList('names', KEBAB_ID) : [],
     uses: reader.stringList('uses', KEBAB_ID),
+    lab: readLab(reader.value('lab'), 'lab', issues),
     objectives: reader.list('objectives', (value, path) => readObjective(new ObjectReader(value, path, issues))),
     hints: readHints(reader),
     chips: optionalList(reader, 'chips', readChip),
@@ -219,6 +223,7 @@ export function validateMission(raw: unknown): Validated<MissionDefinition> {
     for (const skill of mission.prerequisites.filter((id) => mission.skills.includes(id))) {
       issues.add('prerequisites', `"${skill}" is also a skill this mission earns`)
     }
+    reportLabUse(mission.objectives, mission.lab, issues)
   }
   return issues.result(mission)
 }

@@ -11,7 +11,7 @@ function asRevealed(mission: MissionDefinition, at: number): RevealedHint | null
   if (!hint || !tier) {
     return null
   }
-  return { tier, text: hint.text, ...(hint.command !== undefined && { command: hint.command }) }
+  return { tier, text: hint.text }
 }
 
 /** The hints shown so far, in order: the nudge, the concept, the spot. */

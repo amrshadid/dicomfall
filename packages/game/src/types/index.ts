@@ -1,18 +1,30 @@
 export {
+  type AttributeValue,
   CHECK_KINDS,
   type CheckDefinition,
   type CheckKind,
   CONTEXT_REJECTIONS,
   type ContextRejection,
+  DIMSE_MESSAGES,
+  type DimseMessage,
+  ELEMENT_PARTS,
+  type ElementPart,
+  type ElementPath,
   FILE_CHECK_KINDS,
   type FileCheckDefinition,
   type FileCheckKind,
+  type FileSelectedCheck,
+  GROUPINGS,
+  type Grouping,
   type LabPath,
   MAX_STATUS,
+  MESSAGE_SETS,
+  type MessageSet,
   type MissionVerdict,
   type ObjectiveVerdict,
   PART10_REGIONS,
   type Part10Region,
+  type SameAsValue,
   SUBOP_OPERATIONS,
   type SubopOperation,
   type Tag,
@@ -20,6 +32,7 @@ export {
   WIRE_CHECK_KINDS,
   type WireCheckDefinition,
   type WireCheckKind,
+  type WireSelectedCheck,
 } from '#types/definitions/checks'
 export type {
   CodexCardLink,
@@ -51,6 +64,7 @@ export {
   type FieldGuideView,
 } from '#types/definitions/field-guide'
 export { HINT_TIERS, type HintTier, type RevealedHint } from '#types/definitions/hints'
+export { type LabAe, type LabDefinition, type LabFile, type LabLink, MAX_AE_TITLE } from '#types/definitions/lab'
 export {
   type ChapterDefinition,
   type ChapterId,

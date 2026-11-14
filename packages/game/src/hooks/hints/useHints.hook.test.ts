@@ -20,7 +20,7 @@ async function startedGame() {
 describe('revealHint', () => {
   afterEach(uninstallTestGame)
 
-  it("reveals the mission's three hints one at a time, the command last, and saves each", async () => {
+  it("reveals the mission's three hints one at a time, the spot last, and saves each", async () => {
     const { storage } = await startedGame()
     const revealed: [string, number][] = []
     const subscription = eventBus.on<HintRevealedPayload>(GAME_EVENTS.HINT_REVEALED, (event) => {
@@ -29,10 +29,9 @@ describe('revealHint', () => {
 
     const first = await revealHint()
     expect(first).toMatchObject({ success: true, data: { tier: 'nudge' } })
-    expect(first.data?.command).toBeUndefined()
     await revealHint()
     const last = await revealHint()
-    expect(last).toMatchObject({ success: true, data: { tier: 'spot', command: 'go-dicom show /lab/ct.dcm' } })
+    expect(last).toMatchObject({ success: true, data: { tier: 'spot' } })
 
     expect(revealed).toEqual([
       ['nudge', 1],

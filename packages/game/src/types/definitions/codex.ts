@@ -10,7 +10,7 @@ export type CodexCardState = 'filed' | 'seen' | 'hidden'
 export interface CodexEntry {
   readonly card: CodexCard
   readonly missionId: MissionId
-  /** `1.2`: the stage, then the mission's place in it. */
+  /** `1.2` or `B.1`: the stage or the label's initial, then the mission's place in it. */
   readonly missionNumber: string
 }
 
