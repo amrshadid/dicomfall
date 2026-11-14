@@ -9,6 +9,12 @@ skills: [tell-explicit-from-implicit]
 prerequisites: [read-the-transfer-syntax]
 teaches: [implicit-vr]
 uses: [transfer-syntax]
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct.dcm }
+  console: workstation
 objectives:
   - id: name-the-syntax
     text: Give the Transfer Syntax UID of ct.dcm.
@@ -16,8 +22,7 @@ objectives:
 hints:
   - text: Everything after the DICM prefix starts with group 0002 for a while.
   - text: The File Meta Information is always Explicit VR Little Endian, whatever the data set uses.
-  - text: Print the meta elements and look for (0002,0010).
-    command: go-dicom show /lab/ct.dcm
+  - text: The Transfer Syntax UID is the element (0002,0010), in the rows of group 0002.
 codex:
   - id: implicit-vr
     term: Transfer Syntax, implicit VR

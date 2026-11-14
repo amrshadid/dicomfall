@@ -55,6 +55,7 @@ chapters:
     #   the-pixel-attributes       The pixel attributes
   - id: the-bridge
     title: Bridge
+    label: Bridge
     summary: The same SOP Instance UID on disk and on the wire.
     story: The CT is about to leave the disk. The object stays the same; what wraps it changes.
     guide: The Instance UID

@@ -30,14 +30,14 @@ describe('the repository’s content', () => {
       throw new Error(loaded.errors.join('\n'))
     }
     const { game } = loaded.value
-    expect(game.chapters.map((chapter) => [chapter.stage, chapter.id, chapter.guide])).toEqual([
-      [1, 'the-first-file', 'The Preamble'],
-      [2, 'the-elements', 'VR'],
-      [3, 'the-object', 'The Instance UID'],
-      [4, 'the-bridge', 'The Instance UID'],
-      [5, 'the-association', 'The SCP'],
-      [6, 'query-and-retrieve', 'The Archive'],
-      [7, 'interoperability', 'The Conformance Statement'],
+    expect(game.chapters.map((chapter) => [chapter.heading, chapter.id, chapter.guide])).toEqual([
+      ['Stage 1', 'the-first-file', 'The Preamble'],
+      ['Stage 2', 'the-elements', 'VR'],
+      ['Stage 3', 'the-object', 'The Instance UID'],
+      ['Bridge', 'the-bridge', 'The Instance UID'],
+      ['Stage 4', 'the-association', 'The SCP'],
+      ['Stage 5', 'query-and-retrieve', 'The Archive'],
+      ['Stage 6', 'interoperability', 'The Conformance Statement'],
     ])
   })
 
@@ -106,6 +106,19 @@ describe('broken content', () => {
     const errors = errorsOf(withFiles({ missions: { ...FIXTURE_FILES.missions, [missionPath]: text } }))
     expect(errors).toHaveLength(1)
     expect(errors[0]).toMatch(new RegExp(`^${missionPath}: minutes`))
+  })
+
+  it('names a hint that gives a command, and a check that reads a file the lab does not copy', () => {
+    const text = missionText
+      .replace('  - text: Everything after', '  - command: go-dicom show /lab/ct.dcm\n    text: Everything after')
+      .replace('{ kind: answer, file: /lab/ct.dcm', '{ kind: answer, file: /lab/other.dcm')
+    expect(errorsOf(withFiles({ missions: { ...FIXTURE_FILES.missions, [missionPath]: text } }))).toEqual([
+      `${missionPath}: hints[0].command: no hint gives a command: point at the spot in its text instead`,
+    ])
+    const lost = missionText.replace('{ kind: answer, file: /lab/ct.dcm', '{ kind: answer, file: /lab/other.dcm')
+    expect(errorsOf(withFiles({ missions: { ...FIXTURE_FILES.missions, [missionPath]: lost } }))).toEqual([
+      `${missionPath}: objectives[1].check.file: "/lab/other.dcm" is not in the lab: expected a file of lab.files, under one of its folders, or under an AE's /lab/<ae>/received/`,
+    ])
   })
 
   it('wants a story beside every mission', () => {
