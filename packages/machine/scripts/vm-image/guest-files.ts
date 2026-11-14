@@ -33,6 +33,8 @@ exec switch_root /newroot /sbin/init
 // console moves to another AE. Every exec keeps the pid, so the pid file names bash.
 export const SHELL = `#!/bin/sh
 echo $$ > ${VM_SHELL_PID_FILE}
+# busybox init's PATH leaves out /usr/local/bin, where the image installs go-dicom.
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export TERM=xterm-256color HOME=/root
 cd /root
 ae=$(cat ${VM_AE_FILE} 2>/dev/null)
@@ -74,6 +76,7 @@ modprobe -q af_packet
 // bash, for EPOCHREALTIME: a fault's moment is stamped by the shell that injects it, without
 // starting a process. The event port (COM2) is raw too, so lines arrive as they were written.
 export const CONTROL = `#!/bin/bash
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 stty -F ${VM_EVENT_TTY} raw -echo
 stty -F /dev/ttyS2 raw -echo
 exec </dev/ttyS2 >/dev/ttyS2 2>&1
