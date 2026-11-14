@@ -202,10 +202,26 @@ func TestSortingSetShape(t *testing.T) {
 	series := map[string]string{}
 	instances := map[string]bool{}
 	numbers := map[int]bool{}
+	studyDates := map[string]map[string]bool{}
+	seriesNumbers := map[string]map[string]bool{}
+	ours := 0
+	main, err := os.ReadFile(filepath.Join(outDir, "ct-explicit-le.dcm"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, e := range readManifest(t).Files {
 		if !strings.HasPrefix(e.Path, "series/") {
 			continue
 		}
+		data, _, ds := readFixture(t, e.Path)
+		if e.SOPInstanceUID == theInstance.sopInstanceUID() {
+			ours++
+			if !bytes.Equal(data, main) {
+				t.Errorf("%s holds our instance but is not the same bytes as ct-explicit-le.dcm", e.Path)
+			}
+		}
+		addTo(studyDates, ds.GetStringByKeyword("StudyDate"), e.StudyInstanceUID)
+		addTo(seriesNumbers, ds.GetStringByKeyword("SeriesNumber"), e.StudyInstanceUID)
 		studies[e.StudyInstanceUID] = true
 		if s, ok := series[e.SeriesInstanceUID]; ok && s != e.StudyInstanceUID {
 			t.Errorf("series %s appears in two studies", e.SeriesInstanceUID)
@@ -215,7 +231,6 @@ func TestSortingSetShape(t *testing.T) {
 			t.Errorf("SOP Instance UID %s is used twice", e.SOPInstanceUID)
 		}
 		instances[e.SOPInstanceUID] = true
-		_, _, ds := readFixture(t, e.Path)
 		n, _ := strconv.Atoi(ds.GetStringByKeyword("InstanceNumber"))
 		numbers[n] = true
 	}
@@ -226,7 +241,40 @@ func TestSortingSetShape(t *testing.T) {
 	if len(numbers) != len(instances) {
 		t.Errorf("Instance Numbers repeat: %v", numbers)
 	}
-	if instances[theInstance.sopInstanceUID()] {
-		t.Error("the main CT instance must not be in the sorting set")
+	if ours != 1 {
+		t.Errorf("our instance is in %d files of the sorting set, want 1", ours)
+	}
+	if !anyShared(studyDates) {
+		t.Error("no Study Date is shared by two studies, so dates could sort the pile")
+	}
+	if !anyShared(seriesNumbers) {
+		t.Error("no Series Number repeats across studies, so numbers could sort the pile")
+	}
+}
+
+func addTo(m map[string]map[string]bool, key, studyUID string) {
+	if m[key] == nil {
+		m[key] = map[string]bool{}
+	}
+	m[key][studyUID] = true
+}
+
+func anyShared(m map[string]map[string]bool) bool {
+	for _, studies := range m {
+		if len(studies) > 1 {
+			return true
+		}
+	}
+	return false
+}
+
+// Stage 2 shows the padding byte of an odd-length Patient's Name.
+func TestPatientNameIsOddAndShared(t *testing.T) {
+	for _, e := range readManifest(t).Files {
+		_, _, ds := readFixture(t, e.Path)
+		name := ds.GetStringByKeyword("PatientName")
+		if name != "FALLS^DICOM" || len(name)%2 == 0 {
+			t.Errorf("%s: Patient's Name %q, want the one odd-length name", e.Path, name)
+		}
 	}
 }

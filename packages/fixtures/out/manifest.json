@@ -8,8 +8,8 @@
       "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
       "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9646,
-      "sha256": "444124886ccd73bc0bf4b950ed058b6d22ab92c14aa78ed9ac1ac046e8346263"
+      "size": 9648,
+      "sha256": "6b74f886345210fdcdd2f76e54bc45bbd426b17ca4660960d8959c6c406b7edd"
     },
     {
       "path": "ct-implicit-le.dcm",
@@ -18,8 +18,8 @@
       "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
       "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
       "transferSyntaxUid": "1.2.840.10008.1.2",
-      "size": 9636,
-      "sha256": "c7d991165429b2835f9b7cfb7b4ff12136f2f72383328170244e80397252445c"
+      "size": 9638,
+      "sha256": "9f3267a9194b60842169aa463798b73779f336285bbc8bd3fb567b1235fd396b"
     },
     {
       "path": "series/f01.dcm",
@@ -28,58 +28,58 @@
       "studyInstanceUid": "2.25.87115403254764791248648702806613763540",
       "seriesInstanceUid": "2.25.185532969712350415344659803206949717595",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9658,
-      "sha256": "c86eb02cc1e4dc67a701eeb020a65d2153d4c139b1ad7bde1629372d16b17998"
+      "size": 9660,
+      "sha256": "c5fc9d401287e1dc744d80a9854a1081ebed5870c5dce4b3389a7fe7d0cf88b9"
     },
     {
       "path": "series/f02.dcm",
       "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
       "sopInstanceUid": "2.25.317118094456324451845838311032322903914",
-      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
-      "seriesInstanceUid": "2.25.49940973468074505972593806037878073876",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
+      "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9660,
-      "sha256": "7c93b04cfa17fe025cb2281c34acc6459d6599ad6bc9f2eb123b19ebf2ce3226"
+      "size": 9652,
+      "sha256": "0dfad14d13bf75a2c809d379897e3574d0c770b77696a616950e6cda8eec4ff4"
     },
     {
       "path": "series/f03.dcm",
       "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
       "sopInstanceUid": "2.25.142857737833631724124164844337364812269",
-      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
       "seriesInstanceUid": "2.25.294765142776525871675099788420847192460",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9664,
-      "sha256": "e0cea2cee9bab98772626f2a3a2bd6daf8eb7621bbb242383afd5e81efa8bd41"
+      "size": 9656,
+      "sha256": "94891f8a26ca12dcd469bfdc70292a9af0caa438326171e03346de9753a49f3f"
     },
     {
       "path": "series/f04.dcm",
       "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
-      "sopInstanceUid": "2.25.87888607025693343275259035843936887857",
-      "studyInstanceUid": "2.25.87115403254764791248648702806613763540",
-      "seriesInstanceUid": "2.25.185532969712350415344659803206949717595",
+      "sopInstanceUid": "2.25.251886266211036739612775034372164643306",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
+      "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9658,
-      "sha256": "361c901ead80b52adf8a99c05bd8d6854ee2690254e0078b41d434a15c6fda35"
+      "size": 9648,
+      "sha256": "6b74f886345210fdcdd2f76e54bc45bbd426b17ca4660960d8959c6c406b7edd"
     },
     {
       "path": "series/f05.dcm",
       "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
       "sopInstanceUid": "2.25.45215571852009087224317163452414628830",
-      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
-      "seriesInstanceUid": "2.25.49940973468074505972593806037878073876",
+      "studyInstanceUid": "2.25.87115403254764791248648702806613763540",
+      "seriesInstanceUid": "2.25.185532969712350415344659803206949717595",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9656,
-      "sha256": "e7eb654525d9f00ee21e9b38cbd99da01c5bb1e0c7a9463c89eb2a50a40762fc"
+      "size": 9660,
+      "sha256": "5f26199ff08c1478b9cf72e837f1eb482b2d0f00e92fce9f8eaf177a3cd88f9f"
     },
     {
       "path": "series/f06.dcm",
       "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
       "sopInstanceUid": "2.25.93395373739139454485618235538112412213",
-      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
       "seriesInstanceUid": "2.25.294765142776525871675099788420847192460",
       "transferSyntaxUid": "1.2.840.10008.1.2.1",
-      "size": 9664,
-      "sha256": "0cd46b0b165064a1b5fcec5e0bc0bb8738b21fb943290f2d18386de58ca4ed5b"
+      "size": 9656,
+      "sha256": "f52c70e8950490ac3f0e99f15f7bcdcc0bbb074e79e637cf37da51716234d3f3"
     }
   ]
 }

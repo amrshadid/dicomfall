@@ -23,12 +23,12 @@ out/                  → the generated files (committed, CC0)
 
 ## The files
 
-| File                     | Transfer syntax                               | What it is for                                                  |
-| ------------------------ | --------------------------------------------- | --------------------------------------------------------------- |
-| `out/ct-explicit-le.dcm` | Explicit VR Little Endian `1.2.840.10008.1.2.1` | The CT instance the game follows: stages 1 to 3, the bridge, the DIMSE lab |
-| `out/ct-implicit-le.dcm` | Implicit VR Little Endian `1.2.840.10008.1.2`   | The same object, same UIDs and values, in the other encoding (stage 2) |
-| `out/series/f01–f06.dcm` | Explicit VR Little Endian                     | Six files to sort by Study and Series Instance UID (stage 3)    |
-| `out/manifest.json`      |                                               | Path, SOP Class, SOP Instance, Study and Series UIDs, transfer syntax, size and SHA-256 of each file |
+| File                     | Transfer syntax                                 | What it is for                                                                                       |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `out/ct-explicit-le.dcm` | Explicit VR Little Endian `1.2.840.10008.1.2.1` | The CT instance the game follows: stages 1 to 3, the bridge, the DIMSE lab                           |
+| `out/ct-implicit-le.dcm` | Implicit VR Little Endian `1.2.840.10008.1.2`   | The same object, same UIDs and values, in the other encoding (stage 2)                               |
+| `out/series/f01–f06.dcm` | Explicit VR Little Endian                       | Six files to sort by Study and Series Instance UID (stage 3)                                         |
+| `out/manifest.json`      |                                                 | Path, SOP Class, SOP Instance, Study and Series UIDs, transfer syntax, size and SHA-256 of each file |
 
 Every file is a Part 10 file (128-byte zero preamble, `DICM`, File Meta Information) holding one CT
 Image Storage instance (`1.2.840.10008.5.1.4.1.1.2`) of about 9.6 KB: 64×64, 16 bits allocated,
@@ -42,16 +42,19 @@ Indicator) and one sequence, Procedure Code Sequence, whose code is from a priva
 ### The sorting set
 
 The file names are neutral and interleave the groups on purpose; only the UIDs inside say which
-study and series a file belongs to.
+study and series a file belongs to. Both studies are on 2026-01-05 and both have a Series Number
+1, so neither the date nor the number can sort the pile.
 
-| Study                                   | Series                                | Files (Instance Number) |
-| --------------------------------------- | ------------------------------------- | ----------------------- |
-| 2 "Synthetic phantom, follow-up", 2026-02-10 | 1 "Axial phantom", STANDARD kernel    | f02 (7), f05 (2)        |
-|                                         | 2 "Axial phantom, bone", BONE kernel  | f03 (3), f06 (9)        |
-| 3 "Synthetic phantom, recheck", 2026-03-12   | 1 "Axial phantom", STANDARD kernel    | f01 (12), f04 (5)       |
+| Study                                 | Series                               | Files (Instance Number) |
+| ------------------------------------- | ------------------------------------ | ----------------------- |
+| 1 "Synthetic phantom", 09:30          | 1 "Axial phantom", STANDARD kernel   | **f04 (1)**, f02 (7)    |
+|                                       | 2 "Axial phantom, bone", BONE kernel | f03 (3), f06 (9)        |
+| 2 "Synthetic phantom, recheck", 14:10 | 1 "Axial phantom", STANDARD kernel   | f01 (12), f05 (5)       |
 
-Series 1 and 2 of the follow-up share a Frame of Reference UID (one acquisition, reconstructed
-twice). The main CT instance is in study 1 and is not part of this set.
+`f04.dcm` is our instance: byte for byte the same file as `ct-explicit-le.dcm`, for the player to
+find in the pile. Series 1 and 2 of study 1 share a Frame of Reference UID (one acquisition,
+reconstructed twice). Every file has the one fictional patient, `FALLS^DICOM`, `DF-0001`; the
+name has 11 characters, an odd length, so its value carries a trailing space as padding.
 
 ## UIDs
 

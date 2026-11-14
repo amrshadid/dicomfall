@@ -106,7 +106,8 @@ func (s slice) build() (*dataset.Dataset, error) {
 		{"StudyDescription", dataelem.LO, st.description},
 		{"SeriesDescription", dataelem.LO, se.description},
 		{"ManufacturerModelName", dataelem.LO, "Fall-1"},
-		{"PatientName", dataelem.PN, "FALL^DICOM"},
+		// Odd length on purpose, so the file shows a text value's space padding.
+		{"PatientName", dataelem.PN, "FALLS^DICOM"},
 		{"PatientID", dataelem.LO, "DF-0001"},
 		{"PatientBirthDate", dataelem.DA, "19700101"},
 		{"PatientSex", dataelem.CS, "O"},
@@ -199,24 +200,18 @@ var (
 )
 
 var (
-	followUp = &study{
-		key: "series/study-a", date: "20260210", time: "101500", accession: "DFA0002",
-		studyID: "2", description: "Synthetic phantom, follow-up", procedureKey: "DF-CT-PHANTOM",
-	}
-	followUpSoft = &series{
-		key: "series/series-a1", study: followUp, number: 1, description: "Axial phantom",
-		time: "102040", frameOfReference: "series/study-a", windowCenter: 40, windowWidth: 400,
-		convolutionKernel: "STANDARD",
-	}
-	// Same acquisition, so same frame of reference, reconstructed again.
-	followUpBone = &series{
-		key: "series/series-a2", study: followUp, number: 2, description: "Axial phantom, bone",
-		time: "102040", frameOfReference: "series/study-a", windowCenter: 500, windowWidth: 2000,
+	// Same acquisition as our instance's series, so the same frame of
+	// reference, reconstructed again with a bone kernel.
+	firstBone = &series{
+		key: "series/series-a2", study: firstStudy, number: 2, description: "Axial phantom, bone",
+		time: "093512", frameOfReference: "ct", windowCenter: 500, windowWidth: 2000,
 		convolutionKernel: "BONE",
 	}
+	// Same day as the first study and its series is also number 1, so neither
+	// Study Date nor Series Number can sort the pile: only the UIDs can.
 	recheck = &study{
-		key: "series/study-b", date: "20260312", time: "141000", accession: "DFA0003",
-		studyID: "3", description: "Synthetic phantom, recheck", procedureKey: "DF-CT-PHANTOM",
+		key: "series/study-b", date: "20260105", time: "141000", accession: "DFA0002",
+		studyID: "2", description: "Synthetic phantom, recheck", procedureKey: "DF-CT-PHANTOM",
 	}
 	recheckSoft = &series{
 		key: "series/series-b1", study: recheck, number: 1, description: "Axial phantom",
@@ -227,14 +222,15 @@ var (
 
 // sortingSet is the UID exercise. File names are neutral and interleave the
 // groups, so only the UIDs inside say which study and series a file is in.
+// One file is our instance itself, for the player to find in the pile.
 var sortingSet = []struct {
 	name  string
 	slice slice
 }{
 	{"series/f01.dcm", slice{"series/f01", recheckSoft, 12}},
-	{"series/f02.dcm", slice{"series/f02", followUpSoft, 7}},
-	{"series/f03.dcm", slice{"series/f03", followUpBone, 3}},
-	{"series/f04.dcm", slice{"series/f04", recheckSoft, 5}},
-	{"series/f05.dcm", slice{"series/f05", followUpSoft, 2}},
-	{"series/f06.dcm", slice{"series/f06", followUpBone, 9}},
+	{"series/f02.dcm", slice{"series/f02", firstSeries, 7}},
+	{"series/f03.dcm", slice{"series/f03", firstBone, 3}},
+	{"series/f04.dcm", theInstance},
+	{"series/f05.dcm", slice{"series/f05", recheckSoft, 5}},
+	{"series/f06.dcm", slice{"series/f06", firstBone, 9}},
 }
