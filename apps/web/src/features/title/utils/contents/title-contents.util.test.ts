@@ -11,8 +11,8 @@ import {
 } from './title-contents.util'
 
 // No mission content exists yet: a two-stage journey with just the fields these functions read.
-const firstFile = { id: 'the-first-file', stage: 1, title: 'The first file' } as ChapterDefinition
-const archive = { id: 'the-archive', stage: 2, title: 'The archive' } as ChapterDefinition
+const firstFile = { id: 'the-first-file', stage: 1, heading: 'Stage 1', title: 'The first file' } as ChapterDefinition
+const archive = { id: 'the-archive', stage: 2, heading: 'Stage 2', title: 'The archive' } as ChapterDefinition
 const mission = {
   id: 'the-missing-instance',
   chapter: 'the-archive',

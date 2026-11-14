@@ -11,14 +11,19 @@ const STATUS_TEXT: Readonly<Record<MissionStatus, string>> = {
   completed: 'Passed',
 }
 
-/** "Stage 1": a chapter by its place in the journey. */
+/** "Stage 1" or "Bridge": a chapter by its place in the journey. */
 export function stageName(chapter: ChapterEntry | undefined): string {
-  return chapter ? `Stage ${chapter.chapter.stage}` : 'The journey'
+  return chapter ? chapter.chapter.heading : 'The journey'
 }
 
 /** "Stage 1: The first file": the stage the player is in names the manual's volume. */
 export function volumeOf(chapter: ChapterEntry | undefined): string {
-  return chapter ? `Stage ${chapter.chapter.stage}: ${chapter.chapter.title}` : 'The journey'
+  if (!chapter) {
+    return 'The journey'
+  }
+  // A labelled chapter's heading is its title ("Bridge"), so it isn't said twice.
+  const { heading, title } = chapter.chapter
+  return heading === title ? heading : `${heading}: ${title}`
 }
 
 /** The chapter a mission belongs to; the first one that has missions when there is none to continue. */
