@@ -24,6 +24,7 @@
   "dependencies": {
     "@dicomfall/core": "workspace:*",
     "@dicomfall/game": "workspace:*",
+    "@dicomfall/machine": "workspace:*",
     "yaml": "^2.9.1"
   },
   "devDependencies": {

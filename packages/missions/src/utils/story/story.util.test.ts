@@ -50,6 +50,17 @@ describe('parseStory', () => {
     ])
   })
 
+  it('shows a recorded block as the Machine’s output: its body, without the command in its info string', () => {
+    const recorded = parseStory(
+      '## See it\n\n```recorded hexdump -C /lab/ct.dcm | head -n 3\n00000000  00 00\n*\n```\n\n```recorded@archive ls /lab\n(recorded on the Machine)\n```\n'
+    )
+    expect(recorded.sections.get('see-it')).toEqual([
+      { kind: 'code', text: '00000000  00 00\n*' },
+      { kind: 'code', text: '(recorded on the Machine)' },
+    ])
+    expect(storyProblems('# T\n\n**Question:** Q?\n\n## See it\n\n```recorded ls /lab\nct.dcm\n```\n')).toEqual([])
+  })
+
   it('reads a list after a line as a question with its answers, [x] the one that happens', () => {
     const asked = parseStory('## Watch it\n\n> **VR:** Which VR does (0002,0010) have?\n>\n> - US\n> - [x] UI\n')
     expect(asked.sections.get('watch-it')).toEqual([
