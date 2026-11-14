@@ -13,7 +13,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm::0008,0008
-(recorded on the Machine)
+0008,0008    CS  22      ORIGINAL\PRIMARY\AXIAL
 ```
 
 > **VR:** One element, and words with `\` between them. Select it in the File inspector, at offset 346, and read it in the hex. Tag, then `CS`, then a two-byte length, 22: one run of 22 bytes, with one length. Inside it, the backslash is the byte `5c`, twice. The backslashes split those 22 bytes into three values: `ORIGINAL`, `PRIMARY`, `AXIAL`. 8 letters, 7 and 5, and two separators: 22, even, so no padding.
@@ -27,7 +27,21 @@
 ---
 
 ```recorded go-dicom tag-doc 0008,0008
-(recorded on the Machine)
+DICOM Tag Documentation
+==================================================
+
+Tag:      (0008,0008) (00080008)
+Name:     Image Type
+Keyword:  ImageType
+VR:       CS
+VM:       2-n
+Status:   ACTIVE
+Type:     STANDARD
+
+Description:
+--------------------------------------------------
+VR: CS - Code String
+VM: 2-n - Value Multiplicity
 ```
 
 > **VR:** Its VM is `2-n`: two values at least, and as many more as needed. This file holds three. The order is part of the meaning: the first value says whether the pixels are original or derived from other pixels. Give every value of Image Type, in order, with `\` between them, as the file writes them.
@@ -39,7 +53,21 @@
 ---
 
 ```recorded go-dicom tag-doc 0028,0030
-(recorded on the Machine)
+DICOM Tag Documentation
+==================================================
+
+Tag:      (0028,0030) (00280030)
+Name:     Pixel Spacing
+Keyword:  PixelSpacing
+VR:       DS
+VM:       2
+Status:   ACTIVE
+Type:     STANDARD
+
+Description:
+--------------------------------------------------
+VR: DS - Decimal String
+VM: 2 - Value Multiplicity
 ```
 
 > **VR:** VM `2`: exactly two values, never more. The first is the distance between pixel centres from one row to the next, the second from one column to the next, both in millimetres. Its VR is `DS`, a decimal number written as text, so the backslash works the same way here. Find it in the file, and give both values.

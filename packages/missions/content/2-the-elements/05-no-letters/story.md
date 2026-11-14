@@ -19,7 +19,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-implicit-le.dcm::0010,0010
-(recorded on the Machine)
+0010,0010    PN  12      FALLS^DICOM
 ```
 
 > **VR:** go-dicom still prints a VR. It could not read one from the file. It read the tag, looked it up in the data dictionary, and took the VR that PS3.6 gives Patient's Name: `PN`. In implicit VR, the dictionary is the only place I am written.

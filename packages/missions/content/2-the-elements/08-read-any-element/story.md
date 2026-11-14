@@ -15,7 +15,10 @@
 ---
 
 ```recorded hexdump -C -s 800 -n 48 /lab/ct-implicit-le.dcm
-(recorded on the Machine)
+00000320  44 46 41 4c 4c 20 08 00  04 01 16 00 00 00 43 54  |DFALL ........CT|
+00000330  20 70 68 61 6e 74 6f 6d  2c 20 73 79 6e 74 68 65  | phantom, synthe|
+00000340  74 69 63 20 08 00 3e 10  0e 00 00 00 41 78 69 61  |tic ..>.....Axia|
+00000350
 ```
 
 > **VR:** `-s 800` starts the dump at offset 800, and `-n 48` stops it 48 bytes later. Each row still starts with its offset in hex: `00000320` is 800, so the row's seventh byte is offset 806. The same bytes are in the File inspector's hex pane, where you can mark them. Hex `0x326` and decimal 806 name the same byte.

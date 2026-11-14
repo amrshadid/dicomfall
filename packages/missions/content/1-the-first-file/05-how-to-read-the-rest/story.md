@@ -19,7 +19,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm::0002,0010
-(recorded on the Machine)
+0002,0010    UI  20      1.2.840.10008.1.2.1
 ```
 
 > **The Preamble:** `0002,0010` is Transfer Syntax UID. A _UID_ is a unique identifier: numbers joined by dots, at most 64 characters, PS3.5 §9. Each names one thing, once, for the whole world. UIDs that start `1.2.840.10008` are DICOM's own. A UID is only a name: to learn the rules it stands for, a reader looks it up in PS3.6, which lists every UID DICOM defines. The two UIDs above it, Media Storage SOP Class and Instance UIDs, wait for stage 3.

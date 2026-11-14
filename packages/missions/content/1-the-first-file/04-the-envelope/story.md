@@ -13,7 +13,16 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm | head
-(recorded on the Machine)
+=== DICOM File: /lab/ct-explicit-le.dcm ===
+Tag          VR  Length  Value
+─────────────────────────────────────────────
+0002,0001    OB  2       <2 bytes>
+0002,0002    UI  26      1.2.840.10008.5.1.4.1.1.2
+0002,0003    UI  44      2.25.251886266211036739612775034372164643306
+0002,0010    UI  20      1.2.840.10008.1.2.1
+0002,0012    UI  26      1.2.826.0.1.3680043.10.511
+0002,0013    SH  14      GO-DICOM-1.8.0
+0008,0005    CS  10      ISO_IR 100
 ```
 
 > **The Preamble:** Every tag there starts with `0002`. A tag is two numbers: the first four digits are its _group_, the last four number the element inside that group, so `0002,0010` is element `0010` of group `0002`. Stage 2 takes the tag apart. Group 0002 is the _File Meta Information_: the elements that describe the file itself, right after the prefix, PS3.10 §7.1. In the File inspector, it is the band after the prefix. Every Part 10 file has it, and it comes before anything about the patient.
@@ -29,7 +38,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm::0002,0000
-(recorded on the Machine)
+Error: show: element '0002,0000' not found
 ```
 
 > **The Preamble:** That is the _group length_: how many bytes of group 0002 come after this element. Here, 184. It counts bytes, not elements. The element starts at offset 132, right after the prefix, and takes 12 bytes: 4 for the tag, 2 for the VR letters `UL`, 2 for the length, 4 for the value.

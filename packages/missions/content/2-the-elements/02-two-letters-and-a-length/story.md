@@ -19,7 +19,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm::0008,0060
-(recorded on the Machine)
+0008,0060    CS  2       CT
 ```
 
 > **VR:** The VR column is my two letters, read from the file's bytes. PS3.6 gives Modality the same VR, so here the bytes and the dictionary agree.

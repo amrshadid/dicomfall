@@ -27,7 +27,7 @@
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm::7FE0,0010
-(recorded on the Machine)
+7FE0,0010    OW  8192    <100 bytes>... (8192 bytes)
 ```
 
 > **VR:** Its VR is `OW`: the pixels, as 16-bit words. In the hex, after `e0 7f 10 00` come `4f 57`, then `00 00`, then four bytes of length. Mark those four.

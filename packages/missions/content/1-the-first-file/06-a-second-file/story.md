@@ -13,7 +13,24 @@
 ---
 
 ```recorded go-dicom info /lab/ct-implicit-le.dcm
-(recorded on the Machine)
+=== DICOM File Information ===
+File:         /lab/ct-implicit-le.dcm
+Size:         9638 bytes
+Modified:     1970-01-01 00:00:00
+
+Key DICOM Elements:
+─────────────────────────────────────
+Patient Name:    FALLS^DICOM
+Patient ID:      DF-0001
+Study Date:      20260105
+Modality:        CT
+Study Desc:      Synthetic phantom
+Series Desc:     Axial phantom
+
+Image Dimensions:
+─────────────────────────────────────
+Rows:            64
+Columns:         64
 ```
 
 > **The Preamble:** The same patient, the same modality, the same 64 by 64 picture. `info` reports values, not bytes, so it agrees whenever the values agree. Now compare the sizes: `ls -l /lab`.

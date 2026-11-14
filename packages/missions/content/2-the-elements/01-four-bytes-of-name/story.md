@@ -19,7 +19,21 @@
 ---
 
 ```recorded go-dicom tag-doc 0010,0020
-(recorded on the Machine)
+DICOM Tag Documentation
+==================================================
+
+Tag:      (0010,0020) (00100020)
+Name:     Patient ID
+Keyword:  PatientID
+VR:       LO
+VM:       1
+Status:   ACTIVE
+Type:     STANDARD
+
+Description:
+--------------------------------------------------
+VR: LO - Long String
+VM: 1 - Value Multiplicity
 ```
 
 > **VR:** `0010,0020` is Patient ID. Its keyword, `PatientID`, is the same name written for programs to use. The line marked VR is about me, and we read it in the next mission; VM waits a little longer.

@@ -23,7 +23,24 @@ drwxr-xr-x    3 root     root             0 Jan  1  1970 fixtures
 ---
 
 ```recorded go-dicom info /lab/ct-explicit-le.dcm
-(recorded on the Machine)
+=== DICOM File Information ===
+File:         /lab/ct-explicit-le.dcm
+Size:         9648 bytes
+Modified:     1970-01-01 00:00:00
+
+Key DICOM Elements:
+─────────────────────────────────────
+Patient Name:    FALLS^DICOM
+Patient ID:      DF-0001
+Study Date:      20260105
+Modality:        CT
+Study Desc:      Synthetic phantom
+Series Desc:     Axial phantom
+
+Image Dimensions:
+─────────────────────────────────────
+Rows:            64
+Columns:         64
 ```
 
 > **The Preamble:** A patient's name, an ID, a date, a modality, and 64 rows by 64 columns: the picture is 64 pixels high and 64 wide. The Lightbox on the right draws it.
@@ -39,7 +56,79 @@ drwxr-xr-x    3 root     root             0 Jan  1  1970 fixtures
 ---
 
 ```recorded go-dicom show /lab/ct-explicit-le.dcm
-(recorded on the Machine)
+=== DICOM File: /lab/ct-explicit-le.dcm ===
+Tag          VR  Length  Value
+─────────────────────────────────────────────
+0002,0001    OB  2       <2 bytes>
+0002,0002    UI  26      1.2.840.10008.5.1.4.1.1.2
+0002,0003    UI  44      2.25.251886266211036739612775034372164643306
+0002,0010    UI  20      1.2.840.10008.1.2.1
+0002,0012    UI  26      1.2.826.0.1.3680043.10.511
+0002,0013    SH  14      GO-DICOM-1.8.0
+0008,0005    CS  10      ISO_IR 100
+0008,0008    CS  22      ORIGINAL\PRIMARY\AXIAL
+0008,0012    DA  8       20260105
+0008,0013    TM  6       093512
+0008,0016    UI  26      1.2.840.10008.5.1.4.1.1.2
+0008,0018    UI  44      2.25.251886266211036739612775034372164643306
+0008,0020    DA  8       20260105
+0008,0021    DA  8       20260105
+0008,0022    DA  8       20260105
+0008,0023    DA  8       20260105
+0008,0030    TM  6       093000
+0008,0031    TM  6       093512
+0008,0032    TM  6       093512
+0008,0033    TM  6       093512
+0008,0050    SH  8       DFA0001
+0008,0060    CS  2       CT
+0008,0070    LO  28      DICOMFall Synthetic Imaging
+0008,0080    LO  22      DICOMFall Teaching Lab
+0008,0090    PN  0
+0008,1010    SH  8       DF-CT-01
+0008,1030    LO  18      Synthetic phantom
+0008,1032    SQ  0
+0008,0100    SH  14        DF-CT-PHANTOM
+0008,0102    SH  8         99DFALL
+0008,0104    LO  22        CT phantom, synthetic
+0008,103E    LO  14      Axial phantom
+0008,1090    LO  6       Fall-1
+0010,0010    PN  12      FALLS^DICOM
+0010,0020    LO  8       DF-0001
+0010,0030    DA  8       19700101
+0010,0040    CS  2       O
+0018,0050    DS  2       5
+0018,0060    DS  4       120
+0018,1000    LO  10      DF-0000001
+0018,1100    DS  4       320
+0018,1151    IS  4       200
+0018,1210    SH  8       STANDARD
+0018,5100    CS  4       HFS
+0020,000D    UI  44      2.25.244689099060892268776675746833514200113
+0020,000E    UI  44      2.25.262811267488977860285166554097588707013
+0020,0010    SH  2       1
+0020,0011    IS  2       1
+0020,0012    IS  2       1
+0020,0013    IS  2       1
+0020,0032    DS  12      -160\-160\0
+0020,0037    DS  12      1\0\0\0\1\0
+0020,0052    UI  44      2.25.96400224657394843332902432048480078343
+0020,1040    LO  0
+0020,1041    DS  2       0
+0028,0002    US  2       1
+0028,0004    CS  12      MONOCHROME2
+0028,0010    US  2       64
+0028,0011    US  2       64
+0028,0030    DS  4       5\5
+0028,0100    US  2       16
+0028,0101    US  2       12
+0028,0102    US  2       11
+0028,0103    US  2       0
+0028,1050    DS  2       40
+0028,1051    DS  4       400
+0028,1052    DS  6       -1024
+0028,1053    DS  2       1
+0028,1054    LO  2       HU
+7FE0,0010    OW  8192    <100 bytes>... (8192 bytes)
 ```
 
 > **The Preamble:** One line per _element_: one numbered entry of the file, with a value. `Tag` is the element's number, `VR` two letters for the kind of value, `Length` how many bytes the value takes, and `Value` the value itself. Stage 2 opens the tag and the VR; for now, a number and a value.
