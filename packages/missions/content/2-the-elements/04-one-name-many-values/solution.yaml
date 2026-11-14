@@ -1,0 +1,23 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Values from packages/fixtures/out/ct-explicit-le.dcm: Image Type ORIGINAL\PRIMARY\AXIAL,
+# Pixel Spacing 5\5.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Stops at the first backslash.
+  - id: first-value-only
+    passes: false
+    changes:
+      - answer: { objective: image-type, value: ORIGINAL }
+      - answer: { objective: pixel-spacing, value: "5" }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-explicit-le.dcm::0008,0008
+          - go-dicom tag-doc 0008,0008
+          - go-dicom tag-doc 0028,0030
+      - answer: { objective: image-type, value: 'ORIGINAL\PRIMARY\AXIAL' }
+      - answer: { objective: pixel-spacing, value: '5\5' }

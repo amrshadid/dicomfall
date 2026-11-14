@@ -1,0 +1,73 @@
+# Stage 2, mission 1. Offsets read from packages/fixtures/out/ct-explicit-le.dcm (go-dicom v1.8.0):
+# Modality (0008,0060) at 628, tag 628-631; Patient's Name (0010,0010) at 878; Patient ID
+# (0010,0020) at 898. To be confirmed by the recorded run once go-dicom prints offsets (#259).
+id: four-bytes-of-name
+version: 1
+title: Four Bytes of Name
+summary: Open one element and read its first four bytes, the tag, then look the tag up in the data dictionary.
+minutes: 15
+chapter: the-elements
+objective: Mark Modality's tag in the hex and give the offset where Patient ID's tag starts.
+skills: [read-a-tag]
+prerequisites: [map-a-part-10-file]
+teaches: [tag, tag-order, data-dictionary]
+names: [private-tag]
+uses: [data-element, little-endian, offset, byte-and-hex, data-set]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: modality-tag
+    text: Mark the four bytes of the Modality element's tag.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0008,0060)", part: tag }
+  - id: id-offset
+    text: Give the offset where Patient ID's tag starts.
+    check: { kind: offset, file: /lab/ct-explicit-le.dcm, element: "(0010,0020)", offset: 898 }
+
+hints:
+  - text: Select Modality in the tree and look at the first four bytes it lights up in the hex.
+  - text: A tag is a group and an element number, two bytes each, and each is stored low byte first.
+  - text: Patient ID is 0010,0020, so look for the bytes 10 00 20 00 right after the end of Patient's Name.
+
+chips:
+  - { command: go-dicom tag-doc, explain: "look a tag up in the dictionary: its name, keyword, VR and VM" }
+  - { command: go-dicom show, explain: "print every element of a file; add ::<tag> to the file for one" }
+
+codex:
+  - id: tag
+    term: a tag
+    simple: "An element's number: a group and an element number, four hex digits each, written (0010,0020). It is the element's first four bytes."
+    deep: "PS3.5 §7.1: every Data Element starts with its Tag, an ordered pair of 16-bit numbers, the Group Number then the Element Number. In a little-endian transfer syntax each half is stored low byte first, so (0010,0020) is the bytes 10 00 20 00. The tag says which element it is, never what its value means: that is the dictionary's work. go-dicom keeps tags in its tag/ package."
+    deepens: data-element
+    sources: [tag/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html#sect_7.1
+    tryIt: go-dicom show ct.dcm::0010,0020
+  - id: tag-order
+    term: tag order
+    simple: The elements of a Data Set sit in increasing tag order, by group first, then by element number.
+    deep: "PS3.5 §7.1: the Data Elements of a Data Set are ordered by increasing tag, and each appears at most once. Group 0008 comes before group 0010, and inside a group the element numbers rise. So a reader looking for one element can stop once it has passed that tag. The rule holds again inside each item of a sequence, which this stage opens in its last region."
+    deepens: tag
+    sources: [filereader/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html#sect_7.1
+    tryIt: go-dicom show ct.dcm
+  - id: data-dictionary
+    term: the data dictionary
+    simple: "PS3.6's list of every standard tag with its name, keyword, VR and VM. A reader looks tags up in it."
+    deep: "PS3.6 §6, the Registry of DICOM Data Elements, gives each standard tag a name, Patient ID, a keyword for programs, PatientID, a VR and a VM. Elements in odd groups are private: the vendor that defines them keeps their meaning, and PS3.6 does not list them, PS3.5 §7.8. go-dicom's dictionary is generated from PS3.6, and `go-dicom tag-doc` prints one entry."
+    sources: [tag/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html
+    tryIt: go-dicom tag-doc -keyword PatientID
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

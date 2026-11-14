@@ -1,0 +1,81 @@
+# The id is `empty-bytes`, not the spec's `128-empty-bytes`: game's KEBAB_ID wants an id that
+# starts with a letter.
+id: empty-bytes
+version: 1
+title: 128 Empty Bytes
+summary: Find where every DICOM file starts, the 128-byte preamble, and the four letters after it that say the file is DICOM.
+minutes: 15
+chapter: the-first-file
+objective: Mark the preamble and the DICM prefix of tonight's file in the File inspector.
+skills: [find-the-preamble-and-prefix]
+prerequisites: [find-bytes-in-hex]
+teaches: [part-10-file, preamble, dicm-prefix]
+names: [file-meta-information, data-set]
+uses: [dicom, dicom-file, byte-and-hex, offset, text-in-bytes]
+
+# Byte facts (fixture-facts): bytes 0–127 all `00`; `44 49 43 4d`, DICM, at 128 (0x80).
+# [verify] `hexdump -C … | head -n 10` folds the eight rows of `00` into one row and a `*`.
+# [verify] PS3.10 §7.1: the File Preamble is for application profiles or implementations, and
+#   is all 00H when unused; the DICOM Prefix is the four bytes "DICM".
+# go-dicom: filereader/filereader.go reads the preamble, then the prefix; a file with no `DICM`
+#   at 128 is read as a raw Data Set with no File Meta Information (HasPreamble), source read.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: preamble
+    text: Mark the file's preamble.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, region: preamble }
+  - id: prefix
+    text: Mark the four letters after it.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, region: prefix }
+
+hints:
+  - text: Look at the first rows of the hex pane in the File inspector. What do the first bytes of the file hold?
+  - text: A DICOM file starts with 128 bytes of preamble, then four letters that say the file is DICOM.
+  - text: The preamble is offsets 0 to 127. The four letters are offsets 128 to 131; find them in the right-hand column.
+
+chips:
+  - {
+      command: hexdump -C /lab/ct-explicit-le.dcm | head -n 10,
+      explain: "the file's first bytes; a `*` stands for rows that repeat the one above",
+    }
+
+codex:
+  - id: part-10-file
+    term: the Part 10 file
+    simple: "The DICOM File Format of PS3.10: preamble, DICM prefix, File Meta Information, then the Data Set, always in that order."
+    deep: "PS3.10 §7.1 fixes the first two regions: a 128-byte File Preamble and the four bytes `DICM`. The File Meta Information follows, group 0002, which describes the file; then the Data Set, the object. The File inspector draws the four as bands. go-dicom's filereader reads the preamble and checks for `DICM` before it reads any element."
+    deepens: dicom-file
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html
+    tryIt: head -c 132 ct.dcm | hexdump -C
+  - id: preamble
+    term: the preamble
+    simple: "The first 128 bytes of a DICOM file. DICOM gives them no meaning; unused, every one of them is `00`."
+    deep: "PS3.10 §7.1 leaves the File Preamble to application profiles and implementations: it can hold the opening another file format expects, so one file can be read by two kinds of program. Unused, all 128 bytes are `00`, as in every file of this lab. A DICOM reader skips it whatever it holds, and never takes it for part of the object."
+    deepens: part-10-file
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
+    tryIt: head -c 128 ct.dcm | hexdump -C
+  - id: dicm-prefix
+    term: the DICM prefix
+    simple: "The four bytes `44 49 43 4d` at offsets 128 to 131, the letters DICM: they mark the file as DICOM."
+    deep: "PS3.10 §7.1 calls them the DICOM Prefix. A reader checks them before anything else: with no `DICM` at offset 128, the file is not a Part 10 file. go-dicom's filereader then reads the bytes as a bare Data Set with no File Meta Information, a form some older software writes. The four bytes are plain letters, so hexdump's right-hand column shows them."
+    deepens: part-10-file
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
+    tryIt: head -c 132 ct.dcm | tail -c 4
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

@@ -1,0 +1,24 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Offsets from packages/fixtures/out/ct-explicit-le.dcm: Modality's VR at 632-633, Patient's
+# Name's length at 884-885, Transfer Syntax UID (0002,0010) at 244 with length 20, so
+# Implementation Class UID (0002,0012) at 272.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Adds the length to the tag's offset and forgets the eight bytes of tag, VR and length.
+  - id: forgot-the-eight
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 632, to: 634 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 884, to: 886 }
+      - predict: { objective: next-start, offset: 264 }
+  - id: all-three
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-explicit-le.dcm::0008,0060
+      - select: { file: /lab/ct-explicit-le.dcm, from: 632, to: 634 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 884, to: 886 }
+      - predict: { objective: next-start, offset: 272 }

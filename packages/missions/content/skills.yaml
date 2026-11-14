@@ -4,4 +4,63 @@
 # chapters.yaml whose mission earns it; its `prerequisites` are the skills it builds on.
 # Every skill has to be earned by a mission, so the tree grows with the missions.
 # Entries: { id, title, region, prerequisites: [<skill id>, …] }, in play order.
-skills: []
+skills:
+  # stage 1, The First File
+  - id: read-a-dicom-file
+    title: Read what a DICOM file holds with go-dicom
+    region: open-the-file
+  - id: find-bytes-in-hex
+    title: Find a value among a file's bytes
+    region: open-the-file
+    prerequisites: [read-a-dicom-file]
+  - id: find-the-preamble-and-prefix
+    title: Find where a DICOM file starts
+    region: the-four-regions
+    prerequisites: [find-bytes-in-hex]
+  - id: find-the-file-meta-information
+    title: Find where a DICOM file describes itself, and where the object begins
+    region: the-four-regions
+    prerequisites: [find-the-preamble-and-prefix]
+  - id: read-the-transfer-syntax
+    title: Find a file's transfer syntax and say what it means
+    region: the-transfer-syntax
+    prerequisites: [find-the-file-meta-information]
+  - id: map-a-part-10-file
+    title: Map any DICOM file into its four regions and read its transfer syntax
+    region: the-transfer-syntax
+    prerequisites: [read-the-transfer-syntax]
+  # end of stage 1
+  # stage 2, The Elements
+  - id: read-a-tag
+    title: Find an element's tag in the bytes and look it up
+    region: tag-vr-length
+    prerequisites: [map-a-part-10-file]
+  - id: read-vr-and-length
+    title: Read an element's VR and length, and find where it ends
+    region: tag-vr-length
+    prerequisites: [read-a-tag]
+  - id: read-long-form-elements
+    title: Read elements whose length takes four bytes
+    region: tag-vr-length
+    prerequisites: [read-vr-and-length]
+  - id: read-multiple-values
+    title: Read an element that holds several values
+    region: tag-vr-length
+    prerequisites: [read-long-form-elements]
+  - id: read-implicit-elements
+    title: Read an element that carries no VR
+    region: explicit-and-implicit
+    prerequisites: [read-multiple-values]
+  - id: compare-encodings
+    title: Tell what changes between two encodings of the same object
+    region: explicit-and-implicit
+    prerequisites: [read-implicit-elements]
+  - id: read-a-sequence
+    title: Read a sequence, its items and their elements
+    region: sequences
+    prerequisites: [compare-encodings]
+  - id: read-any-element
+    title: Read any element of a file by hand, in either little-endian encoding
+    region: sequences
+    prerequisites: [read-a-sequence]
+  # end of stage 2

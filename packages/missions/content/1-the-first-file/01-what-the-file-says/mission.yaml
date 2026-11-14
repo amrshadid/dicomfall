@@ -1,0 +1,80 @@
+id: what-the-file-says
+version: 1
+title: What the File Says
+summary: Meet tonight's file through go-dicom's reading of it, and find the patient's name and the modality among its elements.
+minutes: 15
+chapter: the-first-file
+objective: Read the file's elements with go-dicom and give its Modality and its Patient's Name.
+skills: [read-a-dicom-file]
+prerequisites: [] # the first mission of the journey
+teaches: [dicom, dicom-file, data-element]
+names: [tag, vr, pixel-data]
+uses: []
+
+# story.md carries no comments, since the story parser shows every line, so its marks are here:
+# [verify] story Watch it: Pixel Data is the last line `go-dicom show` prints, and its Length column
+#   reads 8192 (fixture-facts: Pixel Data at 1444, length 8192).
+# [verify] story See it: `go-dicom info` prints Patient ID and Study Date for this fixture.
+#
+# Stage 1's lab: one AE, no link, no service. This mission needs only the explicit file.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: modality
+    text: Give the kind of equipment the file says made it, its Modality.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0008,0060)" }
+  - id: patient-name
+    text: Give the patient's name the file records.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0010,0010)" }
+
+hints:
+  - text: The summary `go-dicom info` printed already holds both answers. Read the label at the start of each line.
+  - text: Each element of the file is a number with a value. The kind of equipment is the element called Modality; the name is the element called Patient's Name.
+  - text: In the full list of elements, Modality is the line tagged `0008,0060` and Patient's Name the line tagged `0010,0010`. The value is at the end of each line.
+
+chips:
+  - { command: ls -l /lab, explain: "list the lab's files with their sizes in bytes" }
+  - {
+      command: go-dicom info /lab/ct-explicit-le.dcm,
+      explain: "print a few key elements of the file, with plain labels",
+    }
+  - { command: go-dicom show /lab/ct-explicit-le.dcm, explain: "print every element of the file, one per line" }
+
+codex:
+  - id: dicom
+    term: DICOM
+    simple: "Digital Imaging and Communications in Medicine: the standard for medical images and the information about them, in files and on networks."
+    deep: "DICOM is published in numbered parts: PS3.3 says what an object holds, PS3.5 how its elements are encoded, PS3.10 how it is stored as a file, PS3.7 and PS3.8 how it travels between application entities. Scanners, archives and viewers from different makers follow the same parts, so each reads what the others write. go-dicom implements the file and network parts this journey uses."
+    sources: [cli/]
+    # [verify] the section that states DICOM's scope: PS3.1 §1
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part01/chapter_1.html
+    tryIt: go-dicom info ct.dcm
+  - id: dicom-file
+    term: a DICOM file
+    simple: "A file holding one DICOM object: a list of elements, the picture among them, laid out the way PS3.10 says."
+    deep: "PS3.10 §7 calls it the DICOM File Format: a fixed opening that marks the file as DICOM and describes it, then the object's own elements. One file holds one object, so a CT series of many slices is usually many files. go-dicom's filereader reads the opening and then the elements; `go-dicom show` prints them all, the file's own description first."
+    deepens: dicom
+    sources: [filereader/, cli/show.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html
+    tryIt: go-dicom show ct.dcm
+  - id: data-element
+    term: an element
+    simple: "One entry of a DICOM object: a number that names it, its tag, and a value. Modality, `0008,0060`, holds `CT`."
+    deep: "PS3.5 §7.1 calls it a Data Element: a tag, a VR when the encoding writes one, a value length, then the value. The tag says which element it is: the dictionary of PS3.6 gives `0010,0010` the name Patient's Name. An object is its elements in a row, in increasing tag order. `go-dicom show` prints one per line, under the columns Tag, VR, Length and Value. Stage 2 opens each part."
+    sources: [dataelem/, cli/show.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html#sect_7.1
+    tryIt: go-dicom show ct.dcm
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

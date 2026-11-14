@@ -1,0 +1,21 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From packages/fixtures/out/ct-explicit-le.dcm: (0002,0001) at 144, OB, long form, value 2 bytes,
+# so (0002,0002) at 158; Pixel Data's 4-byte length at 1452-1455.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Treats OB as a short-form VR: 144 + 8 + 2.
+  - id: short-form-guess
+    passes: false
+    changes:
+      - predict: { objective: after-version, offset: 154 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 1452, to: 1456 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-explicit-le.dcm::7FE0,0010
+      - predict: { objective: after-version, offset: 158 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 1452, to: 1456 }

@@ -1,0 +1,76 @@
+id: under-the-words
+version: 1
+title: Under the Words
+summary: Open the file as bytes for the first time, learn to read hex and offsets, and find two elements' bytes in the File inspector.
+minutes: 15
+chapter: the-first-file
+objective: Mark the bytes of the Patient's Name element and of the Modality element in the File inspector.
+skills: [find-bytes-in-hex]
+prerequisites: [read-a-dicom-file]
+teaches: [byte-and-hex, offset, text-in-bytes]
+names: [preamble, dicm-prefix]
+uses: [dicom-file, data-element]
+
+# Byte facts in story.md, read from packages/fixtures/out/ct-explicit-le.dcm with xxd:
+#   Modality (0008,0060) at 628, 10 bytes, value `43 54` at 636; Patient's Name (0010,0010) at
+#   878, 20 bytes (fixture-facts). The 128 `00` bytes and `DICM` at 128 are in fixture-facts.
+# [verify] the image ships `hexdump` with `-C` (busybox), and `head` with `-n` and `-c`.
+# [verify] PS3.5 §6.1: the default character repertoire is the basic G0 set of ISO 646, the
+#   International Reference Version, whose letters are those of ASCII.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: name-bytes
+    text: Mark the bytes of the Patient's Name element.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0010,0010)" }
+  - id: modality-bytes
+    text: Mark the bytes of the Modality element.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0008,0060)" }
+
+hints:
+  - text: Open the File inspector under the console and find Patient's Name in the tree on its left.
+  - text: Selecting an element in the tree marks all of its bytes in the hex beside it. A text value shows through in the hex pane's right-hand column.
+  - text: Patient's Name is the row tagged `0010,0010`, and Modality the row tagged `0008,0060`. Select each row.
+
+chips:
+  - {
+      command: hexdump -C /lab/ct-explicit-le.dcm | head,
+      explain: "the file's first bytes: offset, hex and text, ten lines",
+    }
+  - { command: go-dicom show /lab/ct-explicit-le.dcm, explain: "every element of the file, one per line" }
+
+codex:
+  - id: byte-and-hex
+    term: bytes and hex
+    simple: "A byte is a number from 0 to 255. Hex writes it as two digits, 0 to 9 then a to f: `00` to `ff`."
+    deep: "A byte is 8 bits, so it holds 256 values. Hexadecimal counts in sixteens: `4d` is 4 × 16 + 13 = 77, the letter M. Two hex digits always make one byte, which is why `hexdump -C` prints each byte as two digits, sixteen to a line. DICOM writes its tags in hex too: `0008,0060` is two numbers of two bytes each."
+    tryIt: hexdump -C ct.dcm | head
+  - id: offset
+    term: an offset
+    simple: "Where a byte sits in a file, counted from the start, from 0. The first byte is at offset 0; `DICM` starts at 128."
+    deep: "hexdump's first column is the offset of each line's first byte, in hex: `00000080` is 128. The byte at offset n has n bytes before it, so an element of 12 bytes that starts at 132 ends just before 144. PS3.10 §7.1 fixes the first offsets of a file, the preamble at 0 and the prefix at 128; every later element's offset follows from the lengths before it."
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
+    tryIt: head -c 132 ct.dcm | hexdump -C
+  - id: text-in-bytes
+    term: text in bytes
+    simple: "A text value is stored one byte per character, so `CT` is `43 54`, readable in hexdump's right-hand column."
+    deep: "DICOM's default character repertoire, PS3.5 §6.1, is the basic set of ISO 646, the letters of ASCII, one byte each: `41` is A, `43` C, `54` T. The element Specific Character Set, `0008,0005`, can name a larger set; this file names `ISO_IR 100`, which keeps those letters and adds accented ones. A binary number, such as a length, is stored as bytes, not as digits, so it does not show as text."
+    deepens: byte-and-hex
+    sources: [charset/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_6.html#sect_6.1
+    tryIt: go-dicom show ct.dcm::0008,0005
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

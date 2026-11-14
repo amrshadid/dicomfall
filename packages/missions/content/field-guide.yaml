@@ -1,4 +1,41 @@
 # The Codex page of commands. Each entry appears when the mission it is first met in starts.
 # kind: go-dicom (one of go-dicom's commands) or shell (a plain tool of the AE's Linux shell).
 # Entries: { name, kind, what, firstMet: <mission id>, deepenedIn: [<mission id>, …] }, in play order.
-entries: []
+entries:
+  # stage 1, The First File
+  - name: ls -l
+    kind: shell
+    what: list a folder's files, each with its size in bytes
+    firstMet: what-the-file-says
+    deepenedIn: [a-second-file]
+  - name: go-dicom info
+    kind: go-dicom
+    what: print a few key elements of a file with plain labels, and its picture's rows and columns
+    firstMet: what-the-file-says
+    deepenedIn: [a-second-file]
+  - name: go-dicom show
+    kind: go-dicom
+    what: print every element of a file, File Meta Information first, one per line; `<file>::<tag>` prints one element, the tag written 0002,0010; `--top` leaves out elements inside sequences
+    firstMet: what-the-file-says
+    deepenedIn: [the-envelope, how-to-read-the-rest, a-second-file]
+  - name: hexdump -C
+    kind: shell
+    what: print a file's bytes, sixteen to a line, with each line's offset on the left and the bytes as text on the right; a `*` stands for rows that repeat
+    firstMet: under-the-words
+    deepenedIn: [empty-bytes, a-second-file]
+  - name: head
+    kind: shell
+    what: keep only the start of what comes in; `-n 10` keeps ten lines, `-c 132` the first 132 bytes
+    firstMet: under-the-words
+    deepenedIn: [empty-bytes, the-envelope]
+  - name: go-dicom tag-doc
+    kind: go-dicom
+    what: say what go-dicom's dictionary knows about an element, by its tag, such as 0002,0010
+    firstMet: how-to-read-the-rest
+  # end of stage 1
+  # stage 2, The Elements
+  - name: cmp
+    kind: shell
+    what: compare two files byte by byte and print the first byte where they differ, counted from 1; nothing when they are the same
+    firstMet: the-same-object-twice
+  # end of stage 2

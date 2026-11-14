@@ -1,0 +1,24 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From packages/fixtures/out/ct-implicit-le.dcm: Patient's Name (0010,0010) at 872, element
+# 872-891, length 876-879 (0c 00 00 00); Patient ID (0010,0020) at 892.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Reads only two bytes of length, as a short-form explicit element has, with no VR before
+  # them: marks 876-877 and predicts 872 + 4 + 2 + 12.
+  - id: two-byte-length
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 872, to: 892 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 876, to: 878 }
+      - predict: { objective: next-implicit, offset: 890 }
+  - id: all-three
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-implicit-le.dcm::0010,0010
+      - select: { file: /lab/ct-implicit-le.dcm, from: 872, to: 892 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 876, to: 880 }
+      - predict: { objective: next-implicit, offset: 892 }

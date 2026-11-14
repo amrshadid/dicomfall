@@ -1,0 +1,65 @@
+# Stage 2, mission 3. Bytes read from packages/fixtures/out/ct-explicit-le.dcm (go-dicom v1.8.0):
+# (0002,0001) at 144: 02 00 01 00 4f 42 00 00 02 00 00 00 00 01; (0002,0002) at 158.
+# Pixel Data (7FE0,0010) at 1444: e0 7f 10 00 4f 57 00 00, length 00 20 00 00 = 8192 at 1452-1455.
+id: the-long-form
+version: 1
+title: The Long Form
+summary: Meet the elements whose VR is followed by two reserved bytes and a four-byte length, and read Pixel Data's length.
+minutes: 15
+chapter: the-elements
+objective: Predict where Media Storage SOP Class UID starts, and mark the four bytes of Pixel Data's length.
+skills: [read-long-form-elements]
+prerequisites: [read-vr-and-length]
+teaches: [long-form, binary-vr]
+names: [pixel-data, sequence]
+uses: [vr, value-length, tag, offset, group-length, little-endian, file-meta-information]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: after-version
+    text: Predict where Media Storage SOP Class UID starts.
+    check: { kind: offset, file: /lab/ct-explicit-le.dcm, element: "(0002,0002)", offset: 158 }
+  - id: pixel-length
+    text: Mark the length of Pixel Data.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(7FE0,0010)", part: length }
+
+hints:
+  - text: Look at the bytes right after the VR letters of 0002,0001, File Meta Information Version.
+  - text: Some VRs, OB, OW, SQ, UN and UT among them, put two reserved bytes and a four-byte length after the VR.
+  - text: 0002,0001 starts at offset 144. It has twelve bytes before its value, and its value is two bytes long.
+
+chips:
+  - { command: go-dicom show, explain: "every element; add ::<tag> to the file for one" }
+
+codex:
+  - id: long-form
+    term: the long form
+    simple: "For OB, OW, SQ, UN, UT and some others: the VR, two reserved 00 bytes, then a four-byte length. Twelve bytes before the value."
+    deep: "PS3.5 §7.1.2: in Explicit VR, AE, AS, AT, CS, DA, DS, DT, FL, FD, IS, LO, LT, PN, SH, SL, SS, ST, TM, UI, UL and US take a 2-byte length. Every other VR, OB, OW, SQ, UN and UT among them, takes 2 reserved bytes set to 00, then a 4-byte length. That length can count to FFFFFFFE; FFFFFFFF is kept for undefined length, PS3.5 §7.1.1."
+    deepens: value-length
+    sources: [filereader/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html#sect_7.1.2
+    tryIt: go-dicom show ct.dcm::7FE0,0010
+  - id: binary-vr
+    term: OB and OW
+    simple: "OB holds raw bytes; OW holds 16-bit words. Neither is text, and both use the long form."
+    deep: "PS3.5 §6.2: OB, Other Byte, is a string of bytes whose meaning the element defines; OW, Other Word, is a string of 16-bit words, stored in the transfer syntax's byte order. File Meta Information Version is OB, the two bytes 00 01, PS3.10 §7.1. Pixel Data with more than 8 bits allocated is OW in Explicit VR Little Endian, PS3.5 Annex A.2. An odd OB value is padded with one 00."
+    deepens: vr
+    sources: [valuerep/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+    tryIt: go-dicom show ct.dcm::0002,0001
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

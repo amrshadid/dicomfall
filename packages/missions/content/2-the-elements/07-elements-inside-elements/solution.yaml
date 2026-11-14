@@ -1,0 +1,24 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From packages/fixtures/out/ct-explicit-le.dcm: Procedure Code Sequence (0008,1032) 754-841,
+# its item 766-841, Code Value DF-CT-PHANTOM.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Marks the item where the sequence is asked for: the sequence's own tag, VR and length are
+  # left out.
+  - id: item-as-sequence
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 766, to: 842 }
+      - answer: { objective: nested-value, value: DF-CT-PHANTOM }
+  - id: all-three
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-explicit-le.dcm
+          - go-dicom show --top /lab/ct-explicit-le.dcm
+      - select: { file: /lab/ct-explicit-le.dcm, from: 754, to: 842 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 766, to: 842 }
+      - answer: { objective: nested-value, value: DF-CT-PHANTOM }

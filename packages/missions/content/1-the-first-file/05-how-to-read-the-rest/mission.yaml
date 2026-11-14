@@ -1,0 +1,79 @@
+id: how-to-read-the-rest
+version: 1
+title: How to Read the Rest
+summary: Find the one element that tells a reader how the Data Set is written, read its UID, and meet little endian in a number you already know.
+minutes: 15
+chapter: the-first-file
+objective: Mark the Transfer Syntax UID element and give its value.
+skills: [read-the-transfer-syntax]
+prerequisites: [find-the-file-meta-information]
+teaches: [transfer-syntax, uid, little-endian]
+names: [vr, explicit-vr, implicit-vr, media-storage-uids, default-transfer-syntax]
+uses: [file-meta-information, group-length, data-set, byte-and-hex, offset]
+
+# Byte facts read from ct-explicit-le.dcm with xxd: the group length's value bytes at 140–143
+# are `b8 00 00 00`; (0002,0010) starts at 244 (0xF4), VR UI, length 20 (`14 00`), value
+# `1.2.840.10008.1.2.1` then `00` at 271, element ending at 272.
+# [verify] PS3.5 Annex A.2: 1.2.840.10008.1.2.1 is Explicit VR Little Endian, uncompressed.
+# [verify] PS3.5 §9.1: a UID is at most 64 characters; PS3.5 §6.2, VR UI: padded with one
+#   trailing 00H to an even length.
+# [verify] PS3.5 §10.1: Implicit VR Little Endian is the default transfer syntax every
+#   implementation supports.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: ts-bytes
+    text: Mark the Transfer Syntax UID element.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0002,0010)" }
+  - id: ts-value
+    text: Give the file's Transfer Syntax UID.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0002,0010)" }
+
+hints:
+  - text: The answer is in the File Meta Information. Look through the rows of group 0002 in the File inspector's tree.
+  - text: A UID names something defined once, for the whole world. The one you want names the rules the Data Set is written by.
+  - text: It is the element `0002,0010`, Transfer Syntax UID, the fifth row of group 0002.
+
+chips:
+  - { command: "go-dicom show /lab/ct-explicit-le.dcm::0002,0010", explain: "one element: the Transfer Syntax UID" }
+  - { command: "go-dicom tag-doc 0002,0010", explain: "what go-dicom's dictionary says about that element" }
+  - { command: go-dicom show /lab/ct-explicit-le.dcm | head, explain: "the file's own elements, group 0002" }
+
+codex:
+  - id: transfer-syntax
+    term: Transfer Syntax UID
+    simple: "The UID in `0002,0010` that names the rules a Data Set is written by: VR written or not, byte order, compression."
+    deep: "PS3.5 §10 defines a transfer syntax by three choices: explicit or implicit VR, little or big endian, and whether Pixel Data is compressed. Each one is named by a UID listed in PS3.6. `1.2.840.10008.1.2.1` is Explicit VR Little Endian, Annex A.2; `1.2.840.10008.1.2` is Implicit VR Little Endian, Annex A.1, the default. A reader reads it before the Data Set's first element."
+    deepens: file-meta-information
+    sources: [filereader/filereader.go, uid/uid.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_10.html
+    tryIt: go-dicom show ct.dcm::0002,0010
+  - id: uid
+    term: a UID
+    simple: "A unique identifier: numbers joined by dots, at most 64 characters, naming one thing worldwide. `1.2.840.10008` begins DICOM's own."
+    deep: "PS3.5 §9 sets the form: components of digits joined by `.`, no component starting with 0 unless it is 0, at most 64 characters, padded with one `00` byte to an even length. The first components say who made it: UIDs under `1.2.840.10008` are defined by DICOM itself. This file's own UIDs start `2.25.`, built from a UUID, PS3.5 §B.2. A UID names; it never counts."
+    sources: [uid/uid.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_9.html
+    tryIt: go-dicom tag-doc 0002,0010
+  - id: little-endian
+    term: little endian
+    simple: "A number of several bytes stored least significant byte first: 184 in four bytes is `b8 00 00 00`."
+    deep: "PS3.5 §7.3 lets a transfer syntax choose the byte order, and every file of this lab is little endian, the order of the x86 processor the Machine runs on. Read the bytes from last to first to get the number: `00 00 00 b8` is 184. A tag is two such numbers: `0002,0000` is stored as `02 00 00 00`."
+    deepens: byte-and-hex
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.3.html
+    tryIt: head -c 144 ct.dcm | tail -c 4 | hexdump -C
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

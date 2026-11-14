@@ -1,0 +1,73 @@
+# Stage 2, mission 7. From packages/fixtures/out/ct-explicit-le.dcm (go-dicom v1.8.0):
+# Procedure Code Sequence (0008,1032) at 754: 08 00 32 10 53 51 00 00 4c 00 00 00 (SQ, length 76),
+# element 754-841. Its one item (FFFE,E000) at 766: fe ff 00 e0 44 00 00 00 (length 68), 766-841.
+# In the item: Code Value (0008,0100) at 774, SH, DF-CT-PHANTOM; Coding Scheme Designator
+# (0008,0102) at 796, 99DFALL; Code Meaning (0008,0104) at 812, CT phantom, synthetic.
+# The next top-level element, Series Description (0008,103E), at 842.
+# No fixture holds an undefined length (go-dicom writes defined lengths), so undefined-length is
+# named here, in Watch it, with the rule and no evidence, as the stage 2 spec's fallback says.
+id: elements-inside-elements
+version: 1
+title: Elements Inside Elements
+summary: Open the one element whose value is other elements, a sequence, and read an element inside its item.
+minutes: 20
+chapter: the-elements
+objective: Mark the sequence and its first item, and give the value of Code Value inside that item.
+skills: [read-a-sequence]
+prerequisites: [compare-encodings]
+teaches: [sequence, item]
+names: [undefined-length]
+uses: [vr, long-form, value-length, tag, tag-order, explicit-vr, data-set, offset]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: sequence
+    text: Mark the sequence element.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0008,1032)" }
+  - id: first-item
+    text: Mark its first item.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0008,1032)[0]" }
+  - id: nested-value
+    text: Give the value of Code Value inside that item.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0008,1032)[0](0008,0100)" }
+
+hints:
+  - text: Look for the indented lines in go-dicom show, and the element right above them.
+  - text: An SQ element's value is items. Each item starts with the tag FFFE,E000 and a four-byte length, and holds elements of its own.
+  - text: The sequence is Procedure Code Sequence, 0008,1032, at offset 754. Its first item starts twelve bytes later, and Code Value is the item's first element.
+
+chips:
+  - { command: go-dicom show, explain: "every element; --top leaves out the elements nested in sequences" }
+
+codex:
+  - id: sequence
+    term: a sequence, SQ
+    simple: "An element with VR SQ whose value is a list of items, each a set of elements. Procedure Code Sequence holds one item."
+    deep: "PS3.5 §7.5: a Sequence of Items is a Data Element whose VR is SQ and whose value is zero or more Items, each a Data Set of its own, so sequences can nest inside items. In explicit VR an SQ uses the long form, and its length counts every byte of its items. go-dicom's `show` indents the elements inside a sequence one level for each depth, and `--top` leaves them out."
+    deepens: long-form
+    sources: [sequence/, filereader/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.5.html
+    tryIt: go-dicom show --top ct.dcm
+  - id: item
+    term: an item
+    simple: "One entry of a sequence: the tag FFFE,E000, a four-byte length, then elements of its own. It has no VR."
+    deep: "PS3.5 §7.5.1: each Item starts with the Item Tag, (FFFE,E000), and a 4-byte Item Length, in explicit and implicit VR alike; it never carries a VR. Its value is a Data Set, its elements in tag order. Here the one item is 68 bytes: Code Value, Coding Scheme Designator and Code Meaning, which together name the procedure as a code in a coding scheme."
+    deepens: sequence
+    sources: [sequence/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.5.html
+    tryIt: go-dicom show ct.dcm
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

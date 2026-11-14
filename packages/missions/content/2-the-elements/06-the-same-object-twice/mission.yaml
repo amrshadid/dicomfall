@@ -1,0 +1,86 @@
+# Stage 2, mission 6. From packages/fixtures/out/ (go-dicom v1.8.0):
+# ct-explicit-le.dcm 9648 bytes, ct-implicit-le.dcm 9638 bytes.
+# Implicit file: (0002,0010) at 244, VR "UI" (55 49) at 248-249, length 18. Group length 182
+# (explicit 184): the first differing byte is offset 140, the group length's value (b8 / b6).
+# Pixel Data (7FE0,0010) at 1444 explicit, 1438 implicit. The Data Set's long-form elements
+# before Pixel Data: one, Procedure Code Sequence (0008,1032), SQ.
+# [verify] on the recording: `cmp` reports byte 141 (it counts from 1), and the two `show`
+# outputs differ only in (0002,0000) and (0002,0010), with the same VR column in both, Pixel
+# Data's included (PS3.6 lists it as OB or OW; PS3.5 Annex A.1 makes it OW in implicit VR).
+id: the-same-object-twice
+version: 1
+title: The Same Object Twice
+summary: Lay the explicit and implicit files side by side, find what stays and what moves, and see that group 0002 is explicit in both.
+minutes: 15
+chapter: the-elements
+objective: Mark the VR letters of the implicit file's Transfer Syntax UID, and predict where its Pixel Data starts.
+skills: [compare-encodings]
+prerequisites: [read-implicit-elements]
+teaches: [same-object-other-bytes, file-meta-always-explicit]
+names: [sop-instance-uid]
+uses:
+  [
+    explicit-vr,
+    implicit-vr,
+    default-transfer-syntax,
+    long-form,
+    binary-vr,
+    file-meta-information,
+    transfer-syntax,
+    data-set,
+    group-length,
+    offset,
+  ]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+    - { fixture: ct-implicit-le.dcm, to: /lab/ct-implicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: meta-vr
+    text: Mark the VR letters of the Transfer Syntax UID in the implicit file.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, element: "(0002,0010)", part: vr }
+  - id: pixel-moved
+    text: Predict where Pixel Data starts in the implicit file.
+    check: { kind: offset, file: /lab/ct-implicit-le.dcm, element: "(7FE0,0010)", offset: 1438 }
+
+hints:
+  - text: Look at group 0002 of the implicit file in the hex. What sits right after each tag?
+  - text: Every Part 10 file writes its File Meta Information in Explicit VR Little Endian; only the Data Set follows the Transfer Syntax UID.
+  - text: Pixel Data starts at 1444 in the explicit file. Take away the 2 bytes of shorter UID, and 4 for each SQ, OB, OW, UN or UT element of the Data Set before Pixel Data.
+
+chips:
+  - { command: ls -l, explain: "files with their sizes in bytes" }
+  - { command: go-dicom show, explain: "every element of a file" }
+  - { command: cmp, explain: "the first byte where two files differ, counted from 1" }
+
+codex:
+  - id: same-object-other-bytes
+    term: same object, other bytes
+    simple: "One object in two transfer syntaxes: the same elements and values, in other bytes, at other offsets, with another size."
+    deep: "A transfer syntax, PS3.5 §10, says how a Data Set is encoded, not what it holds. From Explicit to Implicit VR Little Endian, each VR is dropped, long-form elements go from 12 bytes before the value to 8, and short-form ones stay at 8. Here the file shrinks by 10 bytes, 2 of them in the Transfer Syntax UID. Tags, values and UIDs stay the same."
+    deepens: transfer-syntax
+    sources: [filereader/, filewriter/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_10.html
+    tryIt: cmp ct.dcm ct-implicit.dcm
+  - id: file-meta-always-explicit
+    term: the File Meta Information is always explicit
+    simple: "Group 0002 is written in Explicit VR Little Endian in every Part 10 file, whatever transfer syntax the Data Set uses."
+    deep: "PS3.10 §7.1: the File Meta Information is encoded in the Explicit VR Little Endian Transfer Syntax. So a reader can always read group 0002, find the Transfer Syntax UID there, and only then choose the rules for the Data Set. That is why the implicit file has UI after the tag of 0002,0010, and why its Data Set starts where group 0002 ends, at offset 326."
+    deepens: file-meta-information
+    sources: [filereader/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
+    tryIt: go-dicom show ct-implicit.dcm::0002,0010
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

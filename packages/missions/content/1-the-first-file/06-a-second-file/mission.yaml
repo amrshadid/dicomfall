@@ -1,0 +1,80 @@
+id: a-second-file
+version: 1
+title: A Second File
+summary: "Capstone: map a file you have never opened, its four regions and its transfer syntax, and find that its Data Set reads differently."
+minutes: 15
+chapter: the-first-file
+objective: Mark the four regions of /lab/ct-implicit-le.dcm and give its Transfer Syntax UID.
+skills: [map-a-part-10-file]
+prerequisites: [read-the-transfer-syntax]
+teaches: []
+names: [vr, explicit-vr, implicit-vr, default-transfer-syntax]
+uses:
+  [
+    part-10-file,
+    preamble,
+    dicm-prefix,
+    file-meta-information,
+    group-length,
+    data-set,
+    transfer-syntax,
+    uid,
+    little-endian,
+    offset,
+  ]
+
+# Byte facts (fixture-facts): ct-implicit-le.dcm is 9638 bytes, group length 182, Data Set from
+# 326; ct-explicit-le.dcm is 9648 bytes, group length 184, Data Set from 328.
+# Read with xxd: the implicit file's group length bytes at 140–143 are `b6 00 00 00`; its
+# (0002,0010) value is 18 bytes, `1.2.840.10008.1.2` and a `00`; its Data Set opens at 326 with
+# `08 00 05 00 0a 00 00 00`, and the explicit file's at 328 with `08 00 05 00 43 53 0a 00`.
+# [verify] PS3.5 Annex A.1 and §10.1: 1.2.840.10008.1.2 is Implicit VR Little Endian, the default.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+    - { fixture: ct-implicit-le.dcm, to: /lab/ct-implicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: preamble
+    text: Mark the second file's preamble.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, region: preamble }
+  - id: prefix
+    text: Mark its DICM prefix.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, region: prefix }
+  - id: file-meta
+    text: Mark its File Meta Information.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, region: file-meta-information }
+  - id: data-set
+    text: Mark its Data Set.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, region: data-set }
+  - id: ts-value
+    text: Give its Transfer Syntax UID.
+    check: { kind: answer, file: /lab/ct-implicit-le.dcm, element: "(0002,0010)" }
+
+hints:
+  - text: Start where every DICOM file starts, at offset 0 of the second file, and take the regions in order.
+  - text: The four regions always come in the same order, and the first two never move. The group length says where the third one ends.
+  - text: This file's group length element is at offset 132, as in the first file, and its value bytes at 140 to 143. Its Transfer Syntax UID is the element `0002,0010`.
+
+# Stage 1 chips are whole lines (docs/MISSIONS.md), so the capstone's are too.
+chips:
+  - { command: ls -l /lab, explain: "the lab's files with their sizes in bytes" }
+  - { command: go-dicom info /lab/ct-implicit-le.dcm, explain: "the second file's key elements, with plain labels" }
+  - { command: hexdump -C /lab/ct-implicit-le.dcm | head -n 10, explain: "the second file's first bytes" }
+  - { command: go-dicom show /lab/ct-implicit-le.dcm, explain: "every element of the second file, its own first" }
+
+# The stage's last mission adds no card; the stage's title page and its "You can now…" lines are
+# filed when it is passed (chapters.yaml).
+codex: []
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

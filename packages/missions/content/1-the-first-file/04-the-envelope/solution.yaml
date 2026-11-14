@@ -1,0 +1,32 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From fixture-facts: group length 184, Data Set from 328 to the end of the file (9648 bytes).
+# File Meta Information from 132 to 328, end excluded.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Off by twelve: 132 plus the group length, forgetting the group length element's own 12 bytes.
+  - id: off-by-twelve
+    passes: false
+    changes:
+      - ae: workstation
+        shell:
+          - "go-dicom show /lab/ct-explicit-le.dcm::0002,0000"
+      - predict: { objective: predict, offset: 316 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 132, to: 328 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 328, to: 9648 }
+  # Half done: the File Meta Information marked, nothing else.
+  - id: meta-only
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 132, to: 328 }
+  - id: all-three
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom show /lab/ct-explicit-le.dcm | head
+          - "go-dicom show /lab/ct-explicit-le.dcm::0002,0000"
+      - predict: { objective: predict, offset: 328 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 132, to: 328 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 328, to: 9648 }

@@ -1,0 +1,31 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Read from ct-explicit-le.dcm with xxd: (0002,0010) from 244 to 272, end excluded; its value
+# is 1.2.840.10008.1.2.1. (0002,0002) holds 1.2.840.10008.5.1.4.1.1.2, CT Image Storage.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # The wrong UID: the element marked, then the Media Storage SOP Class UID given, read from the row above.
+  - id: wrong-uid
+    passes: false
+    changes:
+      - ae: workstation
+        shell: [go-dicom show /lab/ct-explicit-le.dcm | head]
+      - select: { file: /lab/ct-explicit-le.dcm, from: 244, to: 272 }
+      - answer: { objective: ts-value, value: 1.2.840.10008.5.1.4.1.1.2 }
+  # Half done: the value given, the element never marked.
+  - id: value-only
+    passes: false
+    changes:
+      - ae: workstation
+        shell:
+          - "go-dicom show /lab/ct-explicit-le.dcm::0002,0010"
+      - answer: { objective: ts-value, value: 1.2.840.10008.1.2.1 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - "go-dicom show /lab/ct-explicit-le.dcm::0002,0010"
+      - select: { file: /lab/ct-explicit-le.dcm, from: 244, to: 272 }
+      - answer: { objective: ts-value, value: 1.2.840.10008.1.2.1 }

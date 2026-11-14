@@ -1,0 +1,58 @@
+# Stage 2, mission 4. From packages/fixtures/out/ct-explicit-le.dcm (go-dicom v1.8.0):
+# Image Type (0008,0008) at 346, CS, length 22, ORIGINAL\PRIMARY\AXIAL (VM 3).
+# Pixel Spacing (0028,0030) at 1336, DS, length 4, 35 5c 35 20 (5\5 and a space, VM 2).
+# go-dicom's dictionary (tag/gen_dictionary.go, v1.8.0 source): ImageType VM 2-n, PixelSpacing VM 2.
+id: one-name-many-values
+version: 1
+title: One Name, Many Values
+summary: Read an element that holds several values, kept apart by a backslash inside one length.
+minutes: 10
+chapter: the-elements
+objective: Give every value of Image Type and both values of Pixel Spacing.
+skills: [read-multiple-values]
+prerequisites: [read-long-form-elements]
+teaches: [value-multiplicity]
+uses: [vr, value-length, data-dictionary, value-padding, tag, offset]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: image-type
+    text: Give every value of Image Type, in order.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0008,0008)" }
+  - id: pixel-spacing
+    text: Give both values of Pixel Spacing.
+    check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0028,0030)" }
+
+hints:
+  - text: Show the element on its own and read its value closely, character by character.
+  - text: Several values in one text element are separated by a backslash, and their order matters.
+  - text: Image Type is 0008,0008 and Pixel Spacing is 0028,0030. Give the values with a backslash between them.
+
+chips:
+  - { command: go-dicom show, explain: "add ::<tag> to the file for one element" }
+  - { command: go-dicom tag-doc, explain: "the dictionary's VM for a tag" }
+
+codex:
+  - id: value-multiplicity
+    term: VM, the Value Multiplicity
+    simple: "How many values an element holds. Text values are separated by a backslash, 5c; the dictionary says how many are allowed."
+    deep: "PS3.5 §6.4: the Value Multiplicity is how many values an element's value holds, and PS3.6 gives each tag's allowed VM: 1, 2, 1-n, 2-n. In text VRs that allow several values, a backslash separates them, so it cannot be part of a value; LT, ST and UT always hold one value and may contain one. Binary values follow one another, each its fixed size. The length covers them all."
+    deepens: vr
+    sources: [multival/, valuerep/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.4.html
+    tryIt: go-dicom tag-doc -keyword ImageType
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

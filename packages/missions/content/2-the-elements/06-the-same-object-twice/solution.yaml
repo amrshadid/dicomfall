@@ -1,0 +1,23 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From packages/fixtures/out/: the implicit file's (0002,0010) VR at 248-249; Pixel Data at 1444
+# in the explicit file, 1438 in the implicit one.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Gives Pixel Data's offset in the explicit file, as if nothing moved.
+  - id: explicit-offset
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 248, to: 250 }
+      - predict: { objective: pixel-moved, offset: 1444 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - ls -l /lab
+          - go-dicom show /lab/ct-explicit-le.dcm
+          - go-dicom show /lab/ct-implicit-le.dcm
+      - select: { file: /lab/ct-implicit-le.dcm, from: 248, to: 250 }
+      - predict: { objective: pixel-moved, offset: 1438 }

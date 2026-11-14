@@ -1,0 +1,87 @@
+id: the-envelope
+version: 1
+title: The Envelope
+summary: Read how the file describes itself after the prefix, use its first element's length to predict where the object begins, and mark both regions.
+minutes: 20
+chapter: the-first-file
+objective: Predict where the Data Set starts from the group length, then mark the File Meta Information and the Data Set.
+skills: [find-the-file-meta-information]
+prerequisites: [find-the-preamble-and-prefix]
+teaches: [file-meta-information, group-length, data-set]
+names: [tag, transfer-syntax, media-storage-uids, pixel-data]
+uses: [part-10-file, dicm-prefix, offset, data-element]
+
+# Byte facts (fixture-facts): File Meta Information Group Length 184; the Data Set starts at
+# 328 with (0008,0005) Specific Character Set; Pixel Data's value is 8192 bytes of the file's 9648.
+# Read with xxd: (0002,0000) at 132, `02 00 00 00 55 4c 04 00 b8 00 00 00`.
+# [verify] `go-dicom show … | head` prints three lines before the elements, so its ten lines end
+#   with the seventh element of group 0002, (0002,0013).
+# [verify] PS3.10 §7.1: group 0002 elements are not used in a Data Set.
+# [verify] PS3.5 §7.2: group length elements are retired, except in groups 0000 and 0002.
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: predict
+    text: Predict the offset where the Data Set's first element starts.
+    check: { kind: offset, file: /lab/ct-explicit-le.dcm, element: "(0008,0005)", offset: 328 }
+  - id: file-meta
+    text: Mark the File Meta Information.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, region: file-meta-information }
+  - id: data-set
+    text: Mark the Data Set.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, region: data-set }
+
+hints:
+  - text: In the list `go-dicom show` prints, look at the first four digits of each tag. Where do they change?
+  - text: Group 0002 is the File Meta Information. Its first element says how many bytes of the group come after that element.
+  - text: The group length element starts at offset 132 and takes 12 bytes. The Data Set starts at 144 plus its value.
+
+chips:
+  - {
+      command: go-dicom show /lab/ct-explicit-le.dcm | head,
+      explain: "the first ten lines of the element list: the file's own elements",
+    }
+  - {
+      command: "go-dicom show /lab/ct-explicit-le.dcm::0002,0000",
+      explain: "one element: the length of the File Meta Information's group",
+    }
+  - { command: go-dicom show /lab/ct-explicit-le.dcm, explain: "every element, the file's own first" }
+
+codex:
+  - id: file-meta-information
+    term: the File Meta Information
+    simple: "The elements of group 0002, right after the DICM prefix. They describe the file itself, not the object it holds."
+    deep: "PS3.10 §7.1 lists the required ones: File Meta Information Group Length, File Meta Information Version, Media Storage SOP Class UID, Media Storage SOP Instance UID, Transfer Syntax UID and Implementation Class UID. Optional ones follow, such as Implementation Version Name, which here names the software that wrote the file. Group 0002 is used nowhere else in a file. go-dicom prints these elements first."
+    deepens: part-10-file
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
+    tryIt: go-dicom show ct.dcm | head
+  - id: group-length
+    term: group length
+    simple: "`0002,0000`: how many bytes of group 0002 follow it. The Data Set starts at offset 144 plus its value."
+    deep: "File Meta Information Group Length has VR UL, a 4-byte number, so its element takes 12 bytes: tag 4, VR 2, length 2, value 4. It starts at 132 and ends at 144; its value counts the bytes from there to the end of group 0002, PS3.10 §7.1. Here it is 184, so the Data Set starts at 328. PS3.5 §7.2 retires group lengths in other groups."
+    sources: [filereader/filereader.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.2.html
+    tryIt: go-dicom show ct.dcm::0002,0000
+  - id: data-set
+    term: the Data Set
+    simple: "The object's own elements, from the end of the File Meta Information to the end of the file. Here it starts at 328."
+    deep: "PS3.5 §7 defines a Data Set as the Data Elements that make up one object, in increasing tag order. In a Part 10 file it follows group 0002 and runs to the last byte. This one starts with `0008,0005`, Specific Character Set, and ends with Pixel Data, `7FE0,0010`, which holds most of its bytes."
+    deepens: part-10-file
+    sources: [filereader/filereader.go, dataset/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html
+    tryIt: go-dicom show ct.dcm --top
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

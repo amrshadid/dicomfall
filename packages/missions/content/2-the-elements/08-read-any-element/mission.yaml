@@ -1,0 +1,73 @@
+# Stage 2, mission 8, the capstone. From packages/fixtures/out/ct-implicit-le.dcm (go-dicom v1.8.0):
+# Procedure Code Sequence (0008,1032) at 752, length 4c 00 00 00 = 76; its item (FFFE,E000) at 760,
+# length 44 00 00 00 = 68. In the item: Code Value (0008,0100) at 768, Coding Scheme Designator
+# (0008,0102) at 790, Code Meaning (0008,0104) at 806: 08 00 04 01, length 16 00 00 00 = 22 at
+# 810-813, value "CT phantom, synthetic" and a space, 814-835. Series Description (0008,103E),
+# the next element and back at the top level, at 836. In ct-explicit-le.dcm Code Meaning is at 812.
+# The spec asks for an element with a multi-valued or padded value; Code Meaning is padded, holds
+# one value with a comma, and sits in the sequence's item, so the capstone uses sequence and item.
+id: read-any-element
+version: 1
+title: Read Any Element
+summary: "Capstone: at an offset you have never seen, in the implicit file, read an element by hand and find the next one."
+minutes: 15
+chapter: the-elements
+objective: Read the element that starts at offset 806 of the implicit file, and predict where the next one starts.
+skills: [read-any-element]
+prerequisites: [read-a-sequence]
+teaches: []
+names: [undefined-length, sop-instance-uid]
+uses:
+  [
+    tag,
+    little-endian,
+    vr,
+    value-length,
+    value-padding,
+    long-form,
+    value-multiplicity,
+    implicit-vr,
+    data-dictionary,
+    sequence,
+    item,
+    same-object-other-bytes,
+    file-meta-always-explicit,
+    offset,
+  ]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+    - { fixture: ct-implicit-le.dcm, to: /lab/ct-implicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: its-tag
+    text: Mark the tag of the element at offset 806.
+    check: { kind: selected, file: /lab/ct-implicit-le.dcm, element: "(0008,1032)[0](0008,0104)", part: tag }
+  - id: its-value
+    text: Give its value.
+    check: { kind: answer, file: /lab/ct-implicit-le.dcm, element: "(0008,1032)[0](0008,0104)" }
+  - id: next
+    text: Predict where the next element starts.
+    check: { kind: offset, file: /lab/ct-implicit-le.dcm, element: "(0008,103E)", offset: 836 }
+
+hints:
+  - text: Go to offset 806 in the hex. Which transfer syntax is this file in, and what does that leave out?
+  - text: In implicit VR, an element is four bytes of tag, four of length, then the value. The dictionary gives the VR.
+  - text: The tag is the four bytes at 806, low byte first in each half; the length is the next four, and the value follows them.
+
+chips:
+  - { command: hexdump -C, explain: "a file's bytes; -s skips to an offset, -n stops after that many bytes" }
+  - { command: go-dicom tag-doc, explain: "look a tag up in the dictionary" }
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

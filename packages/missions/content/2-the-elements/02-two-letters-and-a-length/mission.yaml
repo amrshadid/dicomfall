@@ -1,0 +1,79 @@
+# Stage 2, mission 2. Offsets read from packages/fixtures/out/ct-explicit-le.dcm (go-dicom v1.8.0):
+# Modality (0008,0060) at 628, VR 632-633 "CS", length 634-635 = 2, value "CT" at 636.
+# Patient's Name (0010,0010) at 878, VR "PN" at 882, length 884-885 = 0x000C, padding 0x20 at 897.
+# Transfer Syntax UID (0002,0010) at 244, length 20 (19 characters and one 00 at 271).
+# Implementation Class UID (0002,0012) at 272.
+id: two-letters-and-a-length
+version: 1
+title: Two Letters and a Length
+summary: Read the two letters after a tag, the VR, and the length after them, and predict where the next element starts.
+minutes: 20
+chapter: the-elements
+objective: Mark Modality's VR and Patient's Name's length, and predict where the element after the Transfer Syntax UID starts.
+skills: [read-vr-and-length]
+prerequisites: [read-a-tag]
+teaches: [vr, value-length, value-padding]
+names: [long-form]
+uses: [tag, tag-order, little-endian, offset, transfer-syntax, uid, text-in-bytes]
+
+lab:
+  aes:
+    - { name: workstation, title: WORKSTATION }
+  links: []
+  files:
+    - { fixture: ct-explicit-le.dcm, to: /lab/ct-explicit-le.dcm }
+  console: workstation
+
+objectives:
+  - id: modality-vr
+    text: Mark the two letters that give Modality its VR.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0008,0060)", part: vr }
+  - id: name-length
+    text: Mark the length of Patient's Name.
+    check: { kind: selected, file: /lab/ct-explicit-le.dcm, element: "(0010,0010)", part: length }
+  - id: next-start
+    text: Predict where the element after the Transfer Syntax UID starts.
+    check: { kind: offset, file: /lab/ct-explicit-le.dcm, element: "(0002,0012)", offset: 272 }
+
+hints:
+  - text: Look at the two bytes right after Modality's tag, in the text column of the hex.
+  - text: After the tag come two letters of VR, then a two-byte little-endian length, then that many bytes of value.
+  - text: The Transfer Syntax UID starts at offset 244. Add 8 and its length, 20, to reach the next tag.
+
+chips:
+  - { command: go-dicom show, explain: "every element, with its VR and length; add ::<tag> to the file for one" }
+  - { command: go-dicom tag-doc, explain: "the dictionary's VR for a tag" }
+
+codex:
+  - id: vr
+    term: VR, the Value Representation
+    simple: "Two letters after the tag that say what kind of value follows: CS a code, PN a person's name, UI a UID."
+    deep: "PS3.5 §6.2 defines every VR: which characters or bytes its value holds, how long it may be and how it is padded. In Explicit VR the two letters are written after the tag, as text, PS3.5 §7.1.2. US is an unsigned 16-bit number in two bytes; DA a date written YYYYMMDD; DS a decimal number written as text. go-dicom's VR rules live in valuerep/."
+    deepens: data-element
+    sources: [valuerep/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+    tryIt: go-dicom tag-doc 0010,0010
+  - id: value-length
+    term: value length
+    simple: "The number after the VR: how many bytes the value takes. It is always even."
+    deep: "PS3.5 §7.1.1: the Value Length counts the bytes of the value only, never the tag, the VR or the length itself. With the VRs met so far it is a 16-bit little-endian number, so it counts up to 65,535, and since it is even, the largest is 65,534. The next element starts at the tag's offset, plus 8, plus the length."
+    deepens: vr
+    sources: [filereader/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_7.html#sect_7.1.1
+    tryIt: go-dicom show ct.dcm::0010,0010
+  - id: value-padding
+    term: padding
+    simple: "The byte that makes an odd value even: a space, 20, for text; 00 for a UID."
+    deep: "PS3.5 §6.2: a value of odd length is padded to an even one. Text VRs such as CS, LO, PN and SH take one trailing space, UI one trailing 00, and OB one 00. The padding is counted in the length but is not part of the value's meaning: a reader removes it before comparing. Patient's Name here is 11 letters and a space."
+    deepens: value-length
+    sources: [valuerep/]
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
+    tryIt: go-dicom show ct.dcm::0002,0010
+
+story:
+  scene: story.md#scene
+  seeIt: story.md#see-it
+  buildIt: story.md#build-it
+  watchIt: story.md#watch-it
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

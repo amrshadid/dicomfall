@@ -1,0 +1,32 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From packages/fixtures/out/ct-implicit-le.dcm: Code Meaning (0008,0104), in the item of
+# Procedure Code Sequence, at 806, tag 806-809, length 22, value "CT phantom, synthetic";
+# the next element, Series Description (0008,103E), at 836.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Reads the element and stops: no prediction.
+  - id: value-only
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 806, to: 810 }
+      - answer: { objective: its-value, value: "CT phantom, synthetic" }
+  # Reads the length bytes as if the VR were written: 16 00 taken for a VR, 00 00 for a
+  # two-byte length of 0, so 806 + 8 + 0.
+  - id: explicit-lengths
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 806, to: 810 }
+      - answer: { objective: its-value, value: "CT phantom, synthetic" }
+      - predict: { objective: next, offset: 814 }
+  - id: all-three
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - hexdump -C -s 800 -n 48 /lab/ct-implicit-le.dcm
+          - go-dicom tag-doc 0008,0104
+      - select: { file: /lab/ct-implicit-le.dcm, from: 806, to: 810 }
+      - answer: { objective: its-value, value: "CT phantom, synthetic" }
+      - predict: { objective: next, offset: 836 }

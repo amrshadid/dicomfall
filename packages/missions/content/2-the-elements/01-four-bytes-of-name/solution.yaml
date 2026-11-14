@@ -1,0 +1,22 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Offsets from packages/fixtures/out/ct-explicit-le.dcm: Modality (0008,0060) at 628, Patient's
+# Name (0010,0010) at 878, Patient ID (0010,0020) at 898.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Marks the whole Modality element, not only its tag, and gives Patient's Name's offset for
+  # Patient ID's: the neighbour, one element too early.
+  - id: whole-element
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 628, to: 638 }
+      - predict: { objective: id-offset, offset: 878 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom tag-doc 0010,0020
+      - select: { file: /lab/ct-explicit-le.dcm, from: 628, to: 632 }
+      - predict: { objective: id-offset, offset: 898 }

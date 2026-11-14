@@ -3,4 +3,54 @@
 # part: foundations | file-format | encoding | information-model | pixel-data | association |
 #       dimse | query-retrieve | interoperability
 # Entries: { id, term, part, codex }.
-concepts: []
+concepts:
+  # stage 1, The First File: the concepts it teaches
+  - { id: dicom, term: DICOM, part: foundations, codex: dicom }
+  - { id: dicom-file, term: a DICOM file, part: file-format, codex: dicom-file }
+  - { id: data-element, term: an element, part: encoding, codex: data-element }
+  - { id: byte-and-hex, term: bytes and hex, part: foundations, codex: byte-and-hex }
+  - { id: offset, term: an offset, part: foundations, codex: offset }
+  - { id: text-in-bytes, term: text in bytes, part: foundations, codex: text-in-bytes }
+  - { id: part-10-file, term: the Part 10 file, part: file-format, codex: part-10-file }
+  - { id: preamble, term: the preamble, part: file-format, codex: preamble }
+  - { id: dicm-prefix, term: the DICM prefix, part: file-format, codex: dicm-prefix }
+  - { id: file-meta-information, term: the File Meta Information, part: file-format, codex: file-meta-information }
+  - { id: group-length, term: group length, part: file-format, codex: group-length }
+  - { id: data-set, term: the Data Set, part: file-format, codex: data-set }
+  - { id: transfer-syntax, term: Transfer Syntax UID, part: encoding, codex: transfer-syntax }
+  - { id: uid, term: a UID, part: foundations, codex: uid }
+  - { id: little-endian, term: little endian, part: encoding, codex: little-endian }
+  # stage 1 names it first (1.4, 1.5); stage 3 (3.4) teaches it and adds its card. Stage 1 also
+  # names tag, vr, explicit-vr, implicit-vr, default-transfer-syntax and pixel-data, which
+  # stage 2's entries hold.
+  - { id: media-storage-uids, term: Media Storage SOP Class and Instance UIDs, part: file-format }
+  # end of stage 1
+  # stage 2, The Elements: the concepts it teaches, in play order
+  - { id: tag, term: a tag, part: encoding, codex: tag }
+  - { id: tag-order, term: tag order, part: encoding, codex: tag-order }
+  - { id: data-dictionary, term: the data dictionary, part: encoding, codex: data-dictionary }
+  - { id: vr, term: "VR, the Value Representation", part: encoding, codex: vr }
+  - { id: value-length, term: value length, part: encoding, codex: value-length }
+  - { id: value-padding, term: padding, part: encoding, codex: value-padding }
+  - { id: long-form, term: the long form, part: encoding, codex: long-form }
+  - { id: binary-vr, term: OB and OW, part: encoding, codex: binary-vr }
+  - { id: value-multiplicity, term: "VM, the Value Multiplicity", part: encoding, codex: value-multiplicity }
+  - { id: explicit-vr, term: explicit VR, part: encoding, codex: explicit-vr }
+  - { id: implicit-vr, term: implicit VR, part: encoding, codex: implicit-vr }
+  - { id: default-transfer-syntax, term: the default transfer syntax, part: encoding, codex: default-transfer-syntax }
+  - { id: same-object-other-bytes, term: "same object, other bytes", part: encoding, codex: same-object-other-bytes }
+  - id: file-meta-always-explicit
+    term: the File Meta Information is always explicit
+    part: file-format
+    codex: file-meta-always-explicit
+  - { id: sequence, term: "a sequence, SQ", part: encoding, codex: sequence }
+  - { id: item, term: an item, part: encoding, codex: item }
+  # stage 2 names them, and no mission of 0.1.0 teaches them: no fixture holds a private element
+  # (2.1, 2.5) or an undefined length (2.7, 2.8), so they have no card yet.
+  - { id: private-tag, term: "private elements, odd groups", part: encoding }
+  - { id: undefined-length, term: undefined length and the delimitation items, part: encoding }
+  # stage 1 (1.1, 1.4) and stage 2 (2.3) name pixel-data, and stage 2 (2.6) names
+  # sop-instance-uid; stage 3 teaches both (3.5, 3.3) and adds their cards.
+  - { id: pixel-data, term: Pixel Data, part: pixel-data }
+  - { id: sop-instance-uid, term: SOP Instance UID, part: information-model }
+  # end of stage 2

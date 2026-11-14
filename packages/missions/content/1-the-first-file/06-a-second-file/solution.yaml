@@ -1,0 +1,50 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# From fixture-facts: ct-implicit-le.dcm is 9638 bytes, its Data Set starts at 326, so its File
+# Meta Information runs from 132 to 326 (end excluded); ct-explicit-le.dcm is 9648 bytes, its
+# Data Set from 328. The implicit file's Transfer Syntax UID,
+# 1.2.840.10008.1.2, is in the manifest.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # The wrong file: the first file mapped again, and its UID given.
+  - id: wrong-file
+    passes: false
+    changes:
+      - ae: workstation
+        shell:
+          - "go-dicom show /lab/ct-explicit-le.dcm::0002,0010"
+      - select: { file: /lab/ct-explicit-le.dcm, from: 0, to: 128 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 128, to: 132 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 132, to: 328 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 328, to: 9648 }
+      - answer: { objective: ts-value, value: 1.2.840.10008.1.2.1 }
+  # The first file's offsets carried over: the third and fourth regions two bytes off.
+  - id: old-offsets
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 0, to: 128 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 128, to: 132 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 132, to: 328 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 328, to: 9638 }
+      - answer: { objective: ts-value, value: 1.2.840.10008.1.2 }
+  # Half done: the four regions, no answer.
+  - id: regions-only
+    passes: false
+    changes:
+      - select: { file: /lab/ct-implicit-le.dcm, from: 0, to: 128 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 128, to: 132 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 132, to: 326 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 326, to: 9638 }
+  - id: all
+    passes: true
+    changes:
+      - ae: workstation
+        shell:
+          - go-dicom info /lab/ct-implicit-le.dcm
+          - "go-dicom show /lab/ct-implicit-le.dcm::0002,0000"
+      - select: { file: /lab/ct-implicit-le.dcm, from: 0, to: 128 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 128, to: 132 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 132, to: 326 }
+      - select: { file: /lab/ct-implicit-le.dcm, from: 326, to: 9638 }
+      - answer: { objective: ts-value, value: 1.2.840.10008.1.2 }

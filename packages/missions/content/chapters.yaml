@@ -13,32 +13,77 @@
 # written before its first mission. Each stage's regions from the first draft are kept as a
 # comment under it, and move into `regions:` with their first mission.
 chapters:
+  # stage 1
   - id: the-first-file
-    title: The first file
-    summary: What DICOM describes and how Part 10 packages a Data Set.
-    story: A synthetic CT file arrives in the lab with no viewer to open it. Before any image, there are bytes to read.
+    title: The First File
+    summary: What a DICOM file holds, read with go-dicom and as bytes, its four regions, and the one element that says how to read the rest.
+    story: >-
+      One synthetic CT slice has to reach the archive tonight, and nobody sends a file they cannot
+      read. The Preamble, 128 bytes with nothing in them, shows you the file through go-dicom, then
+      as bytes: where it starts, how it says it is DICOM, how it describes itself, and which element
+      tells a reader how to read the rest. Then a second file arrives, and reads differently.
     guide: The Preamble
     standsFor: Part 10, the file format
     outcomes:
-      - find the preamble, the DICM prefix, the File Meta Information and the Data Set of a file
-      - read the Transfer Syntax UID and say what it tells the reader
-    # Regions, first draft, all guided by The Preamble (filereader/, PS3.10):
-    #   open-the-file          Open the file
-    #   the-four-regions       The four regions
-    #   the-transfer-syntax    The transfer syntax
+      - find the four regions of any DICOM file
+      - read where the object starts from its group length
+      - read a file's transfer syntax and say what it decides
+    regions:
+      - id: open-the-file
+        name: Open the file
+        caption: what a DICOM file holds, read with go-dicom and as bytes
+        guide: The Preamble
+        source: cli/show.go, cli/info.go, PS3.10 §7
+        missions: [what-the-file-says, under-the-words]
+      - id: the-four-regions
+        name: The four regions
+        caption: the preamble, the DICM prefix, the File Meta Information and the Data Set
+        guide: The Preamble
+        source: filereader/, PS3.10 §7.1
+        missions: [empty-bytes, the-envelope]
+      - id: the-transfer-syntax
+        name: The transfer syntax
+        caption: the Transfer Syntax UID, UIDs, and little endian
+        guide: The Preamble
+        source: filereader/, uid/, PS3.10 §7.1, PS3.5 §7.3, §9, §10
+        missions: [how-to-read-the-rest, a-second-file]
+  # end of stage 1
+  # stage 2
   - id: the-elements
-    title: The elements
-    summary: Tags, Value Representation, value length and multiplicity, explicit and implicit VR, and sequences.
-    story: The Data Set is a run of elements, each a tag, a VR, a length and a value. The same object can be written two ways.
+    title: The Elements
+    summary: One element opened byte by byte, its tag, VR, length and values, then the same elements with no VR, and elements that hold other elements.
+    story: >-
+      The Data Set is a run of elements, and VR, the two letters that say how a value is written,
+      opens one of them at a time: its tag, its VR, its length, the long form some VRs use, and
+      values that come several to an element. Then the second file, which writes no VR at all, and
+      the same object in two encodings side by side. Then the one element that holds other
+      elements. At the end, you read any element by hand.
     guide: VR
     standsFor: Part 5, data structures and encoding
     outcomes:
-      - find one element in the hex and predict where the next one starts
-      - compare the same object in explicit and implicit VR
-    # Regions, first draft, all guided by VR (filereader/, PS3.5):
-    #   tag-vr-length              Tag, VR, length
-    #   explicit-and-implicit      Explicit and implicit
-    #   sequences                  Sequences
+      - read any element's tag, VR, length and value by hand
+      - predict where the next element starts, in explicit or implicit VR
+      - find a sequence's items and the elements inside them
+    regions:
+      - id: tag-vr-length
+        name: Tag, VR, length
+        caption: an element's tag, its VR, its length and its values
+        guide: VR
+        source: filereader/, tag/, valuerep/, PS3.5 §6.2, §6.4, §7.1
+        missions: [four-bytes-of-name, two-letters-and-a-length, the-long-form, one-name-many-values]
+      - id: explicit-and-implicit
+        name: Explicit and implicit
+        caption: elements without VR letters, and one object in two encodings
+        guide: VR
+        source: filereader/, tag/, PS3.5 §7.1.3, §10.1, Annex A
+        missions: [no-letters, the-same-object-twice]
+      - id: sequences
+        name: Sequences
+        caption: sequences, items and their delimiters
+        guide: VR
+        source: sequence/, filereader/, PS3.5 §7.5
+        missions: [elements-inside-elements, read-any-element]
+  # end of stage 2
   - id: the-object
     title: The object
     summary: Study, Series and SOP Instance UIDs, SOP Classes, and the pixel attributes.

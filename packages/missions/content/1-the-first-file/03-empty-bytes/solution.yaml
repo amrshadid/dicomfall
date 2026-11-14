@@ -1,0 +1,26 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Ranges from PS3.10 §7.1's layout and the fixture: preamble 0–127, prefix 128–131 (to is exclusive).
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Half done: the four letters, not the 128 bytes before them.
+  - id: prefix-only
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 128, to: 132 }
+  # One byte short: offsets 0 to 126 marked, then the prefix.
+  - id: one-byte-short
+    passes: false
+    changes:
+      - ae: workstation
+        shell: [hexdump -C /lab/ct-explicit-le.dcm | head -n 10]
+      - select: { file: /lab/ct-explicit-le.dcm, from: 0, to: 127 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 128, to: 132 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell: [hexdump -C /lab/ct-explicit-le.dcm | head -n 10]
+      - select: { file: /lab/ct-explicit-le.dcm, from: 0, to: 128 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 128, to: 132 }

@@ -1,0 +1,27 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Byte ranges, end excluded, read from ct-explicit-le.dcm with xxd: Patient's Name (0010,0010)
+# from 878 (fixture-facts) to 898, its value from 886; Modality (0008,0060) from 628 to 638.
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Half done: only Patient's Name.
+  - id: name-only
+    passes: false
+    changes:
+      - select: { file: /lab/ct-explicit-le.dcm, from: 878, to: 898 }
+  # Only the value bytes of Patient's Name dragged, not the whole element, then Modality whole.
+  - id: value-only
+    passes: false
+    changes:
+      - ae: workstation
+        shell: [hexdump -C /lab/ct-explicit-le.dcm | head]
+      - select: { file: /lab/ct-explicit-le.dcm, from: 886, to: 898 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 628, to: 638 }
+  - id: both-elements
+    passes: true
+    changes:
+      - ae: workstation
+        shell: [hexdump -C /lab/ct-explicit-le.dcm | head]
+      - select: { file: /lab/ct-explicit-le.dcm, from: 878, to: 898 }
+      - select: { file: /lab/ct-explicit-le.dcm, from: 628, to: 638 }

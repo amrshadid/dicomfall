@@ -1,0 +1,37 @@
+# The golden runs: what a player might do, and whether the mission must pass.
+# Values come from the fixture (fixture-facts: PatientName FALLS^DICOM; Modality CT, read at
+# offset 636 of ct-explicit-le.dcm).
+runs:
+  - id: start
+    passes: false
+    changes: []
+  # Half done: only the modality given.
+  - id: modality-only
+    passes: false
+    changes:
+      - ae: workstation
+        shell: [go-dicom show /lab/ct-explicit-le.dcm]
+      - answer: { objective: modality, value: CT }
+  # A plausible slip: the patient's ID given for the name.
+  - id: id-for-name
+    passes: false
+    changes:
+      - ae: workstation
+        shell: [go-dicom info /lab/ct-explicit-le.dcm]
+      - answer: { objective: modality, value: CT }
+      - answer: { objective: patient-name, value: DF-0001 }
+  - id: both
+    passes: true
+    changes:
+      - ae: workstation
+        shell: [go-dicom show /lab/ct-explicit-le.dcm]
+      - answer: { objective: modality, value: CT }
+      - answer: { objective: patient-name, value: FALLS^DICOM }
+  # Both read from the summary instead of the full list; a code string is compared case-blind.
+  - id: from-info
+    passes: true
+    changes:
+      - ae: workstation
+        shell: [go-dicom info /lab/ct-explicit-le.dcm]
+      - answer: { objective: modality, value: ct }
+      - answer: { objective: patient-name, value: FALLS^DICOM }
