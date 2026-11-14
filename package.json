@@ -11,6 +11,9 @@
   "scripts": {
     "dev": "pnpm --filter @dicomfall/web dev",
     "preview": "pnpm --filter @dicomfall/web preview",
+    "vm:image": "node packages/machine/scripts/vm-image/build.ts",
+    "vm:check": "node packages/machine/scripts/vm-check.ts",
+    "vm:mirror": "node packages/machine/scripts/vm-image/build.ts --mirror-out node_modules/.cache/dicomfall-vm-mirror",
     "build": "pnpm -r --if-present build",
     "test": "pnpm -r --workspace-concurrency=1 --if-present test",
     "type-check": "pnpm -r --if-present type-check",
