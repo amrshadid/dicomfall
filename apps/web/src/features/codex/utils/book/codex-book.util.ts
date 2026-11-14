@@ -32,8 +32,8 @@ const found = (entry: { readonly state: string }) => entry.state !== 'hidden'
 
 function linkOf(link: GameCardLink): CodexCardLink {
   return found(link)
-    ? { term: link.term, href: cardHref(link.cardId), missionNumber: link.missionNumber }
-    : { term: null, href: null, missionNumber: link.missionNumber }
+    ? { cardId: link.cardId, term: link.term, href: cardHref(link.cardId), missionNumber: link.missionNumber }
+    : { cardId: link.cardId, term: null, href: null, missionNumber: link.missionNumber }
 }
 
 /** A card the player has found, as the man page prints it. */

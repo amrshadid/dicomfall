@@ -1,5 +1,7 @@
 /** A card of the same `deepens` chain, linked both ways; a card not found yet shows only its mission number. */
 export interface CodexCardLink {
+  /** Two cards still locked from one mission share their number and have no term, but never an id. */
+  readonly cardId: string
   readonly term: string | null
   readonly href: string | null
   /** `1.2` or `B.1`. */

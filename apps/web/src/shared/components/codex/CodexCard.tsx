@@ -89,7 +89,7 @@ export function CodexCard({ card, stamp }: CodexCardProps) {
             body: (
               <ul className="codex-card__list">
                 {card.deepenedBy.map((link) => (
-                  <li key={`${link.missionNumber}-${link.term ?? ''}`}>
+                  <li key={link.cardId}>
                     <CardLink link={link} />
                   </li>
                 ))}

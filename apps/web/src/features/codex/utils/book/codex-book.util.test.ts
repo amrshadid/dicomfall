@@ -73,9 +73,12 @@ describe('codexPageOf', () => {
 
   it('links deepens both ways, hiding the term of a card not found yet', () => {
     const before = codexPageOf(CODEX, { cardId: 'preamble', chapterId: null }, missionLabel)
-    expect(before.kind === 'card' && before.card.deepenedBy).toEqual([{ term: null, href: null, missionNumber: '1.3' }])
+    expect(before.kind === 'card' && before.card.deepenedBy).toEqual([
+      { cardId: 'transfer-syntax', term: null, href: null, missionNumber: '1.3' },
+    ])
     const after = codexPageOf(FINISHED_CODEX, { cardId: 'transfer-syntax', chapterId: null }, missionLabel)
     expect(after.kind === 'card' && after.card.deepens).toEqual({
+      cardId: 'preamble',
       term: 'the preamble',
       href: '#/codex/preamble',
       missionNumber: '1.1',
