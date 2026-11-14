@@ -14,8 +14,9 @@ uses: [part-10-file, dicm-prefix, offset, data-element]
 # Byte facts (fixture-facts): File Meta Information Group Length 184; the Data Set starts at
 # 328 with (0008,0005) Specific Character Set; Pixel Data's value is 8192 bytes of the file's 9648.
 # Read with xxd: (0002,0000) at 132, `02 00 00 00 55 4c 04 00 b8 00 00 00`.
-# [verify] `go-dicom show … | head` prints three lines before the elements, so its ten lines end
-#   with the seventh element of group 0002, (0002,0013).
+# go-dicom 1.9.0's `show` leaves out (0002,0000) (go-dicom #271), so the player reads the group
+# length from the File inspector, whose tree comes from `show --json`, where (0002,0000) is first
+# in `fileMeta`. [verify] in the app: the tree shows (0002,0000) with the value 184.
 # [verify] PS3.10 §7.1: group 0002 elements are not used in a Data Set.
 # [verify] PS3.5 §7.2: group length elements are retired, except in groups 0000 and 0002.
 lab:
@@ -47,17 +48,13 @@ chips:
       command: go-dicom show /lab/ct-explicit-le.dcm | head,
       explain: "the first ten lines of the element list: the file's own elements",
     }
-  - {
-      command: "go-dicom show /lab/ct-explicit-le.dcm::0002,0000",
-      explain: "one element: the length of the File Meta Information's group",
-    }
   - { command: go-dicom show /lab/ct-explicit-le.dcm, explain: "every element, the file's own first" }
 
 codex:
   - id: file-meta-information
     term: the File Meta Information
     simple: "The elements of group 0002, right after the DICM prefix. They describe the file itself, not the object it holds."
-    deep: "PS3.10 §7.1 lists the required ones: File Meta Information Group Length, File Meta Information Version, Media Storage SOP Class UID, Media Storage SOP Instance UID, Transfer Syntax UID and Implementation Class UID. Optional ones follow, such as Implementation Version Name, which here names the software that wrote the file. Group 0002 is used nowhere else in a file. go-dicom prints these elements first."
+    deep: "PS3.10 §7.1 lists the required ones: File Meta Information Group Length, File Meta Information Version, Media Storage SOP Class UID, Media Storage SOP Instance UID, Transfer Syntax UID and Implementation Class UID. Optional ones follow, such as Implementation Version Name: here the go-dicom 1.8.0 that generated the fixture. PS3.10 counts the preamble and prefix as part of the File Meta Information; here the name means the group 0002 elements alone. `go-dicom show` prints them first, all but the group length."
     deepens: part-10-file
     sources: [filereader/filereader.go]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html#sect_7.1
@@ -68,7 +65,7 @@ codex:
     deep: "File Meta Information Group Length has VR UL, a 4-byte number, so its element takes 12 bytes: tag 4, VR 2, length 2, value 4. It starts at 132 and ends at 144; its value counts the bytes from there to the end of group 0002, PS3.10 §7.1. Here it is 184, so the Data Set starts at 328. PS3.5 §7.2 retires group lengths in other groups."
     sources: [filereader/filereader.go]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.2.html
-    tryIt: go-dicom show ct.dcm::0002,0000
+    tryIt: head -c 144 ct.dcm | tail -c 4 | hexdump -C
   - id: data-set
     term: the Data Set
     simple: "The object's own elements, from the end of the File Meta Information to the end of the file. Here it starts at 328."

@@ -18,7 +18,7 @@
 
 > **VR:** One element, and words with `\` between them. Select it in the File inspector, at offset 346, and read it in the hex. Tag, then `CS`, then a two-byte length, 22: one run of 22 bytes, with one length. Inside it, the backslash is the byte `5c`, twice. The backslashes split those 22 bytes into three values: `ORIGINAL`, `PRIMARY`, `AXIAL`. 8 letters, 7 and 5, and two separators: 22, even, so no padding.
 
-> **VR:** How many values an element holds is its _Value Multiplicity_, VM, PS3.5 §6.4. The dictionary says how many each tag may hold: one, two, or a range. That is the line marked VM that `tag-doc` printed in Four Bytes of Name. A code string never holds a backslash of its own: PS3.5 allows it only capital letters, digits, the space and the underscore. So the byte is free to separate, and a reader splits the value at every `5c` without asking what the words mean.
+> **VR:** How many values an element holds is its _Value Multiplicity_, VM, PS3.5 §6.4. The dictionary says how many each tag may hold: one, two, or a range. Those are the lines marked VM that `tag-doc` printed in Four Bytes of Name. A code string never holds a backslash of its own: PS3.5 allows it only capital letters, digits, the space and the underscore. So the byte is free to separate, and a reader splits the value at every `5c` without asking what the words mean.
 
 ## Build it
 

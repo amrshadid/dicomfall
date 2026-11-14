@@ -36,7 +36,7 @@ VR: LO - Long String
 VM: 1 - Value Multiplicity
 ```
 
-> **VR:** `0010,0020` is Patient ID. Its keyword, `PatientID`, is the same name written for programs to use. The line marked VR is about me, and we read it in the next mission; VM waits a little longer.
+> **VR:** `0010,0020` is Patient ID. Its keyword, `PatientID`, is the same name written for programs to use. The lines marked VR are about me, and we read them in the next mission; the lines marked VM wait a little longer.
 
 ## Build it
 

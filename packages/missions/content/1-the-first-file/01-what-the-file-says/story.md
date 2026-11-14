@@ -45,7 +45,7 @@ Columns:         64
 
 > **The Preamble:** A patient's name, an ID, a date, a modality, and 64 rows by 64 columns: the picture is 64 pixels high and 64 wide. The Lightbox on the right draws it.
 
-> **The Preamble:** `info` read every one of those lines from the file itself. A photo file carries its pixels and little else; this file also says whose picture it is, when it was taken and how it was made, so an archive can file it and a viewer can show it correctly.
+> **The Preamble:** Apart from the file's name, size and date, which come from the disk, `info` read those lines from the file itself. A photo file carries its pixels and little else; this file also says whose picture it is, when it was taken and how it was made, so an archive can file it and a viewer can show it correctly.
 
 > **The Preamble:** That is what DICOM is for. Digital Imaging and Communications in Medicine is the standard for medical images and the information that goes with them, in files and on networks, so that a scanner, an archive and a viewer from different makers all read the same thing.
 
@@ -131,7 +131,7 @@ Tag          VR  Length  Value
 7FE0,0010    OW  8192    <100 bytes>... (8192 bytes)
 ```
 
-> **The Preamble:** One line per _element_: one numbered entry of the file, with a value. `Tag` is the element's number, `VR` two letters for the kind of value, `Length` how many bytes the value takes, and `Value` the value itself. Stage 2 opens the tag and the VR; for now, a number and a value.
+> **The Preamble:** One line per _element_: one numbered entry of the file, with a value. `Tag` is the element's number, `VR` two letters for the kind of value, `Length` how many bytes the value takes, and `Value` the value itself. A sequence's line shows 0; stage 2 says why. Stage 2 opens the tag and the VR; for now, a number and a value.
 
 > **The Preamble:** The line tagged `0008,0060` is Modality: the kind of equipment that made the picture. Give its value beside the objective.
 
@@ -153,7 +153,7 @@ Tag          VR  Length  Value
 
 ---
 
-> **The Preamble:** Look at the last line of `show`: tag `7FE0,0010`, Pixel Data, with a length of 8192. That is 64 times 64 pixels, two bytes each: the same bytes the Lightbox drew. The picture is one element among the others. The rest describe it: whose it is, when, from which equipment, how big. Stage 3 reads how they describe it.
+> **The Preamble:** Look at the last line of `show`: tag `7FE0,0010`, Pixel Data, with a length of 8192; go-dicom shows only the size of a binary value. That is 64 times 64 pixels, two bytes each: the same bytes the Lightbox drew. The picture is one element among the others. The rest describe it: whose it is, when, from which equipment, how big. Stage 3 reads how they describe it.
 
 ## Debrief
 

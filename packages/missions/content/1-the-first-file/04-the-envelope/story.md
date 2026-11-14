@@ -4,7 +4,7 @@
 
 ## Scene
 
-> **The Preamble:** After `DICM`, the file describes itself before the object begins, the way the label on an envelope tells you what is inside and where it goes. Where that picture stops: this label is written for the reader's software, not for a person, and it tells the software exactly how far to read. Read the label, then find where the letter starts: the offset of the object's first byte.
+> **The Preamble:** After `DICM`, the file describes itself before the object begins, the way the label on an envelope tells you what is inside. Where that picture stops: this label is written for the reader's software, not for a person, and it tells the software exactly how far to read. Read the label, then find where the letter starts: the offset of the object's first byte.
 
 ## See it
 
@@ -25,23 +25,19 @@ Tag          VR  Length  Value
 0008,0005    CS  10      ISO_IR 100
 ```
 
-> **The Preamble:** Every tag there starts with `0002`. A tag is two numbers: the first four digits are its _group_, the last four number the element inside that group, so `0002,0010` is element `0010` of group `0002`. Stage 2 takes the tag apart. Group 0002 is the _File Meta Information_: the elements that describe the file itself, right after the prefix, PS3.10 §7.1. In the File inspector, it is the band after the prefix. Every Part 10 file has it, and it comes before anything about the patient.
+> **The Preamble:** Six lines start with `0002`; the last line, `0008,0005`, is the first of another group. A tag is two numbers: the first four digits are its _group_, the last four number the element inside that group, so `0002,0010` is element `0010` of group `0002`. Stage 2 takes the tag apart. Group 0002 is the _File Meta Information_: the elements that describe the file itself, right after the prefix, PS3.10 §7.1. In the File inspector, it is the band after the prefix. Every Part 10 file has it, and it comes before anything about the patient.
 
 > **The Preamble:** They say what kind of object the file holds and which one it is, in the Media Storage SOP Class and Instance UIDs, read in stage 3. They also say how the rest of the file is written, its transfer syntax, which How to Read the Rest opens.
 
-> **The Preamble:** After group 0002, in the full list, come other groups: the _Data Set_, the object itself. Everything `info` showed you lives there, the patient's name and the picture among it.
+> **The Preamble:** After group 0002, in the full list, come other groups: the _Data Set_, the object itself. Every DICOM element `info` showed you lives there, the patient's name and the picture's size among them.
 
 ## Build it
 
-> **The Preamble:** Where does the File Meta Information end? Its first element says. Type `go-dicom show /lab/ct-explicit-le.dcm::0002,0000`.
+> **The Preamble:** Where does the File Meta Information end? Its first element says, and `show` leaves that one out. Open the File inspector and select the first row of group 0002 in its tree, `0002,0000`.
 
 ---
 
-```recorded go-dicom show /lab/ct-explicit-le.dcm::0002,0000
-Error: show: element '0002,0000' not found
-```
-
-> **The Preamble:** That is the _group length_: how many bytes of group 0002 come after this element. Here, 184. It counts bytes, not elements. The element starts at offset 132, right after the prefix, and takes 12 bytes: 4 for the tag, 2 for the VR letters `UL`, 2 for the length, 4 for the value.
+> **The Preamble:** That is File Meta Information Group Length, the _group length_: how many bytes of group 0002 come after this element. The inspector shows its value: 184. The element starts at offset 132, right after the prefix, and takes 12 bytes: 4 for the tag, 2 for the VR letters `UL`, 2 for the length, 4 for the value.
 
 > **The Preamble:** So it ends at 144, and 184 bytes later the group ends. Predict the offset of the Data Set's first element, and give it beside the objective.
 
@@ -77,7 +73,7 @@ On your own machine:
 
 ```
 go-dicom show ct.dcm | head
-go-dicom show ct.dcm::0002,0000
+head -c 144 ct.dcm | tail -c 4 | hexdump -C
 ```
 
-Add 144 to the second command's value: that is where the file's Data Set starts, in any Part 10 file.
+The second prints the group length's four value bytes, offsets 140 to 143; How to Read the Rest shows how to read them as a number. Add 144 to that number: that is where the Data Set starts, in any Part 10 file.

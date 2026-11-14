@@ -212,7 +212,7 @@ because the bridge names them.
 | Part 10 file (DICOM File Format)          | preamble, prefix, File Meta Information, then the Data Set (PS3.10 §7)                                  | 1.3    |
 | preamble                                  | the first 128 bytes; DICOM gives them no meaning, and unused they are all `00`                          | 1.3    |
 | DICM prefix                               | the four letters `DICM` at offsets 128 to 131 that mark a DICOM file                                    | 1.3    |
-| File Meta Information                     | the elements of group 0002 that describe the file itself; always Explicit VR Little Endian              | 1.4    |
+| File Meta Information                     | the elements of group 0002 that describe the file itself; always Explicit VR Little Endian. PS3.10 counts the preamble and prefix as part of it; the game names the group 0002 elements alone | 1.4    |
 | group length                              | (0002,0000): how many bytes of group 0002 follow it                                                     | 1.4    |
 | Data Set                                  | the object's own elements, after the File Meta Information                                              | 1.4    |
 | transfer syntax                           | the rules a Data Set is encoded by: VR written or not, byte order, compression                          | 1.5    |
@@ -222,7 +222,7 @@ because the bridge names them.
 | tag order                                 | elements of a Data Set sit in increasing tag order                                                      | 2.1    |
 | data dictionary                           | the list of every standard tag with its name, keyword, VR and VM (PS3.6)                                | 2.1    |
 | VR (Value Representation)                 | two letters that say what kind of value follows: `PN` a person's name, `UI` a UID, `US` a 16-bit number | 2.2    |
-| value length                              | how many bytes the value takes; always even                                                             | 2.2    |
+| value length                              | how many bytes the value takes; always even, except the undefined length `FFFFFFFF`                     | 2.2    |
 | padding                                   | the byte added to an odd value to make it even: a space for text, `00` for a UID                        | 2.2    |
 | long form                                 | the explicit layout of OB, OW, SQ, UN, UT and others: two reserved bytes, then a 4-byte length          | 2.3    |
 | binary VRs (OB, OW)                       | values that are raw bytes or 16-bit words, not text                                                     | 2.3    |

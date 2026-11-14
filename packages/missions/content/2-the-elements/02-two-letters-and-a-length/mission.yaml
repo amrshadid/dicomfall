@@ -13,7 +13,7 @@ objective: Mark Modality's VR and Patient's Name's length, and predict where the
 skills: [read-vr-and-length]
 prerequisites: [read-a-tag]
 teaches: [vr, value-length, value-padding]
-names: [long-form]
+names: [long-form, undefined-length]
 uses: [tag, tag-order, little-endian, offset, transfer-syntax, uid, text-in-bytes]
 
 lab:
@@ -55,7 +55,7 @@ codex:
     tryIt: go-dicom tag-doc 0010,0010
   - id: value-length
     term: value length
-    simple: "The number after the VR: how many bytes the value takes. It is always even."
+    simple: "The number after the VR: how many bytes the value takes. It is always even, except the undefined length FFFFFFFF of Elements Inside Elements."
     deep: "PS3.5 §7.1.1: the Value Length counts the bytes of the value only, never the tag, the VR or the length itself. With the VRs met so far it is a 16-bit little-endian number, so it counts up to 65,535, and since it is even, the largest is 65,534. The next element starts at the tag's offset, plus 8, plus the length."
     deepens: vr
     sources: [filereader/]

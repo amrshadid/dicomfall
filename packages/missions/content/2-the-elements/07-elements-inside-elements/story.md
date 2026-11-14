@@ -88,7 +88,7 @@ Tag          VR  Length  Value
 7FE0,0010    OW  8192    <100 bytes>... (8192 bytes)
 ```
 
-> **VR:** A few lines are indented, under Procedure Code Sequence, `0008,1032`, whose VR is `SQ`. Now ask for the file without them: `go-dicom show --top /lab/ct-explicit-le.dcm`.
+> **VR:** Under Procedure Code Sequence, `0008,1032`, whose VR is `SQ`, a few values are pushed right: those elements sit inside it. The `SQ` line's Length reads 0, while the hex says 76: go-dicom keeps no value for a sequence, only its items. Now ask for the file without them: `go-dicom show --top /lab/ct-explicit-le.dcm`.
 
 ---
 
@@ -165,7 +165,7 @@ Tag          VR  Length  Value
 7FE0,0010    OW  8192    <100 bytes>... (8192 bytes)
 ```
 
-> **VR:** The indented lines are gone and the `SQ` line stays: `--top` prints only the elements that sit in no sequence. The indented ones belong to the sequence, and the tree in the File inspector folds them under it. Open the fold, and select the `SQ` row in the tree.
+> **VR:** The pushed-right lines are gone and the `SQ` line stays: `--top` prints only the elements that sit in no sequence. The others belong to the sequence, and the tree in the File inspector folds them under it. Open the fold, and select the `SQ` row in the tree.
 
 ---
 

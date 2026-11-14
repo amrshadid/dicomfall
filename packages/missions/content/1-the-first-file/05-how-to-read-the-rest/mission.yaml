@@ -8,12 +8,14 @@ objective: Mark the Transfer Syntax UID element and give its value.
 skills: [read-the-transfer-syntax]
 prerequisites: [find-the-file-meta-information]
 teaches: [transfer-syntax, uid, little-endian]
-names: [vr, explicit-vr, implicit-vr, media-storage-uids, default-transfer-syntax]
+names: [vr, explicit-vr, implicit-vr, media-storage-uids, default-transfer-syntax, value-length, value-padding]
 uses: [file-meta-information, group-length, data-set, byte-and-hex, offset]
 
 # Byte facts read from ct-explicit-le.dcm with xxd: the group length's value bytes at 140–143
 # are `b8 00 00 00`; (0002,0010) starts at 244 (0xF4), VR UI, length 20 (`14 00`), value
 # `1.2.840.10008.1.2.1` then `00` at 271, element ending at 272.
+# [verify] in the app: See it relies on a File inspector row for (0002,0000), built from
+#   `show --json` (go-dicom 1.9.0's plain `show` leaves it out, #271).
 # [verify] PS3.5 Annex A.2: 1.2.840.10008.1.2.1 is Explicit VR Little Endian, uncompressed.
 # [verify] PS3.5 §9.1: a UID is at most 64 characters; PS3.5 §6.2, VR UI: padded with one
 #   trailing 00H to an even length.
@@ -49,7 +51,7 @@ codex:
   - id: transfer-syntax
     term: Transfer Syntax UID
     simple: "The UID in `0002,0010` that names the rules a Data Set is written by: VR written or not, byte order, compression."
-    deep: "PS3.5 §10 defines a transfer syntax by three choices: explicit or implicit VR, little or big endian, and whether Pixel Data is compressed. Each one is named by a UID listed in PS3.6. `1.2.840.10008.1.2.1` is Explicit VR Little Endian, Annex A.2; `1.2.840.10008.1.2` is Implicit VR Little Endian, Annex A.1, the default. A reader reads it before the Data Set's first element."
+    deep: "PS3.5 §10 defines a transfer syntax by three choices this stage meets: explicit or implicit VR, little or big endian, and whether the data, usually Pixel Data, is compressed. Each one is named by a UID listed in PS3.6. `1.2.840.10008.1.2.1` is Explicit VR Little Endian, Annex A.2; `1.2.840.10008.1.2` is Implicit VR Little Endian, Annex A.1, the default. A reader reads it before the Data Set's first element."
     deepens: file-meta-information
     sources: [filereader/filereader.go, uid/uid.go]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_10.html

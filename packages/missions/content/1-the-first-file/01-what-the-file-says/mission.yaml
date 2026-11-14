@@ -58,7 +58,7 @@ codex:
   - id: dicom-file
     term: a DICOM file
     simple: "A file holding one DICOM object: a list of elements, the picture among them, laid out the way PS3.10 says."
-    deep: "PS3.10 §7 calls it the DICOM File Format: a fixed opening that marks the file as DICOM and describes it, then the object's own elements. One file holds one object, so a CT series of many slices is usually many files. go-dicom's filereader reads the opening and then the elements; `go-dicom show` prints them all, the file's own description first."
+    deep: "PS3.10 §7 calls it the DICOM File Format: a fixed opening that marks the file as DICOM and describes it, then the object's own elements. One file holds one object, so a CT series of many slices is usually many files. go-dicom's filereader reads the opening and then the elements; `go-dicom show` prints every element except the File Meta Information Group Length, the file's own description first."
     deepens: dicom
     sources: [filereader/, cli/show.go]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part10/chapter_7.html

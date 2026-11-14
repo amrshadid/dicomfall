@@ -37,7 +37,7 @@
 
 ---
 
-> **The Preamble:** Its bytes light up in the hex: the whole element, twenty bytes, with `FALLS^DICOM` readable on the right after a few bytes that are not text. Stage 2 says what those are. The link works both ways: mark bytes in the hex, and the tree selects the element they belong to. Two views of one file.
+> **The Preamble:** Its bytes light up in the hex: the whole element, twenty bytes, with `FALLS^DICOM` readable on the right after a few bytes, two of them the letters `PN`; stage 2 says what they are. The link works both ways: mark bytes in the hex, and the tree selects the element they belong to. Two views of one file.
 
 > **The Preamble:** Now mark the Modality element, `0008,0060`.
 
@@ -55,7 +55,7 @@
 
 ---
 
-> **The Preamble:** One byte per letter, by the code called ASCII: `41` is A, `43` is C, `54` is T. DICOM's default set of characters, PS3.5 §6.1, is this basic set, so any DICOM reader anywhere reads `43 54` as `CT`. That is why every text value shows through in the right-hand column, and why a number stored as plain bytes shows only dots or stray letters.
+> **The Preamble:** One byte per letter, by the code called ASCII: `41` is A, `43` is C, `54` is T. DICOM's default set of characters, PS3.5 §6.1.2.1, is this basic set, so any DICOM reader anywhere reads `43 54` as `CT`. That is why every text value shows through in the right-hand column, and why a number stored as plain bytes shows only dots or stray letters.
 
 ## Debrief
 
@@ -70,4 +70,4 @@ hexdump -C ct.dcm | head
 go-dicom show ct.dcm
 ```
 
-On a computer without `hexdump`, `xxd ct.dcm | head` prints the same bytes in a slightly different layout.
+On a computer without `hexdump`, `xxd ct.dcm | head` prints the file's bytes without folding the zero rows.

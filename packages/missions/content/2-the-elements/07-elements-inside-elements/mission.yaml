@@ -39,7 +39,7 @@ objectives:
     check: { kind: answer, file: /lab/ct-explicit-le.dcm, element: "(0008,1032)[0](0008,0100)" }
 
 hints:
-  - text: Look for the indented lines in go-dicom show, and the element right above them.
+  - text: Look for the lines of go-dicom show whose values are pushed right, and the element right above them.
   - text: An SQ element's value is items. Each item starts with the tag FFFE,E000 and a four-byte length, and holds elements of its own.
   - text: The sequence is Procedure Code Sequence, 0008,1032, at offset 754. Its first item starts twelve bytes later, and Code Value is the item's first element.
 
@@ -50,7 +50,7 @@ codex:
   - id: sequence
     term: a sequence, SQ
     simple: "An element with VR SQ whose value is a list of items, each a set of elements. Procedure Code Sequence holds one item."
-    deep: "PS3.5 §7.5: a Sequence of Items is a Data Element whose VR is SQ and whose value is zero or more Items, each a Data Set of its own, so sequences can nest inside items. In explicit VR an SQ uses the long form, and its length counts every byte of its items. go-dicom's `show` indents the elements inside a sequence one level for each depth, and `--top` leaves them out."
+    deep: "PS3.5 §7.5: a Sequence of Items is a Data Element whose VR is SQ and whose value is zero or more Items, each a Data Set of its own, so sequences can nest inside items. In explicit VR an SQ uses the long form, and its length counts every byte of its items. go-dicom's `show` pushes the values of the elements inside a sequence to the right, and `--top` leaves them out."
     deepens: long-form
     sources: [sequence/, filereader/]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.5.html
@@ -58,7 +58,7 @@ codex:
   - id: item
     term: an item
     simple: "One entry of a sequence: the tag FFFE,E000, a four-byte length, then elements of its own. It has no VR."
-    deep: "PS3.5 §7.5.1: each Item starts with the Item Tag, (FFFE,E000), and a 4-byte Item Length, in explicit and implicit VR alike; it never carries a VR. Its value is a Data Set, its elements in tag order. Here the one item is 68 bytes: Code Value, Coding Scheme Designator and Code Meaning, which together name the procedure as a code in a coding scheme."
+    deep: "PS3.5 §7.5.1: each Item starts with the Item Tag, (FFFE,E000), and a 4-byte Item Length, in explicit and implicit VR alike; it never carries a VR. Its value is a Data Set, its elements in tag order. Here the one item's length is 68: Code Value, Coding Scheme Designator and Code Meaning, which together name the procedure as a code in a coding scheme."
     deepens: sequence
     sources: [sequence/]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_7.5.html

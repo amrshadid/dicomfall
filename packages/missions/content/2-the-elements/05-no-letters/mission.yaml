@@ -1,11 +1,9 @@
 # Stage 2, mission 5. From packages/fixtures/out/ct-implicit-le.dcm (go-dicom v1.8.0):
 # Patient's Name (0010,0010) at 872: 10 00 10 00, length 0c 00 00 00 at 876-879, value 880-891
 # (FALLS^DICOM and a space at 891). Patient ID (0010,0020) at 892.
-# [verify] on the recording: `go-dicom show` prints PN in the VR column for the implicit file
-# (the story says go-dicom takes it from the dictionary).
-# [verify] PS3.5 §10.1's exact wording on who must support the default transfer syntax (every
-# DICOM implementation, as GAME.md says, or every AE that communicates on a network); the story,
-# the Predict and the card say "every DICOM implementation must support".
+# Fact-checked 2026-11-14: go-dicom 1.9.0 prints PN in the VR column for the implicit file (the
+# recorded `show ::0010,0010`). PS3.5 §10.1: the default transfer syntax "shall be supported by
+# every conformant DICOM Implementation", as the story, the Predict and the card say.
 id: no-letters
 version: 1
 title: No Letters
@@ -71,7 +69,7 @@ codex:
     deep: "PS3.5 §10.1 makes Implicit VR Little Endian the Default Transfer Syntax for DICOM, and PS3.5 Annex A.1 defines it: no VR in the Data Set, numbers little endian, Pixel Data as OW. Two AEs that agree on nothing else can fall back to it, as stage 4 shows. Its price is the dictionary: explicit VR is safer for elements the reader does not know."
     deepens: transfer-syntax
     sources: [filereader/, uid/]
-    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_10.1.html
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_10.html#sect_10.1
     tryIt: go-dicom show ct-implicit.dcm::0002,0010
 
 story:

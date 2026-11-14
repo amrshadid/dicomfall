@@ -59,7 +59,7 @@ codex:
   - id: data-dictionary
     term: the data dictionary
     simple: "PS3.6's list of every standard tag with its name, keyword, VR and VM. A reader looks tags up in it."
-    deep: "PS3.6 §6, the Registry of DICOM Data Elements, gives each standard tag a name, Patient ID, a keyword for programs, PatientID, a VR and a VM. Elements in odd groups are private: the vendor that defines them keeps their meaning, and PS3.6 does not list them, PS3.5 §7.8. go-dicom's dictionary is generated from PS3.6, and `go-dicom tag-doc` prints one entry."
+    deep: "PS3.6 §6, the Registry of DICOM Data Elements, gives each standard tag a name, Patient ID, a keyword for programs, PatientID, a VR and a VM. Elements in odd groups are private: the vendor that defines them keeps their meaning, and PS3.6 does not list them, PS3.5 §7.8. go-dicom's dictionary follows PS3.6, and `go-dicom tag-doc` prints one entry."
     sources: [tag/]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html
     tryIt: go-dicom tag-doc -keyword PatientID

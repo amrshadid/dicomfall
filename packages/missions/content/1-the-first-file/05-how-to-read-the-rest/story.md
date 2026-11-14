@@ -12,7 +12,7 @@
 
 ---
 
-> **The Preamble:** `b8 00 00 00`. In hex, `b8` is eleven sixteens and eight: 184, the group length. A number too big for one byte takes several, and here the least significant byte comes first. That is _little endian_, PS3.5 §7.3: read the bytes from last to first, `00 00 00 b8`, and you read the number. In The Envelope, `show` turned them round for you.
+> **The Preamble:** `b8 00 00 00`. In hex, `b8` is eleven sixteens and eight: 184, the group length. A number too big for one byte takes several, and here the least significant byte comes first. That is _little endian_, PS3.5 §7.3: read the bytes from last to first, `00 00 00 b8`, and you read the number. In The Envelope, the inspector turned them round for you.
 
 > **The Preamble:** Now the element you came for. Type `go-dicom show /lab/ct-explicit-le.dcm::0002,0010`.
 
@@ -22,7 +22,7 @@
 0002,0010    UI  20      1.2.840.10008.1.2.1
 ```
 
-> **The Preamble:** `0002,0010` is Transfer Syntax UID. A _UID_ is a unique identifier: numbers joined by dots, at most 64 characters, PS3.5 §9. Each names one thing, once, for the whole world. UIDs that start `1.2.840.10008` are DICOM's own. A UID is only a name: to learn the rules it stands for, a reader looks it up in PS3.6, which lists every UID DICOM defines. The two UIDs above it, Media Storage SOP Class and Instance UIDs, wait for stage 3.
+> **The Preamble:** `0002,0010` is Transfer Syntax UID. A _UID_ is a unique identifier: numbers joined by dots, at most 64 characters, PS3.5 §9. Each names one thing, once, for the whole world. UIDs that start `1.2.840.10008` are DICOM's own. A UID is only a name: to learn the rules it stands for, a reader looks it up in PS3.6, which lists every UID DICOM defines. The two UIDs above it in group 0002, Media Storage SOP Class and Instance UIDs, wait for stage 3.
 
 ## Build it
 

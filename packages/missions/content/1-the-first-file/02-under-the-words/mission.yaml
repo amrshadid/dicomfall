@@ -15,7 +15,7 @@ uses: [dicom-file, data-element]
 #   Modality (0008,0060) at 628, 10 bytes, value `43 54` at 636; Patient's Name (0010,0010) at
 #   878, 20 bytes (fixture-facts). The 128 `00` bytes and `DICM` at 128 are in fixture-facts.
 # [verify] the image ships `hexdump` with `-C` (busybox), and `head` with `-n` and `-c`.
-# [verify] PS3.5 §6.1: the default character repertoire is the basic G0 set of ISO 646, the
+# [verify] PS3.5 §6.1.2.1: the default character repertoire is the basic G0 set of ISO 646, the
 #   International Reference Version, whose letters are those of ASCII.
 lab:
   aes:
@@ -61,10 +61,10 @@ codex:
   - id: text-in-bytes
     term: text in bytes
     simple: "A text value is stored one byte per character, so `CT` is `43 54`, readable in hexdump's right-hand column."
-    deep: "DICOM's default character repertoire, PS3.5 §6.1, is the basic set of ISO 646, the letters of ASCII, one byte each: `41` is A, `43` C, `54` T. The element Specific Character Set, `0008,0005`, can name a larger set; this file names `ISO_IR 100`, which keeps those letters and adds accented ones. A binary number, such as a length, is stored as bytes, not as digits, so it does not show as text."
+    deep: "DICOM's default character repertoire, PS3.5 §6.1.2.1, is the basic set of ISO 646, the letters of ASCII, one byte each: `41` is A, `43` C, `54` T. The element Specific Character Set, `0008,0005`, can name a larger set; this file names `ISO_IR 100`, which keeps those letters and adds accented ones. A binary number, such as a length, is stored as bytes, not as digits, so it shows as text only by accident, as the `,` of length 44 does."
     deepens: byte-and-hex
     sources: [charset/]
-    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_6.html#sect_6.1
+    docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_6.html#sect_6.1.2.1
     tryIt: go-dicom show ct.dcm::0008,0005
 
 story:

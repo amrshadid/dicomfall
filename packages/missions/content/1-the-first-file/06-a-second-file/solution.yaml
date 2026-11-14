@@ -42,7 +42,8 @@ runs:
       - ae: workstation
         shell:
           - go-dicom info /lab/ct-implicit-le.dcm
-          - "go-dicom show /lab/ct-implicit-le.dcm::0002,0000"
+          - hexdump -C /lab/ct-implicit-le.dcm | head -n 10
+      - select: { file: /lab/ct-implicit-le.dcm, from: 132, to: 144 } # its group length element, read in the inspector
       - select: { file: /lab/ct-implicit-le.dcm, from: 0, to: 128 }
       - select: { file: /lab/ct-implicit-le.dcm, from: 128, to: 132 }
       - select: { file: /lab/ct-implicit-le.dcm, from: 132, to: 326 }

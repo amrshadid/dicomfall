@@ -382,7 +382,9 @@ in brackets, then the element's tag: `(0008,1032)[0](0008,0100)`.
 
 - **`selected`.** `region` is one of `preamble` (bytes 0–127), `prefix` (128–131),
   `file-meta-information` (from offset 132 to the end of group 0002) and `data-set` (from
-  there to the end of the file), as PS3.10 §7.1 lays them out. `part` narrows an element to
+  there to the end of the file), as PS3.10 §7.1 lays them out. PS3.10 counts the preamble and
+  prefix as part of the File Meta Information; the game names the group 0002 elements alone,
+  and so does `file-meta-information`. `part` narrows an element to
   `tag`, `vr`, `length` or `value`; for an element whose explicit VR uses the long form, `vr`
   also covers the two reserved bytes, as the inspector draws them. The player marks a range
   by clicking a row of the tree, a band, or by dragging over the hex; the check compares the

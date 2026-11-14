@@ -50,7 +50,7 @@ codex:
   - id: binary-vr
     term: OB and OW
     simple: "OB holds raw bytes; OW holds 16-bit words. Neither is text, and both use the long form."
-    deep: "PS3.5 §6.2: OB, Other Byte, is a string of bytes whose meaning the element defines; OW, Other Word, is a string of 16-bit words, stored in the transfer syntax's byte order. File Meta Information Version is OB, the two bytes 00 01, PS3.10 §7.1. Pixel Data with more than 8 bits allocated is OW in Explicit VR Little Endian, PS3.5 Annex A.2. An odd OB value is padded with one 00."
+    deep: "PS3.5 §6.2: OB, Other Byte, is an octet-stream where the encoding of the contents is specified by the negotiated Transfer Syntax; OW, Other Word, is a string of 16-bit words, stored in the transfer syntax's byte order. File Meta Information Version is OB, the two bytes 00 01, PS3.10 §7.1. Pixel Data with more than 8 bits allocated is OW in Explicit VR Little Endian, PS3.5 Annex A.2. An odd OB value is padded with one 00."
     deepens: vr
     sources: [valuerep/]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html

@@ -179,7 +179,7 @@ Tag          VR  Length  Value
 7FE0,0010    OB or OW 8192    ... (8192 bytes)
 ```
 
-> **VR:** Line by line: the same tags, the same values, and the same VR column, though one file wrote my letters and the other left them to the dictionary. Only two lines of group 0002 differ, the group length and the Transfer Syntax UID itself: the one element that says which rules the rest was written by. Even the instance's own name, SOP Instance UID, `0008,0018`, is the same in both. Stage 3 follows that name.
+> **VR:** Line by line: the same tags and values, and the same VR column but for one line, though one file wrote my letters and the other left them to the dictionary. Of group 0002 only the Transfer Syntax UID differs: go-dicom does not list the group length. On the last line, go-dicom could not read Pixel Data's VR from the implicit file, so it prints the dictionary's choice, `OB or OW`, where PS3.5 Annex A.1 fixes OW. Even the instance's own name, SOP Instance UID, `0008,0018`, is the same in both. Stage 3 follows that name.
 
 ## Build it
 
@@ -217,7 +217,7 @@ Tag          VR  Length  Value
 
 ## Debrief
 
-> **VR:** A transfer syntax changes the bytes, the offsets and the size, never the values, and never group 0002's rules. Either file can go to the archive: they hold one object. Elements Inside Elements opens the one element whose value is other elements.
+> **VR:** A transfer syntax changes the bytes, the offsets and the size, never the Data Set's values, and never group 0002's rules. Either file can go to the archive: they hold one object. Elements Inside Elements opens the one element whose value is other elements.
 
 ## Real world
 

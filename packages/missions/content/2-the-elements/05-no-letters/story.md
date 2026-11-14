@@ -4,7 +4,7 @@
 
 ## Scene
 
-> **VR:** In stage 1 you mapped a second file, `/lab/ct-implicit-le.dcm`, and saw that its Data Set had no two-letter VRs between the tags. In that file I am not written down at all. Someone still has to know me, or not one of its values can be read: a name, a date and a 16-bit number all look alike as bytes. Today you find out who knows me there.
+> **VR:** In stage 1 you mapped a second file, `/lab/ct-implicit-le.dcm`, and saw that its Data Set had no two-letter VRs between the tags. In that file I am not written down at all. Someone still has to know me, or not one of its values can be read: a name, a date and a 16-bit number are all bytes, and nothing in the bytes says which is which. Today you find out who knows me there.
 
 ## See it
 

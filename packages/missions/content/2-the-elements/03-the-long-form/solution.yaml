@@ -5,11 +5,11 @@ runs:
   - id: start
     passes: false
     changes: []
-  # Treats OB as a short-form VR: 144 + 8 + 2.
+  # Treats OB as a short-form VR: reads the reserved 00 00 as a length of 0, so 144 + 8 + 0.
   - id: short-form-guess
     passes: false
     changes:
-      - predict: { objective: after-version, offset: 154 }
+      - predict: { objective: after-version, offset: 152 }
       - select: { file: /lab/ct-explicit-le.dcm, from: 1452, to: 1456 }
   - id: both
     passes: true

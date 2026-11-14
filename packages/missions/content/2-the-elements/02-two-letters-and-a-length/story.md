@@ -54,7 +54,7 @@
 
 ## Debrief
 
-> **VR:** Tag, VR, length: eight bytes, then the value, and the length is always even. With those, you can step from any element to the next. Some of my kind need more room than two bytes of length can count. The Long Form shows them.
+> **VR:** Tag, VR, length: eight bytes, then the value, and the length is always even, except the undefined length `FFFFFFFF` of Elements Inside Elements. With those, you step from any element to the next. Some of my kind need more room than two bytes can count. The Long Form shows them.
 
 ## Real world
 

@@ -4,7 +4,7 @@
 
 ## Scene
 
-> **The Preamble:** Time I spoke about myself. I am 128 bytes, and in this file every one of me is zero. I am still required: a DICOM file on a disk always starts with me. Everything in it has its place, and mine is first. Find me, then find the four bytes that come after me, the ones every reader checks. Being nothing is a job too, and I do it well.
+> **The Preamble:** Time I spoke about myself. I am 128 bytes, and in this file every one of me is zero. I am still required: every Part 10 file starts with me. Everything in it has its place, and mine is first. Find me, then find the four bytes that come after me, the ones every reader checks. Being nothing is a job too, and I do it well.
 
 ## See it
 
@@ -25,11 +25,11 @@
 000000f0  33 33 30 36 02 00 10 00  55 49 14 00 31 2e 32 2e  |3306....UI..1.2.|
 ```
 
-> **The Preamble:** The first row is sixteen `00` bytes, then a `*`: hexdump's way of saying that every row up to the next offset it prints is the same. The next offset is `00000080`. In hex, `80` is eight sixteens: 128. So offsets 0 to 127 are all `00`, eight rows of sixteen. That is me, the _preamble_.
+> **The Preamble:** The first row is sixteen `00` bytes, then a `*`: hexdump's way of saying the rows up to the next offset it prints repeat it. The next offset is `00000080`. In hex, `80` is eight sixteens: 128. So offsets 0 to 127 are all `00`, eight rows of sixteen. That is me, the _preamble_.
 
-> **The Preamble:** At offset 128, four bytes: `44 49 43 4d`, and the right-hand column reads `DICM`. That is the _DICM prefix_, offsets 128 to 131. A reader that finds those four letters there knows it holds a DICOM file, whatever the file is called.
+> **The Preamble:** At offset 128, four bytes: `44 49 43 4d`, and the right-hand column reads `DICM`. That is the _DICM prefix_, offsets 128 to 131. Those letters, not the file's name, say it is DICOM.
 
-> **The Preamble:** This order is the _Part 10 file_, the DICOM File Format of PS3.10 §7, which every DICOM file on a disk follows. It has four regions: the preamble, the prefix, then the File Meta Information, where the file describes itself, then the Data Set, the object. The File inspector draws them as bands. The first two never move: the preamble and the prefix sit at the same offsets in every file. Where the other two start depends on what the file holds.
+> **The Preamble:** This order is the _Part 10 file_, the DICOM File Format of PS3.10 §7. It has four regions: the preamble, the prefix, then the File Meta Information, where the file describes itself, then the Data Set, the object. PS3.10 counts the preamble and prefix as part of the File Meta Information; here that name means the group 0002 elements alone. The File inspector draws the four as bands. The first two never move. The File Meta Information always starts right after, at 132; where it ends, and so where the Data Set starts, depends on the file.
 
 ## Build it
 
@@ -53,7 +53,7 @@
 
 ---
 
-> **The Preamble:** PS3.10 §7.1 leaves the preamble to an application profile or an implementation. A writer can put another format's opening there, so a program that expects that format can read the same file. Unused, all 128 bytes are `00`, as here. Think of the flap of an envelope: nobody reads it to read the letter. Where that stops: a flap is never written on, but I can hold anything, and a DICOM reader skips me whatever I hold.
+> **The Preamble:** PS3.10 §7.1 leaves the preamble to an application profile or an implementation. A writer can put another format's opening there, so a program that expects that format can read the same file. Unused, all 128 bytes are `00`, as here. Used or not, a DICOM reader skips me whatever I hold, and never takes me for part of the object.
 
 ## Debrief
 

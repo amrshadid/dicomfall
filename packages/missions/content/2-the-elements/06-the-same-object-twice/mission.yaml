@@ -4,9 +4,10 @@
 # (explicit 184): the first differing byte is offset 140, the group length's value (b8 / b6).
 # Pixel Data (7FE0,0010) at 1444 explicit, 1438 implicit. The Data Set's long-form elements
 # before Pixel Data: one, Procedure Code Sequence (0008,1032), SQ.
-# [verify] on the recording: `cmp` reports byte 141 (it counts from 1), and the two `show`
-# outputs differ only in (0002,0000) and (0002,0010), with the same VR column in both, Pixel
-# Data's included (PS3.6 lists it as OB or OW; PS3.5 Annex A.1 makes it OW in implicit VR).
+# Recorded with go-dicom 1.9.0 and fact-checked: `cmp` reports char 141 (it counts from 1);
+# `show` does not list (0002,0000), so of group 0002 only (0002,0010) differs; and for the
+# implicit file `show` prints Pixel Data's VR as "OB or OW", the dictionary's choice, where
+# PS3.5 Annex A.1 fixes OW.
 id: the-same-object-twice
 version: 1
 title: The Same Object Twice
@@ -63,7 +64,7 @@ codex:
   - id: same-object-other-bytes
     term: same object, other bytes
     simple: "One object in two transfer syntaxes: the same elements and values, in other bytes, at other offsets, with another size."
-    deep: "A transfer syntax, PS3.5 §10, says how a Data Set is encoded, not what it holds. From Explicit to Implicit VR Little Endian, each VR is dropped, long-form elements go from 12 bytes before the value to 8, and short-form ones stay at 8. Here the file shrinks by 10 bytes, 2 of them in the Transfer Syntax UID. Tags, values and UIDs stay the same."
+    deep: "A transfer syntax, PS3.5 §10, says how a Data Set is encoded, not what it holds. From Explicit to Implicit VR Little Endian, each VR is dropped, long-form elements go from 12 bytes before the value to 8, and short-form ones stay at 8. Here the file shrinks by 10 bytes, 2 of them in the Transfer Syntax UID. The Data Set's tags and values never change."
     deepens: transfer-syntax
     sources: [filereader/, filewriter/]
     docs: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/chapter_10.html

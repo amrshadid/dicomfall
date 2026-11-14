@@ -22,7 +22,7 @@
 
 ---
 
-> **VR:** 144, plus 12, plus 2: offset 158. Every Part 10 file starts its group 0002 with these same two elements, in tag order, so in every one of them this element starts at 158. A reader that took `OB` for a short-form VR would look at 154 and find the middle of a value. Now the last element of this file, Pixel Data, `7FE0,0010`: the picture itself. Ask for it alone: `go-dicom show /lab/ct-explicit-le.dcm::7FE0,0010`.
+> **VR:** 144, plus 12, plus 2: offset 158. Every Part 10 file starts its group 0002 with these same two elements, in tag order, so in every one of them this element starts at 158. A reader that took `OB` for a short-form VR would read the reserved `00 00` as a length of 0 and look for a tag at 152, inside the real length. Now the last element of this file, Pixel Data, `7FE0,0010`: the picture itself. Ask for it alone: `go-dicom show /lab/ct-explicit-le.dcm::7FE0,0010`.
 
 ---
 
@@ -44,7 +44,7 @@
 
 ---
 
-> **VR:** The four bytes are `00 20 00 00`. Little endian, they read `0x2000`: 8,192, which is 64 × 64 × 2. Two bytes of length could have held that, but not a bigger picture: one slice of 512 by 512 pixels takes 524,288 bytes. Four bytes of length count to about 4 GB. `OB` and `OW` use the long form whatever their own value's size: File Meta Information Version holds two bytes, and still takes twelve before them. Stage 3 reads what those pixels mean.
+> **VR:** The four bytes are `00 20 00 00`. Little endian, they read `0x2000`: 8,192, which is 64 × 64 × 2, at two bytes per pixel. Two bytes of length could have held that, but not a bigger picture: one slice of 512 by 512 pixels takes 524,288 bytes. Four bytes of length count to about 4 GB. `OB` and `OW` use the long form whatever their own value's size: File Meta Information Version holds two bytes, and still takes twelve before them. Stage 3 reads what those pixels mean.
 
 ## Debrief
 

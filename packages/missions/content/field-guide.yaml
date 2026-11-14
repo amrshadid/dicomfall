@@ -15,22 +15,27 @@ entries:
     deepenedIn: [a-second-file]
   - name: go-dicom show
     kind: go-dicom
-    what: print every element of a file, File Meta Information first, one per line; `<file>::<tag>` prints one element, the tag written 0002,0010; `--top` leaves out elements inside sequences
+    what: print every element of a file, File Meta Information first, one per line, all but the File Meta Information Group Length 0002,0000, which the File inspector shows; `<file>::<tag>` prints one element, the tag written 0002,0010; `--top` leaves out elements inside sequences
     firstMet: what-the-file-says
     deepenedIn: [the-envelope, how-to-read-the-rest, a-second-file]
   - name: hexdump -C
     kind: shell
-    what: print a file's bytes, sixteen to a line, with each line's offset on the left and the bytes as text on the right; a `*` stands for rows that repeat
+    what: print a file's bytes, sixteen to a line, with each line's offset on the left and the bytes as text on the right; a `*` stands for rows that repeat; `-s 144` starts at offset 144 and `-n 16` stops after 16 bytes
     firstMet: under-the-words
-    deepenedIn: [empty-bytes, a-second-file]
+    deepenedIn: [empty-bytes, a-second-file, the-long-form, read-any-element]
   - name: head
     kind: shell
     what: keep only the start of what comes in; `-n 10` keeps ten lines, `-c 132` the first 132 bytes
     firstMet: under-the-words
-    deepenedIn: [empty-bytes, the-envelope]
+    deepenedIn: [empty-bytes, the-envelope, how-to-read-the-rest, a-second-file]
+  - name: tail -c
+    kind: shell
+    what: keep only the last bytes of what comes in; `head -c 144 ct.dcm | tail -c 4` keeps bytes 140 to 143, the group length's value
+    firstMet: empty-bytes
+    deepenedIn: [the-envelope, how-to-read-the-rest, a-second-file]
   - name: go-dicom tag-doc
     kind: go-dicom
-    what: say what go-dicom's dictionary knows about an element, by its tag, such as 0002,0010
+    what: say what go-dicom's dictionary knows about an element, by its tag, such as 0002,0010, or by its keyword with `--keyword PatientName`
     firstMet: how-to-read-the-rest
   # end of stage 1
   # stage 2, The Elements
