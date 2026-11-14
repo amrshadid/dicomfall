@@ -1,0 +1,35 @@
+name: Inaccuracy
+description: The game teaches or shows something that doesn't match DICOM or go-dicom.
+labels: [accuracy]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Accuracy reports are some of the most valuable contributions.
+  - type: input
+    id: where
+    attributes:
+      label: Where in the game
+      placeholder: "The Four Regions, the debrief, or the hex pane"
+    validations:
+      required: true
+  - type: textarea
+    id: game
+    attributes:
+      label: What the game does or says
+    validations:
+      required: true
+  - type: textarea
+    id: real
+    attributes:
+      label: What the DICOM standard or go-dicom says or does
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: A section of the DICOM standard, go-dicom's code or docs, or output from a real DICOM tool (with its version).
+      placeholder: "PS3.10 section 7.1, or the output of pydicom 3.0's dcmread"
+    validations:
+      required: true

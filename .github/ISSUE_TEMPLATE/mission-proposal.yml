@@ -1,0 +1,42 @@
+name: Mission proposal
+description: Propose a new mission or changes to a planned one.
+labels: [mission]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read docs/MISSIONS.md first. Every mission teaches one skill on synthetic
+        DICOM data the player can inspect, change, send and reset.
+  - type: input
+    id: stage
+    attributes:
+      label: Curriculum stage
+      placeholder: "The elements"
+    validations:
+      required: true
+  - type: input
+    id: skill
+    attributes:
+      label: The one skill it teaches
+      placeholder: "Tell explicit VR from implicit VR in the bytes"
+    validations:
+      required: true
+  - type: textarea
+    id: lab
+    attributes:
+      label: The lab
+      description: The files, the application entities and links, the starting state, and what goes wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: How the mission is passed
+      description: The outcome that is checked (the bytes found, the value read, the UID received, the status returned), never a command.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Sections of the DICOM standard and go-dicom files the debrief links to.
