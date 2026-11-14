@@ -59,6 +59,27 @@ How the code fits together. The code rules (layout, imports, file names) are in
 The image is Alpine Linux for 32-bit x86 plus the go-dicom release binary, built from pinned,
 checksummed downloads. Files are fetched only when Linux opens them.
 
+## Security
+
+- **The Machine is the player's own.** It runs in their tab, inside v86, inside the
+  browser's sandbox. Whatever is typed there, as root too, changes only that copy: Start over
+  or a reload brings back the saved boot, and the image's files are only ever read from the
+  site.
+- **It has no way out.** v86 is given no network card, so nothing in the Machine reaches the
+  internet: no package downloads, no outside address. Its AEs talk over veth pairs inside it.
+- **Nothing in it is secret.** The image is built from public, pinned packages, go-dicom's
+  released binary and synthetic fixtures. It holds no key, token, password or patient data.
+  Keep it that way.
+- **Its output is text.** The console draws what the Machine prints with xterm, and the
+  inspector shows go-dicom's JSON as text. No output of the Machine and no save file is ever
+  inserted into the page as HTML.
+- **The host's headers** (`vercel.json`, sent with every file): a Content-Security-Policy
+  that allows only the site itself, WebAssembly (`'wasm-unsafe-eval'`, for v86) and Clarity's
+  hosts; no framing by other sites; `nosniff`; a strict referrer; no camera, microphone or
+  other device; and `Cross-Origin-Opener-Policy: same-origin`. An inline script runs only if
+  the policy names its hash: the build fails with the hash to add when one changes, and
+  `vite preview` sends the same headers.
+
 ## Packages
 
 | Package    | Holds                                                                                  | Depends on    |

@@ -6,6 +6,14 @@ Every change players or contributors notice. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- **The site sends security headers.** A Content-Security-Policy lets the page run only the
+  site's own code, the Linux machine's WebAssembly and, once allowed, Clarity. No other site
+  can frame the game, and the page asks for no camera, microphone or other device. The
+  machine itself has no way to the internet, and what is typed in it changes only the
+  player's own copy.
+
 ### Added
 
 - The repository: workspace, lint, type and test setup, CI, issue templates, and the shared
