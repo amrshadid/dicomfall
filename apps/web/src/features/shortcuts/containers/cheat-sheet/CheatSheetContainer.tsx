@@ -23,7 +23,7 @@ export function CheatSheetContainer() {
     return {
       game: of('Game'),
       terminal: of('Terminal'),
-      focusOut: (['focus-guide'] as const).map((id) => shortcutLabelOf(id, isMac)),
+      focusOut: (['focus-guide', 'focus-inspector', 'focus-lightbox'] as const).map((id) => shortcutLabelOf(id, isMac)),
     }
   }, [])
 

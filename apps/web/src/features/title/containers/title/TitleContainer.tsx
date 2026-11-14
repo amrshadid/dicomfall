@@ -1,7 +1,9 @@
 import { useCheatSheet } from '@app/store'
-import { useMissionList, useProgress } from '@dicomfall/game/hooks'
+import { useCodex, useMissionList, useProgress } from '@dicomfall/game/hooks'
 import { useSaveStatus } from '@features/chrome/hooks/save'
 import { useScreenChrome } from '@features/chrome/hooks/screen'
+import { useContent } from '@features/content/hooks/content'
+import { journeyChapters } from '@features/map'
 import { TitlePresentation } from '@features/title/components/title'
 import { useEnterActivatesPrimary, useNewGame } from '@features/title/hooks/title'
 import {
@@ -13,24 +15,31 @@ import {
   volumeOf,
 } from '@features/title/utils/contents'
 import { useTourScreen } from '@features/tour/hooks/tour'
+import { useReducedMotion } from '@shared/hooks/motion'
 import { useNow } from '@shared/hooks/time'
 import { hrefOf } from '@shared/navigation'
 import { saveStatusText } from '@shared/utils/format'
+import { useMemo } from 'react'
 
 export function TitleContainer() {
   const chrome = useScreenChrome()
   useTourScreen('title')
+  const content = useContent()
   const { progress } = useProgress()
   const { saveState, lastSavedAt } = useSaveStatus()
   const list = useMissionList()
+  const codex = useCodex()
   const { openCheatSheet } = useCheatSheet()
   const now = useNow()
+  const reducedMotion = useReducedMotion()
 
   const hasSave = progress.missions.length > 0
-  const firstMission = list.chapters.flatMap((entry) => entry.missions)[0]?.mission
+  const firstMission = content.game.missions[0]
   const { confirming, newGame, startOver, cancel } = useNewGame({ hasSave, firstMission: firstMission?.id })
   useEnterActivatesPrimary(!confirming)
 
+  // Fig. 1 is the map itself, from the same stops, so "you are here" is where Continue goes.
+  const journey = useMemo(() => journeyChapters(list.chapters, list.next), [list.chapters, list.next])
   // The stage the player is in names the manual's volume and the map's progress.
   const chapter = currentChapter(list.chapters, list.next)
   const target = hasSave ? list.next : null
@@ -50,7 +59,8 @@ export function TitleContainer() {
       }
       firstMission={firstMissionOf(firstMission)}
       onNewGame={newGame}
-      contents={titleContentsOf({ chapter, firstMission, onNewGame: newGame })}
+      contents={titleContentsOf({ chapter, firstMission, codexCards: codex.filed, onNewGame: newGame })}
+      figure={{ chapters: journey, href: hrefOf({ name: 'map' }), pulse: !reducedMotion }}
       newGame={{
         open: confirming,
         onCancel: cancel,

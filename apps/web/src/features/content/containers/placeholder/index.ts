@@ -1,1 +1,0 @@
-export { MapPlaceholderContainer } from './MapPlaceholderContainer'

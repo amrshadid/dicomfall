@@ -42,10 +42,10 @@ describe('migrateSettings', () => {
 
 describe('readPanelSizes', () => {
   it('keeps sizes inside their limits and defaults the rest, so a stale save never squeezes a panel shut', () => {
-    expect(readPanelSizes({ guide: 24, network: 99, editor: 'big' })).toEqual({
+    expect(readPanelSizes({ guide: 24, lightbox: 99, bench: 'big' })).toEqual({
       guide: 24,
-      network: null,
-      editor: null,
+      lightbox: null,
+      bench: null,
     })
     expect(readPanelSizes(null)).toEqual(DEFAULT_SETTINGS.panelSizes)
   })

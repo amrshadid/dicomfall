@@ -89,6 +89,17 @@ export function playTour(stops: readonly TourStop[], animate: boolean): void {
   const aims = createAims()
   let stopFollowing = () => {}
   const stopPassingWheel = passWheelThrough()
+  // The console can take focus while a tour is open (the lab finishes building), and xterm would
+  // then send Escape to the shell. Caught first, on the window, Escape only ever closes the tour.
+  const closeOnEscape = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') {
+      return
+    }
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    tour.destroy()
+  }
+  window.addEventListener('keydown', closeOnEscape, true)
   const tour = driver({
     ...tourConfig(stops, animate, aims.aimAt),
     onPopoverRender: (popover) => {
@@ -109,6 +120,7 @@ export function playTour(stops: readonly TourStop[], animate: boolean): void {
       aim?.classList.remove(TOUR_AIM_SHOWN_CLASS)
     },
     onDestroyed: () => {
+      window.removeEventListener('keydown', closeOnEscape, true)
       stopFollowing()
       stopPassingWheel()
       aims.removeAll()

@@ -1,0 +1,468 @@
+/*
+ * The File inspector: the element tree beside the hex pane, under a bar that says what is marked.
+ * Every colour is a theme token. The four region colours and the four part underlines are the
+ * inspector's own drawing (proposal §8); each also has its name in words beside it.
+ */
+.file-inspector {
+  --hex-line: 1.25rem;
+  --region-preamble: var(--hatch);
+  --region-prefix: var(--red);
+  --region-fileMeta: var(--blue);
+  --region-dataSet: var(--green);
+  --part-tag: var(--blue);
+  --part-vr: var(--taint);
+  --part-length: var(--code-pre);
+  --part-value: var(--green);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.file-inspector__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: var(--rule-thin);
+  font-size: 0.8125rem;
+}
+
+.file-inspector__bar .df-seg__options button {
+  padding: 0.1875rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.file-inspector__file {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+.file-inspector__marked {
+  flex: 1;
+  min-width: 12rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+/* The word, boxed in the selection's own wash, says "marked" without the colour. */
+.file-inspector__marked-word {
+  padding: 0 0.25rem;
+  border: 1px solid var(--ink);
+  background: var(--red-wash);
+  font-family: var(--face);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.file-inspector__cursor {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+.file-inspector__notice {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.file-inspector__error {
+  margin-top: 0.25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--red);
+}
+
+.file-inspector__panes {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------- The tree ---------- */
+
+.file-tree {
+  min-height: 0;
+  overflow: auto;
+  border-right: var(--rule-thin);
+  font-size: 0.75rem;
+}
+
+.file-tree__row {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  align-items: stretch;
+  padding-left: calc(var(--depth, 0) * 0.875rem);
+}
+
+.file-tree__fold {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-family: var(--mono);
+}
+
+.file-tree__pick {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.125rem 0.5rem 0.125rem 0.25rem;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: none;
+  text-align: left;
+  color: var(--ink);
+}
+
+.file-tree__pick:hover {
+  background: var(--soft);
+}
+
+.file-tree__pick:focus-visible {
+  outline-offset: -3px;
+}
+
+.file-tree__tag,
+.file-tree__vr,
+.file-tree__value,
+.file-tree__span {
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+}
+
+.file-tree__tag {
+  flex: none;
+  font-weight: 600;
+}
+
+.file-tree__vr {
+  flex: none;
+  width: 1.5rem;
+  color: var(--ink-2);
+}
+
+.file-tree__name {
+  flex: 0 1 auto;
+  min-width: 4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-tree__value {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+
+/* A region row is the band's heading in the tree: ruled across, in the band's colour. */
+.file-tree__row--region {
+  border-top: var(--rule-thin);
+}
+
+.file-tree__row--region .file-tree__pick {
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.file-tree__row--preamble .file-tree__pick {
+  border-left-color: var(--region-preamble);
+}
+
+.file-tree__row--prefix .file-tree__pick {
+  border-left-color: var(--region-prefix);
+}
+
+.file-tree__row--fileMeta .file-tree__pick {
+  border-left-color: var(--region-fileMeta);
+}
+
+.file-tree__row--dataSet .file-tree__pick {
+  border-left-color: var(--region-dataSet);
+}
+
+.file-tree__region {
+  flex: 1;
+}
+
+.file-tree__span {
+  color: var(--ink-2);
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* Marked: the selection's wash with an ink rule, so it reads in both themes and in greyscale. */
+.file-tree__row.is-marked .file-tree__pick {
+  background: var(--red-wash);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.file-tree__row.is-focused .file-tree__pick {
+  box-shadow: inset 0 0 0 1px var(--ink-2);
+}
+
+/* ---------- The hex pane ---------- */
+
+.hex {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+  font-size: 0.75rem;
+}
+
+.hex__head,
+.hex__line {
+  display: flex;
+  align-items: center;
+  height: var(--hex-line);
+  white-space: pre;
+}
+
+.hex__head {
+  border-bottom: var(--rule-thin);
+  color: var(--ink-2);
+  font-size: 0.6875rem;
+}
+
+.hex__view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  user-select: none;
+  cursor: text;
+}
+
+.hex__view:focus-visible {
+  outline-offset: -3px;
+}
+
+.hex__sheet {
+  position: relative;
+}
+
+.hex__window {
+  position: absolute;
+  inset: 0 0 auto;
+}
+
+/* The band strip: each line's region as a colour bar, its name on the band line before it. */
+.hex__band {
+  flex: none;
+  align-self: stretch;
+  width: 0.25rem;
+  margin-right: 0.375rem;
+}
+
+.hex__band--preamble {
+  background: repeating-linear-gradient(45deg, var(--region-preamble) 0 2px, transparent 2px 4px);
+}
+
+.hex__band--prefix {
+  background: var(--region-prefix);
+}
+
+.hex__band--fileMeta {
+  background: var(--region-fileMeta);
+}
+
+.hex__band--dataSet {
+  background: var(--region-dataSet);
+}
+
+.hex__offset {
+  flex: none;
+  width: 9ch;
+  color: var(--ink-2);
+}
+
+.hex__bytes {
+  display: flex;
+  flex: none;
+}
+
+.hex__b {
+  display: inline-block;
+  width: 2.75ch;
+  text-align: center;
+  text-underline-offset: 3px;
+}
+
+.hex__b--half {
+  margin-left: 1ch;
+}
+
+.hex__text {
+  display: flex;
+  flex: none;
+  margin: 0 0.5rem 0 1ch;
+  padding-left: 0.5ch;
+  border-left: var(--rule-thin);
+}
+
+.hex__c {
+  display: inline-block;
+  width: 1ch;
+}
+
+/* Where a region starts inside a line: a heavy rule before its first byte. */
+.hex__b--start {
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+
+/* The four parts of an element: four underline styles, so they part without colour too. */
+.hex__b--tag {
+  text-decoration: underline solid var(--part-tag) 2px;
+}
+
+.hex__b--vr {
+  text-decoration: underline double var(--part-vr) 2px;
+}
+
+.hex__b--length {
+  text-decoration: underline dashed var(--part-length) 2px;
+}
+
+.hex__b--value {
+  text-decoration: underline dotted var(--part-value) 2px;
+}
+
+.hex__b.is-marked,
+.hex__c.is-marked {
+  background: var(--red-wash);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hex__b.is-cursor {
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.hex__bandline {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-top: var(--rule-thin);
+  background: var(--soft);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.6875rem;
+  text-align: left;
+}
+
+.hex__bandline:hover {
+  background: var(--sheet);
+}
+
+.hex__bandline.is-marked {
+  background: var(--red-wash);
+}
+
+.hex__bandline:focus-visible {
+  outline-offset: -3px;
+}
+
+.hex__bandname {
+  font-family: var(--face);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 0.75rem;
+}
+
+.hex__bandspan {
+  color: var(--ink-2);
+}
+
+/* ---------- The parts strip ---------- */
+
+.file-inspector__parts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.75rem;
+  border-top: var(--rule-thin);
+  font-size: 0.75rem;
+}
+
+.file-inspector__parts-none {
+  color: var(--ink-2);
+}
+
+.file-inspector__parts-of {
+  font-weight: 700;
+}
+
+.file-inspector__part-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.file-inspector__part {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: var(--rule-thin);
+  background: var(--sheet);
+  color: var(--ink);
+  font-size: 0.75rem;
+}
+
+.file-inspector__part:hover {
+  background: var(--soft);
+}
+
+.file-inspector__part[aria-pressed="true"] {
+  background: var(--red-wash);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.file-inspector__part-name {
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.file-inspector__part-span {
+  font-family: var(--mono);
+  color: var(--ink-2);
+}
+
+.file-inspector__part--tag .file-inspector__part-name {
+  text-decoration: underline solid var(--part-tag) 2px;
+}
+
+.file-inspector__part--vr .file-inspector__part-name {
+  text-decoration: underline double var(--part-vr) 2px;
+}
+
+.file-inspector__part--length .file-inspector__part-name {
+  text-decoration: underline dashed var(--part-length) 2px;
+}
+
+.file-inspector__part--value .file-inspector__part-name {
+  text-decoration: underline dotted var(--part-value) 2px;
+}

@@ -64,6 +64,17 @@ describe('TOUR_STOPS', () => {
     }
   })
 
+  it('tours Fig. 1 on the title page and every part of the Archive Map', () => {
+    expect(TOUR_STOPS.title.map((s) => s.selector)).toContain('.title__drawing')
+    expect(TOUR_STOPS.map.map((s) => s.selector)).toEqual([
+      '.map-scroll',
+      '.map-gauge',
+      '.map-detail__head',
+      '.map-detail__legend',
+      '.map-topbar__next',
+    ])
+  })
+
   it('keeps each stop to one short sentence or two', () => {
     for (const stops of Object.values(TOUR_STOPS)) {
       for (const s of stops) {

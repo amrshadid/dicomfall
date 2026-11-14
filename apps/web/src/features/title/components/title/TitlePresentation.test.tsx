@@ -1,9 +1,19 @@
 // @vitest-environment jsdom
+import { appContent } from '@dicomfall/missions/utils'
+import { journeyChapters } from '@features/map'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { TitlePresentation, type TitlePresentationProps } from './TitlePresentation'
 
 beforeAll(() => {
+  // The map figure sizes itself to its box; jsdom has no layout to observe.
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    }
+  )
   // jsdom has no modal dialogs; the screen only needs them to open and close.
   HTMLDialogElement.prototype.showModal = function showModal() {
     this.open = true
@@ -14,6 +24,18 @@ beforeAll(() => {
 })
 
 afterEach(cleanup)
+
+const loaded = appContent()
+if (!loaded.ok) {
+  throw new Error(loaded.errors.join('\n'))
+}
+const { game } = loaded.value
+const chapters = game.chapters.map((chapter) => ({
+  chapter,
+  missions: game
+    .missionsIn(chapter.id)
+    .map((mission) => ({ mission, status: 'available' as const, attempts: 0, hintsUsed: 0 })),
+}))
 
 function title(overrides: Partial<TitlePresentationProps> = {}) {
   const props: TitlePresentationProps = {
@@ -27,6 +49,7 @@ function title(overrides: Partial<TitlePresentationProps> = {}) {
       { id: 'map', name: 'Archive Map', reference: 'Stage 1, 0 of 1 passed', href: '#/map' },
       { id: 'settings', name: 'Settings', reference: 'theme, motion, saves', href: '#/settings' },
     ],
+    figure: { chapters: journeyChapters(chapters, game.missions[0] ?? null), href: '#/map' },
     newGame: { open: false, onExportAndStart: vi.fn(), onStart: vi.fn(), onCancel: vi.fn() },
     saveText: 'Saved just now',
     onShortcuts: vi.fn(),
@@ -86,6 +109,12 @@ describe('TitlePresentation', () => {
       'https://github.com/amrshadid/dicomfall'
     )
     expect(screen.getByText(/Learn DICOM from the first byte to the network\./)).toBeTruthy()
+  })
+
+  it('shows the map around the player as Fig. 1, linked to the whole map', () => {
+    title()
+    expect(screen.getByText(/^Fig\. 1\. The Archive Map around you/)).toBeTruthy()
+    expect(document.querySelector('.title__drawing a')?.getAttribute('href')).toBe('#/map')
   })
 
   it('says how the game is saved, links Privacy and opens the shortcuts', () => {

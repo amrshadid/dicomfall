@@ -6,16 +6,22 @@ import { configureApp } from '@app/config'
 import { registerServiceWorker } from '@app/offline'
 import { configureCore } from '@dicomfall/core'
 import { configureGame } from '@dicomfall/game'
+import { configureMachine } from '@dicomfall/machine'
+import { appContent } from '@dicomfall/missions/utils'
 import { configureTheme } from '@dicomfall/theme'
 import { pageStorage, storageAdapter } from '@shared/utils/storage'
 import { App } from './App'
 
 // Every package is configured before the first render, so nothing reads a config that isn't set yet.
 configureCore({ logEvents: import.meta.env.DEV ? {} : false })
+configureMachine({ vmBaseUrl: `${import.meta.env.BASE_URL}vm/` })
 configureTheme()
 configureApp({ clarityId: import.meta.env.VITE_CLARITY_ID })
-// No content yet: the game opens the save and lists no missions until the missions package exists.
-configureGame({ storage: storageAdapter(pageStorage().text) })
+const content = appContent()
+// Invalid content never reaches the game: the router shows its errors instead.
+if (content.ok) {
+  configureGame({ storage: storageAdapter(pageStorage().text), content: content.value.game })
+}
 
 const root = document.getElementById('root')
 if (!root) {

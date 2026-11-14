@@ -1,6 +1,6 @@
 import type { Route } from '@shared/navigation'
 import type { ReactNode } from 'react'
-import { MapPage, NotFoundPage, SettingsPage, TitlePage } from '@/pages'
+import { CodexPage, MapPage, MissionPage, NotFoundPage, SettingsPage, TitlePage } from '@/pages'
 
 /** Every area page is a lazy chunk fetched when first visited. */
 export function routeElement(route: Route): ReactNode {
@@ -9,9 +9,11 @@ export function routeElement(route: Route): ReactNode {
       return <TitlePage />
     case 'map':
       return <MapPage />
-    // There is no mission page until the missions package exists, so no mission address leads anywhere.
     case 'mission':
-      return <NotFoundPage />
+      // A new key per mission: the Machine and the mission's state start fresh.
+      return <MissionPage key={route.missionId} missionId={route.missionId} cardId={route.card ?? null} />
+    case 'codex':
+      return <CodexPage cardId={route.cardId} chapter={route.chapter ?? null} page={route.page ?? null} />
     case 'settings':
       return <SettingsPage section={route.section} />
     case 'not-found':

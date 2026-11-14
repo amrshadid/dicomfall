@@ -11,7 +11,9 @@ export const SHORTCUTS: readonly Shortcut[] = [
   },
   { id: 'hint', group: 'Game', action: 'Hint', binding: { code: 'KeyH', alt: true } },
   { id: 'focus-guide', group: 'Game', action: 'Focus Guide', binding: { code: 'KeyG', alt: true } },
-  { id: 'focus-terminal', group: 'Game', action: 'Focus terminal', binding: { code: 'KeyT', alt: true } },
+  { id: 'focus-inspector', group: 'Game', action: 'Focus Inspector', binding: { code: 'KeyI', alt: true } },
+  { id: 'focus-terminal', group: 'Game', action: 'Focus Console', binding: { code: 'KeyT', alt: true } },
+  { id: 'focus-lightbox', group: 'Game', action: 'Focus the Lightbox', binding: { code: 'KeyL', alt: true } },
   {
     id: 'cheat-sheet',
     group: 'Game',

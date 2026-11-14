@@ -44,9 +44,9 @@ describe('useAppStore', () => {
     expect(useAppStore.getState().panelSizes.guide).toBe(24)
     useAppStore.getState().setPanelSize('guide', 500)
     expect(useAppStore.getState().panelSizes.guide).toBeNull()
-    useAppStore.getState().setPanelSize('network', 30)
-    useAppStore.getState().setPanelSize('network', null)
-    expect(useAppStore.getState().panelSizes.network).toBeNull()
+    useAppStore.getState().setPanelSize('lightbox', 30)
+    useAppStore.getState().setPanelSize('lightbox', null)
+    expect(useAppStore.getState().panelSizes.lightbox).toBeNull()
   })
 
   it('stores the settings under the current version and reads older ones field by field', () => {

@@ -27,14 +27,16 @@ const chaptersWith = (status: 'available' | 'in_progress' | 'completed'): Chapte
 ]
 
 describe('titleContentsOf', () => {
-  it('lists New game, then the map with the stage progress, and Settings', () => {
+  it('lists New game, then the map with the stage progress, the Codex, and Settings', () => {
     const onNewGame = vi.fn()
     const contents = titleContentsOf({
       chapter: currentChapter(chaptersWith('completed'), mission),
       firstMission: mission,
+      codexCards: 3,
       onNewGame,
     })
-    expect(contents.map((entry) => entry.id)).toEqual(['new', 'map', 'settings'])
+    expect(contents.map((entry) => entry.id)).toEqual(['new', 'map', 'codex', 'settings'])
+    expect(contents[2]).toMatchObject({ reference: '3 cards filed', href: '#/codex' })
     expect(contents[0]?.reference).toBe('from The Missing Instance')
     expect(contents[1]).toMatchObject({ reference: 'Stage 2, 1 of 1 passed', href: hrefOf({ name: 'map' }) })
     contents[0]?.onSelect?.()
@@ -42,7 +44,13 @@ describe('titleContentsOf', () => {
   })
 
   it('still names the journey before any content', () => {
-    const contents = titleContentsOf({ chapter: undefined, firstMission: undefined, onNewGame: () => {} })
+    const contents = titleContentsOf({
+      chapter: undefined,
+      firstMission: undefined,
+      codexCards: 1,
+      onNewGame: () => {},
+    })
+    expect(contents[2]?.reference).toBe('1 card filed')
     expect(contents[1]?.reference).toBe('the journey')
   })
 })

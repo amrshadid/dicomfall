@@ -43,10 +43,12 @@ export interface TitleContentsInput {
   readonly chapter: ChapterEntry | undefined
   /** Where New game starts. */
   readonly firstMission: MissionDefinition | undefined
+  /** Cards filed in the Codex so far. */
+  readonly codexCards: number
   readonly onNewGame: () => void
 }
 
-export function titleContentsOf({ chapter, firstMission, onNewGame }: TitleContentsInput): ContentsEntry[] {
+export function titleContentsOf({ chapter, firstMission, codexCards, onNewGame }: TitleContentsInput): ContentsEntry[] {
   const passed = chapter?.missions.filter((entry) => entry.status === 'completed').length ?? 0
   return [
     {
@@ -60,6 +62,12 @@ export function titleContentsOf({ chapter, firstMission, onNewGame }: TitleConte
       name: 'Archive Map',
       reference: chapter ? `${stageName(chapter)}, ${passed} of ${chapter.missions.length} passed` : 'the journey',
       href: hrefOf({ name: 'map' }),
+    },
+    {
+      id: 'codex',
+      name: 'Codex',
+      reference: `${codexCards} card${codexCards === 1 ? '' : 's'} filed`,
+      href: hrefOf({ name: 'codex', cardId: null }),
     },
     {
       id: 'settings',
