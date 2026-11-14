@@ -171,11 +171,241 @@ export type WireCheckDefinition =
   /** The AE `to` answers C-ECHO from the AE `from`. */
   | { readonly kind: 'echo'; readonly from: string; readonly to: string }
 
-/** How one objective was judged. */
+/** A byte range in a file, `from` inclusive, `to` exclusive, as go-dicom's offsets are. */
+export interface ByteRange {
+  readonly from: number
+  readonly to: number
+}
+
+/** A range the player marked in the File inspector, in the file it was marked in. */
+export interface ByteSelection extends ByteRange {
+  readonly file: LabPath
+}
+
+/**
+ * What the player has done that a file check reads, as it stands now. Never which command was
+ * typed: commands change the lab's files, and the files are read.
+ */
+export interface PlayerActions {
+  /** The range marked in the File inspector now; null when nothing is marked. */
+  readonly selection: ByteSelection | null
+  /** What each answer box holds now, by objective. */
+  readonly answers: Readonly<Record<ObjectiveId, string>>
+  /** The offset each `offset` objective's box holds now, by objective. */
+  readonly predictions: Readonly<Record<ObjectiveId, number>>
+}
+
+export const NO_PLAYER_ACTIONS: PlayerActions = { selection: null, answers: {}, predictions: {} }
+
+/**
+ * Where an element's or an item's bytes are, as go-dicom's `show --json` gives them. The game's
+ * view of go-dicom's reading: `@dicomfall/machine`'s `ShowReading` has this shape and more, and
+ * the checks read nothing else, so no parser of the game's own ever decides a verdict.
+ */
+export interface ReadingSpan {
+  /** `(gggg,eeee)`, upper-case hex; `(FFFE,E000)` for an item. */
+  readonly tag: string
+  readonly tagOffset: number
+  readonly lengthOffset: number
+  /** The length field alone, 2 or 4 bytes; a long-form VR's two reserved bytes sit before it. */
+  readonly lengthSize: number
+  readonly valueOffset: number
+  readonly valueLength: number
+  readonly undefinedLength: boolean
+  readonly endOffset: number
+}
+
+export interface ReadingElement extends ReadingSpan {
+  readonly vr: string
+  /** go-dicom's decoded value, padding trimmed, values joined by `\`; none for a sequence or binary data. */
+  readonly value?: string
+  /** null when the VR is implicit. */
+  readonly vrOffset: number | null
+  readonly items?: readonly ReadingItem[]
+}
+
+export interface ReadingItem extends ReadingSpan {
+  readonly elements: readonly ReadingElement[]
+}
+
+/** go-dicom's reading of one file: its Part 10 regions, transfer syntax and elements. */
+export interface FileReading {
+  readonly size: number
+  /** go-dicom's names: `preamble`, `prefix`, `fileMeta`, `dataSet`. */
+  readonly regions: readonly { readonly name: string; readonly offset: number; readonly endOffset: number }[]
+  readonly transferSyntax: { readonly uid: string }
+  readonly fileMeta: readonly ReadingElement[]
+  readonly dataSet: readonly ReadingElement[]
+}
+
+/** A file go-dicom read, or why it could not: no such file, or not one go-dicom reads. */
+export type FileRead =
+  | { readonly ok: true; readonly reading: FileReading }
+  | { readonly ok: false; readonly error: string }
+
+/** What a mission's file checks need read on the Machine before they can be judged. */
+export interface ReadingRequest {
+  /** Files to read now. */
+  readonly files: readonly LabPath[]
+  /** Folders to list now, every regular file under them, at any depth; each listed file is read too. */
+  readonly folders: readonly LabPath[]
+  /** Files to read once, as the lab starts: a `grouped` check's files, before the player moves them. */
+  readonly startFiles: readonly LabPath[]
+}
+
+/** go-dicom's readings taken on the Machine, for the checks to judge against. */
+export interface LabReadings {
+  /** Each file read now, by path; a file left out has not been read. */
+  readonly files: Readonly<Record<LabPath, FileRead>>
+  /** The regular files under each listed folder now, at any depth, by folder. */
+  readonly folders: Readonly<Record<LabPath, readonly LabPath[]>>
+  /** The start files, as the lab started. */
+  readonly start: Readonly<Record<LabPath, FileRead>>
+}
+
+export const NO_READINGS: LabReadings = { files: {}, folders: {}, start: {} }
+
+/** Why a check didn't pass, for the app to put into words. */
+export const CHECK_FAILURES = {
+  /** The file has not been read from the Machine yet. */
+  notRead: 'not_read',
+  /** go-dicom could not read the file: it is missing or not DICOM. */
+  unreadable: 'unreadable',
+  /** The file holds no element at that path (or no such item). */
+  noElement: 'no_element',
+  /** The element has no such part: no VR under implicit VR, none on an item. */
+  noPart: 'no_part',
+  /** go-dicom's reading has no such region. */
+  noRegion: 'no_region',
+  /** Nothing is marked in the File inspector. */
+  notMarked: 'not_marked',
+  /** The marked range is in another file. */
+  wrongFile: 'wrong_file',
+  /** The marked range is not exactly the bytes asked for. */
+  wrongRange: 'wrong_range',
+  /** The answer or offset box is empty. */
+  notGiven: 'not_given',
+  /** The element has no value go-dicom decodes as text: a sequence, binary data. */
+  noValue: 'no_value',
+  wrongValue: 'wrong_value',
+  wrongOffset: 'wrong_offset',
+  /** A `grouped` check: a file of the set is not under the folder. */
+  missingFiles: 'missing_files',
+  /** A `grouped` check: a file is not at the depth asked for (one folder for study, two for series). */
+  wrongDepth: 'wrong_depth',
+  /** A `grouped` check: one folder holds files of two studies or two series. */
+  mixedFolder: 'mixed_folder',
+  /** A `grouped` check: one study or series is split over two folders. */
+  splitGroup: 'split_group',
+  wrongTransferSyntax: 'wrong_transfer_syntax',
+  /** A `file` check: an attribute is missing or holds another value. */
+  wrongAttribute: 'wrong_attribute',
+  /** An `absent` check: the file still holds the element. */
+  stillPresent: 'still_present',
+  /** A wire check, or a `selected` in the Wire inspector: judged from go-dicom's event log, not by this engine yet. */
+  notEvaluated: 'not_evaluated',
+} as const
+
+export type CheckFailure = (typeof CHECK_FAILURES)[keyof typeof CHECK_FAILURES]
+
+/** One file of a `grouped` check as it was found under the folder. */
+export interface GroupedFile {
+  readonly path: LabPath
+  /** Its path under the folder: `a/f01.dcm`. */
+  readonly relative: string
+  readonly sopInstanceUid: Uid
+  readonly studyInstanceUid: Uid
+  readonly seriesInstanceUid: Uid
+}
+
+/** One attribute a `file` check compared. */
+export interface AttributeFinding {
+  readonly tag: Tag
+  /** The value asked for: as written, or another file's (`sameAs`); null when that one could not be read. */
+  readonly expected: string | null
+  /** go-dicom's value in the file; null when the file has no such element or no text value. */
+  readonly found: string | null
+  readonly passed: boolean
+}
+
+/** What a check found. `failure` is null exactly when `passed`; the rest is the evidence it read. */
+export type CheckResult =
+  | {
+      readonly kind: 'selected'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      /** The file the check names; null for the Wire inspector's form. */
+      readonly file: LabPath | null
+      /** The element path or the region asked for. */
+      readonly target: string
+      readonly part: ElementPart | null
+      /** The bytes go-dicom puts there; null when the file or the element could not be found. */
+      readonly expected: ByteRange | null
+      readonly marked: ByteSelection | null
+    }
+  | {
+      readonly kind: 'answer'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      readonly file: LabPath
+      readonly element: ElementPath
+      /** The element's VR, which decides how values compare; null when it was not found. */
+      readonly vr: string | null
+      /** go-dicom's decoded value; null when it has none. */
+      readonly expected: string | null
+      readonly given: string | null
+    }
+  | {
+      readonly kind: 'offset'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      readonly file: LabPath
+      readonly element: ElementPath
+      /** Where go-dicom says the element starts: what the prediction is judged against. */
+      readonly expected: number | null
+      /** The offset the mission's spec copied; a difference from `expected` is the spec's mistake. */
+      readonly declared: number
+      readonly given: number | null
+    }
+  | {
+      readonly kind: 'grouped'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      readonly into: LabPath
+      readonly by: Grouping
+      /** Every DICOM file found under the folder. */
+      readonly found: readonly GroupedFile[]
+      /** The SOP Instance UIDs of the set that are not under the folder. */
+      readonly missing: readonly Uid[]
+    }
+  | {
+      readonly kind: 'file'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      readonly file: LabPath
+      /** The transfer syntax go-dicom read the file with; null when it could not read it. */
+      readonly transferSyntax: Uid | null
+      readonly attributes: readonly AttributeFinding[]
+    }
+  | {
+      readonly kind: 'absent'
+      readonly passed: boolean
+      readonly failure: CheckFailure | null
+      readonly file: LabPath
+      readonly element: ElementPath
+      /** Whether the file still holds it; null when the file could not be read. */
+      readonly present: boolean | null
+    }
+  | {
+      readonly kind: WireCheckKind
+      readonly passed: false
+      readonly failure: typeof CHECK_FAILURES.notEvaluated
+    }
+
+/** How one objective was judged, with the evidence. */
 export interface ObjectiveVerdict {
   readonly objectiveId: ObjectiveId
-  readonly kind: CheckKind
-  readonly passed: boolean
+  readonly result: CheckResult
 }
 
 /** A mission's objectives judged together: passed only when every objective's check did. */

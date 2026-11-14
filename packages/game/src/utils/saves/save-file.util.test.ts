@@ -51,14 +51,17 @@ describe('save files', () => {
         ...stored.progress,
         debrief: {
           missionId: MISSION_ID,
-          verdict: { passed: 'yes', objectives: [{ objectiveId: 'x', kind: 'reachable', passed: true }] },
+          verdict: {
+            passed: 'yes',
+            objectives: [{ objectiveId: 'x', result: { kind: 'reachable', passed: true, failure: null } }],
+          },
         },
       },
     }
     const loaded = readSaveFile(broken)
     expect(!loaded.ok && loaded.errors).toEqual([
       'progress.debrief.verdict.passed: expected true or false, got text',
-      'progress.debrief.verdict.objectives[0].kind: expected one of selected, answer, offset, grouped, file, absent, association, rejected-context, status, received, subops, echo, got "reachable"',
+      'progress.debrief.verdict.objectives[0].result.kind: expected one of selected, answer, offset, grouped, file, absent, association, rejected-context, status, received, subops, echo, got "reachable"',
     ])
   })
 

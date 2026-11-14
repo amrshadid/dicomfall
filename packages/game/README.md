@@ -2,8 +2,10 @@
 
 The game's rules, with no mission built in: mission definitions and their schema, the `check:`
 kinds a mission declares, staged hints, the Codex and the Field Guide, the skill tree, and the
-player's progress saved in the browser. The missions themselves will come from
-`@dicomfall/missions`; judging a check against the lab is not here yet.
+player's progress saved in the browser. The missions themselves come from
+`@dicomfall/missions`. File checks are judged here, as pure functions of what the player did and
+go-dicom's own readings of the lab; wire checks wait for go-dicom's event log and are left
+unevaluated.
 
 > **Note:** this package holds logic only. The app uses `configureGame()`, `setupGameListeners()`,
 > `/hooks`, `/types` and `/utils`; the screens live in `apps/web/src/features/`.
@@ -42,6 +44,9 @@ src/
 │   ├── codex.ts, field-guide.ts, concepts.ts, skills.ts, hints.ts
 │   └── progress.ts, saves.ts, store.ts, config.ts
 ├── utils/
+│   ├── checks/               → judgeMission, evaluateCheck, mergeVerdicts, readingRequestOf; checkSelected,
+│   │                           checkAnswer, checkOffset, checkGrouped, checkFile, checkAbsent; findTarget and
+│   │                           rangeOf (element paths through items, the bytes of a part), sameValue
 │   ├── validate/             → validateMission (mission.yaml), readCheck, readLab, inLab, validateChapters,
 │   │                           validateSkills, validateConcepts, validateFieldGuide
 │   ├── content/              → createGameContent: ids, chapters, skills, concepts, cards and the Field Guide
@@ -54,7 +59,8 @@ src/
 │   ├── progress/             → missionStatus, missionList, startMission, recordAttempt, replayMission, debrief…
 │   └── saves/                → readSaveFile, importSave, exportSave, migrations
 ├── test/                     → example mission, labs and chapters, a mission with every wire check, verdicts,
-│                               fake clock, memory storage, installTestGame (not exported)
+│                               excerpts of go-dicom's real readings of the fixtures, fake clock, memory
+│                               storage, installTestGame (not exported)
 └── index.ts                  → configureGame, setupGameListeners, cleanupGameListeners
 ```
 
@@ -74,8 +80,35 @@ src/
   `/lab/`). The mission then checks them against its lab: every file a check reads is one
   `lab.files` copies, under a folder it copies, or under an AE's `/lab/<ae>/received/`; every AE a
   check names is a lab AE; a wire check needs a link, and `echo` a link between its two AEs.
-  Whether an element is in a file is for the file to say, and evaluating a check is not in this
-  package.
+  Whether an element is in a file is for the file to say.
+- **File checks judged from go-dicom's reading:** `judgeMission(mission, actions, readings)` takes
+  what the player did (`PlayerActions`: the range marked in the File inspector, each answer box,
+  each predicted offset) and go-dicom's `show --json` readings of the lab (`LabReadings`, read by
+  `@dicomfall/missions` as `readingRequestOf(mission)` asks), and returns a verdict per objective.
+  The engine never parses DICOM: every offset, value and transfer syntax is go-dicom's.
+  - `selected`: the marked range equals, byte for byte and in the named file, go-dicom's range
+    for the region (`preamble`, `prefix`, `file-meta-information` → go-dicom's `fileMeta`,
+    `data-set` → `dataSet`), the element or item (`tagOffset` to `endOffset`), or its `part`:
+    `tag` the 4 tag bytes; `vr` from `vrOffset` to `lengthOffset`, so a long-form VR's reserved
+    bytes are in it (none under implicit VR, none on an item); `length` the length field;
+    `value` its content, stopping before the 8-byte delimiter of an undefined length.
+  - `answer`: go-dicom's decoded value, compared value by value (split on `\`), each trimmed of
+    spaces and NUL padding; case-blind for VR CS only; as numbers for IS, DS, US, UL, SS, SL, FL,
+    FD, SV and UV (`0` matches `00`); exact otherwise, names and UIDs included. An empty box,
+    a sequence or binary data never passes.
+  - `offset`: the prediction equals go-dicom's `tagOffset`; the spec's own `offset` is kept as
+    evidence (`declared`), so a spec that disagrees with go-dicom shows.
+  - `grouped`: the set's SOP Instance UIDs, read as the lab started, are all found under `into`,
+    at `into/<study>/<file>` (or `into/<study>/<series>/<file>`), and the folders split every
+    DICOM file under `into` exactly as their Study (and Series) Instance UIDs do.
+  - `file`: the transfer syntax go-dicom read the file with, and each attribute compared as
+    `answer` compares; `sameAs` reads the other file's value.
+  - `absent`: the file decodes and holds no element at the path.
+  - Wire checks, and the Wire inspector's `selected`, come back `not_evaluated`, never passed.
+- **Verdicts with evidence:** each `ObjectiveVerdict` holds a `CheckResult`: its `kind`, `passed`,
+  a `failure` from `CHECK_FAILURES` (null exactly when passed) and what it read (go-dicom's range
+  and the marked one, go-dicom's value and the given one, the files found under a folder…).
+  `mergeVerdicts` keeps an objective met once met; an unmet one takes the latest reason.
 - **A lab in every mission:** `readLab` reads the AEs (kebab-case names, AE titles as VR AE allows
   them, IPv4 addresses with a prefix length for linked AEs only, go-dicom `start` commands), the
   links between known AEs on one network, the fixtures copied to `/lab/` (a folder to a folder,
@@ -101,5 +134,7 @@ src/
 ## Dependencies
 
 - `@dicomfall/core`: event bus, service responses, storage adapter, `ObjectReader`
+- go-dicom's readings come in as `FileReading`, the part of `@dicomfall/machine`'s `ShowReading`
+  the checks read; `@dicomfall/missions` checks that one fits the other
 - `zustand`: the progress store
 - `react` (peer): only for the hooks

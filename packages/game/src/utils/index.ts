@@ -1,3 +1,4 @@
+export * from '#utils/checks/index'
 export * from '#utils/codex/index'
 export * from '#utils/concepts/index'
 export * from '#utils/content/index'

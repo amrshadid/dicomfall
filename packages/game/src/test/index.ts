@@ -18,4 +18,5 @@ export {
 export { FakeClock } from '#test/fake-clock'
 export { installTestGame, type TestGame, type TestGameOptions, uninstallTestGame } from '#test/install'
 export { createFailingStorage, createMemoryStorage, type MemoryStorage } from '#test/memory-storage'
+export { CT_EXPLICIT_LE_READING, CT_IMPLICIT_LE_READING, SERIES_F01_READING } from '#test/readings'
 export { failedVerdict, passedVerdict } from '#test/verdicts'
