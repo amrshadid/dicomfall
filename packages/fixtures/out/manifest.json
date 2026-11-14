@@ -1,0 +1,85 @@
+{
+  "uidScheme": "2.25 UUID-derived UIDs (PS3.5 B.2) from RFC 9562 version 5 UUIDs in the URL namespace, named https://github.com/amrshadid/dicomfall/packages/fixtures#<key>",
+  "files": [
+    {
+      "path": "ct-explicit-le.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.251886266211036739612775034372164643306",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
+      "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9646,
+      "sha256": "444124886ccd73bc0bf4b950ed058b6d22ab92c14aa78ed9ac1ac046e8346263"
+    },
+    {
+      "path": "ct-implicit-le.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.251886266211036739612775034372164643306",
+      "studyInstanceUid": "2.25.244689099060892268776675746833514200113",
+      "seriesInstanceUid": "2.25.262811267488977860285166554097588707013",
+      "transferSyntaxUid": "1.2.840.10008.1.2",
+      "size": 9636,
+      "sha256": "c7d991165429b2835f9b7cfb7b4ff12136f2f72383328170244e80397252445c"
+    },
+    {
+      "path": "series/f01.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.56542817840280321777476327238050225936",
+      "studyInstanceUid": "2.25.87115403254764791248648702806613763540",
+      "seriesInstanceUid": "2.25.185532969712350415344659803206949717595",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9658,
+      "sha256": "c86eb02cc1e4dc67a701eeb020a65d2153d4c139b1ad7bde1629372d16b17998"
+    },
+    {
+      "path": "series/f02.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.317118094456324451845838311032322903914",
+      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "seriesInstanceUid": "2.25.49940973468074505972593806037878073876",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9660,
+      "sha256": "7c93b04cfa17fe025cb2281c34acc6459d6599ad6bc9f2eb123b19ebf2ce3226"
+    },
+    {
+      "path": "series/f03.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.142857737833631724124164844337364812269",
+      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "seriesInstanceUid": "2.25.294765142776525871675099788420847192460",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9664,
+      "sha256": "e0cea2cee9bab98772626f2a3a2bd6daf8eb7621bbb242383afd5e81efa8bd41"
+    },
+    {
+      "path": "series/f04.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.87888607025693343275259035843936887857",
+      "studyInstanceUid": "2.25.87115403254764791248648702806613763540",
+      "seriesInstanceUid": "2.25.185532969712350415344659803206949717595",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9658,
+      "sha256": "361c901ead80b52adf8a99c05bd8d6854ee2690254e0078b41d434a15c6fda35"
+    },
+    {
+      "path": "series/f05.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.45215571852009087224317163452414628830",
+      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "seriesInstanceUid": "2.25.49940973468074505972593806037878073876",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9656,
+      "sha256": "e7eb654525d9f00ee21e9b38cbd99da01c5bb1e0c7a9463c89eb2a50a40762fc"
+    },
+    {
+      "path": "series/f06.dcm",
+      "sopClassUid": "1.2.840.10008.5.1.4.1.1.2",
+      "sopInstanceUid": "2.25.93395373739139454485618235538112412213",
+      "studyInstanceUid": "2.25.19543178225633327976653369228950133957",
+      "seriesInstanceUid": "2.25.294765142776525871675099788420847192460",
+      "transferSyntaxUid": "1.2.840.10008.1.2.1",
+      "size": 9664,
+      "sha256": "0cd46b0b165064a1b5fcec5e0bc0bb8738b21fb943290f2d18386de58ca4ed5b"
+    }
+  ]
+}

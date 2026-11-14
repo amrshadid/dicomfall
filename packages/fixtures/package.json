@@ -1,0 +1,11 @@
+{
+  "name": "@dicomfall/fixtures",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DICOMFall's synthetic DICOM files, generated with go-dicom and cross-checked against pydicom.",
+  "scripts": {
+    "generate": "go run . -out out",
+    "test": "go vet ./... && go test ./...",
+    "crosscheck": "python3 -I scripts/crosscheck.py"
+  }
+}

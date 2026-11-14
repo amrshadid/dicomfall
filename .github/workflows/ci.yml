@@ -27,6 +27,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      # packages/fixtures is Go: its tests run with `pnpm test`.
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: packages/fixtures/go.mod
       - run: pnpm install --frozen-lockfile
       - name: Lint and format
         run: pnpm exec biome ci .
