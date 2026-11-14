@@ -142,6 +142,9 @@ importers:
       '@dicomfall/game':
         specifier: workspace:*
         version: link:../game
+      '@dicomfall/machine':
+        specifier: workspace:*
+        version: link:../machine
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
