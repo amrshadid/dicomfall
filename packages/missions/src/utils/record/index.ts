@@ -3,6 +3,7 @@ export { labNetwork, startLine, startLogOf, startPort } from '#utils/record/reco
 export { labSkipReason, type MachineAbilities, needsGoDicom, skipReason } from '#utils/record/record-skip.util'
 export {
   askedCommands,
+  emptinessProblem,
   isPlaceholder,
   OWN_MACHINE_SECTION,
   RECORDED_PLACEHOLDER,
@@ -15,4 +16,4 @@ export {
   type TypedCommand,
   unsafeBody,
 } from '#utils/record/recorded-block.util'
-export { commandOutput, stripTerminalCodes } from '#utils/record/terminal-text.util'
+export { commandOutput, echoed, stripTerminalCodes } from '#utils/record/terminal-text.util'

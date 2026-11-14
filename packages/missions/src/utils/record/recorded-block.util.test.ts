@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   askedCommands,
+  emptinessProblem,
   isPlaceholder,
   readRecordedStory,
   recordPlan,
@@ -54,10 +55,18 @@ describe('readRecordedStory', () => {
         line: 11,
         ae: null,
         command: 'hexdump -C /lab/ct.dcm | head -n 3',
+        expectsEmpty: false,
         body: '(recorded on the Machine)',
         section: 'scene',
       },
-      { line: 23, ae: 'archive', command: 'ls /lab', body: '(recorded on the Machine)', section: 'see-it' },
+      {
+        line: 23,
+        ae: 'archive',
+        command: 'ls /lab',
+        expectsEmpty: false,
+        body: '(recorded on the Machine)',
+        section: 'see-it',
+      },
     ])
   })
 
@@ -83,11 +92,24 @@ describe('readRecordedStory', () => {
 
   it('names a recorded fence with no command, a bad AE, or no close', () => {
     expect(readRecordedStory(`## Scene\n${FENCE}recorded\nx\n${FENCE}\n`).problems).toEqual([
-      { line: 2, message: 'expected "```recorded <command>" or "```recorded@<ae> <command>"' },
+      {
+        line: 2,
+        message: 'expected "```recorded <command>", "```recorded@<ae> <command>", or either with "recorded!"',
+      },
     ])
     expect(readRecordedStory(`## Scene\n${FENCE}recorded@Archive ls\nx\n${FENCE}\n`).problems).toHaveLength(1)
     expect(readRecordedStory(`## Scene\n${FENCE}recorded ls\nx\n`).problems).toEqual([
       { line: 2, message: 'this recorded block is never closed with ```' },
+    ])
+  })
+
+  it('reads recorded! as a block whose command prints nothing, with or without an AE', () => {
+    const { blocks } = readRecordedStory(
+      `## Scene\n${FENCE}recorded! cp a b\n${FENCE}\n${FENCE}recorded!@archive true\n${FENCE}\n`
+    )
+    expect(blocks.map((block) => [block.ae, block.command, block.expectsEmpty, block.body])).toEqual([
+      [null, 'cp a b', true, ''],
+      ['archive', 'true', true, ''],
     ])
   })
 
@@ -180,6 +202,25 @@ describe('replaceRecordedBodies', () => {
   it('reads its own output back the same', () => {
     const once = replaceRecordedBodies(STORY, new Map([[23, 'ct.dcm\ncopy.dcm']]))
     expect(replaceRecordedBodies(once, new Map([[23, 'ct.dcm\ncopy.dcm']]))).toBe(once)
+  })
+})
+
+describe('emptinessProblem', () => {
+  const [shows, silent] = readRecordedStory(
+    `## Scene\n${FENCE}recorded hexdump -C /lab/ct.dcm | head -n 10\nx\n${FENCE}\n${FENCE}recorded! cp a b\n${FENCE}\n`
+  ).blocks
+  if (!shows || !silent) {
+    throw new Error('expected two blocks')
+  }
+
+  it('refuses an empty recording for a block that shows output', () => {
+    expect(emptinessProblem(shows, '')).toMatch(/printed nothing; write the block as ```recorded!/)
+    expect(emptinessProblem(shows, '00000000  00 00')).toBeNull()
+  })
+
+  it('takes an empty recording for a recorded! block, and refuses output there', () => {
+    expect(emptinessProblem(silent, '')).toBeNull()
+    expect(emptinessProblem(silent, 'cp: a: No such file')).toMatch(/printed output/)
   })
 })
 

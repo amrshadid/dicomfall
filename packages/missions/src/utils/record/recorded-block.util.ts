@@ -8,8 +8,8 @@ export const RECORDED_PLACEHOLDER = '(recorded on the Machine)'
 export const OWN_MACHINE_SECTION = 'real-world'
 
 const FENCE = /^```/
-const RECORDED_OPENER = /^```recorded(?=[@\s]|$)/
-const RECORDED_FENCE = /^```recorded(?:@([a-z](?:[a-z0-9-]{0,14}[a-z0-9])?))?[ \t]+(\S(?:.*\S)?)\s*$/
+const RECORDED_OPENER = /^```recorded(?=[!@\s]|$)/
+const RECORDED_FENCE = /^```recorded(!)?(?:@([a-z](?:[a-z0-9-]{0,14}[a-z0-9])?))?[ \t]+(\S(?:.*\S)?)\s*$/
 const SECTION_HEADING = /^##\s+(.+?)\s*$/
 const QUOTE_PREFIX = /^>\s?/
 
@@ -33,6 +33,8 @@ export interface RecordedBlock {
   /** The AE named by `recorded@<ae>`; null for the lab's console AE. */
   readonly ae: string | null
   readonly command: string
+  /** Written `recorded!`: the command prints nothing, and an empty body is its true output. */
+  readonly expectsEmpty: boolean
   /** Everything between the fences, newlines kept, no trailing newline. */
   readonly body: string
   /** The slug of the section it is in; null before the first one. */
@@ -89,7 +91,7 @@ export function readRecordedStory(markdown: string): RecordedStory {
   const typed: TypedCommand[] = []
   const problems: StoryProblem[] = []
   let section: string | null = null
-  let open: { line: number; ae: string | null; command: string | null; body: string[] } | null = null
+  let open: { line: number; ae: string | null; command: string | null; empty: boolean; body: string[] } | null = null
 
   markdown.split(/\r?\n/).forEach((raw, index) => {
     const line = index + 1
@@ -99,20 +101,30 @@ export function readRecordedStory(markdown: string): RecordedStory {
         return
       }
       if (open.command !== null) {
-        blocks.push({ line: open.line, ae: open.ae, command: open.command, body: open.body.join('\n'), section })
+        blocks.push({
+          line: open.line,
+          ae: open.ae,
+          command: open.command,
+          expectsEmpty: open.empty,
+          body: open.body.join('\n'),
+          section,
+        })
       }
       open = null
       return
     }
     if (FENCE.test(raw)) {
       const recorded = RECORDED_FENCE.exec(raw)
-      if (recorded?.[2] !== undefined) {
-        open = { line, ae: recorded[1] ?? null, command: recorded[2], body: [] }
+      if (recorded?.[3] !== undefined) {
+        open = { line, ae: recorded[2] ?? null, command: recorded[3], empty: recorded[1] === '!', body: [] }
       } else {
         if (RECORDED_OPENER.test(raw)) {
-          problems.push({ line, message: 'expected "```recorded <command>" or "```recorded@<ae> <command>"' })
+          problems.push({
+            line,
+            message: 'expected "```recorded <command>", "```recorded@<ae> <command>", or either with "recorded!"',
+          })
         }
-        open = { line, ae: null, command: null, body: [] }
+        open = { line, ae: null, command: null, empty: false, body: [] }
       }
       return
     }
@@ -173,6 +185,21 @@ export function recordPlan(story: RecordedStory, consoleAe: string): RecordStep[
     steps.push({ kind: 'record', ae: block.ae ?? consoleAe, block })
   }
   return steps
+}
+
+/**
+ * Why an output cannot be the block's recording, by whether the block expects one: every output
+ * block shows something, so an empty one means the console lost the command or its output. A block
+ * written `recorded!` is for a command that truly prints nothing, and then output is the surprise.
+ */
+export function emptinessProblem(block: RecordedBlock, output: string): string | null {
+  if (output === '' && !block.expectsEmpty) {
+    return 'it printed nothing; write the block as ```recorded! if the command really prints nothing'
+  }
+  if (output !== '' && block.expectsEmpty) {
+    return 'the block is written ```recorded! (prints nothing), but the command printed output'
+  }
+  return null
 }
 
 /** Why `body` cannot go between a block's fences: a line starting with ``` would close it early. */

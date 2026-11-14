@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { commandOutput, stripTerminalCodes } from '#utils/record/terminal-text.util'
+import { commandOutput, echoed, stripTerminalCodes } from '#utils/record/terminal-text.util'
 
 const ESC = '\u001b'
 
@@ -57,5 +57,20 @@ describe('commandOutput', () => {
 
   it('strips colours from the output', () => {
     expect(commandOutput(`ls\r\n${ESC}[1;34mlab${ESC}[0m\r\n${PROMPT}`, 'ls', 'workstation')).toBe('lab')
+  })
+})
+
+describe('echoed', () => {
+  const PROMPT = 'workstation:~# '
+  const COMMAND = 'hexdump -C /lab/ct.dcm | head -n 10'
+
+  it('is false for a prompt that came before the command was echoed', () => {
+    expect(echoed(`\r\n${PROMPT}`, COMMAND)).toBe(false)
+    expect(echoed(`${ESC}[?2004h${PROMPT}hexdump -C /lab/ct.dcm | he`, COMMAND)).toBe(false)
+  })
+
+  it('is true once the whole line and its newline have shown, even wrapped', () => {
+    expect(echoed(`${COMMAND}\r\n`, COMMAND)).toBe(true)
+    expect(echoed(`hexdump -C /lab/ct.dcm | he\r\nad -n 10\r\n00000000`, COMMAND)).toBe(true)
   })
 })

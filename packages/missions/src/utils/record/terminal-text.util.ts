@@ -57,7 +57,7 @@ const squeeze = (text: string): string => text.replace(/[\r\n ]/g, '')
  * where the console wraps it, so the echo ends at the first newline by which every character of
  * the command has shown.
  */
-function afterEcho(text: string, command: string): string {
+function afterEcho(text: string, command: string): string | null {
   const wanted = squeeze(command)
   let at = text.indexOf('\n')
   while (at !== -1) {
@@ -66,8 +66,16 @@ function afterEcho(text: string, command: string): string {
     }
     at = text.indexOf('\n', at + 1)
   }
-  // No echo found: the whole capture is output, which the run log shows as it is.
-  return text
+  return null
+}
+
+/**
+ * True once the console has echoed the whole command line and the newline after it: only then did
+ * the shell take the command. A prompt with no echo before it answers some other Enter, or keys the
+ * shell never read.
+ */
+export function echoed(shown: string, command: string): boolean {
+  return afterEcho(stripEscapes(shown), command) !== null
 }
 
 /**
@@ -77,7 +85,9 @@ function afterEcho(text: string, command: string): string {
  * without a newline.
  */
 export function commandOutput(shown: string, command: string, ae: string): string {
-  const lines = drawLines(afterEcho(stripEscapes(shown), command)).split('\n')
+  const plain = stripEscapes(shown)
+  // No echo found: the whole capture is output, which the run log shows as it is.
+  const lines = drawLines(afterEcho(plain, command) ?? plain).split('\n')
   const last = lines.length - 1
   lines[last] = (lines[last] ?? '').replace(trailingPrompt(ae), '')
   const trimmed = lines.map((line) => line.trimEnd())

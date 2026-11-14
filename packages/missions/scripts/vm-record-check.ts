@@ -1,8 +1,10 @@
 // Checks the mission recorder end to end on the real Machine: a copy of the test content with
 // recorded blocks added is recorded, its bodies compared with the fixture's own bytes, then checked
-// with --check, which must pass, and again after a body is changed, which must fail. Never touches
-// packages/missions/content/.
-// Usage: node packages/missions/scripts/vm-record-check.ts   (after pnpm vm:image; boots the Machine three times)
+// with --check several times, which must pass, again after a body is changed, which must fail, and
+// once more with a block that prints nothing, which must fail and stay as it was. Both missions open
+// with a recorded block, the first command after their lab is built, where a prompt left from the
+// setup once ended a recording before its output came. Never touches packages/missions/content/.
+// Usage: node packages/missions/scripts/vm-record-check.ts   (after pnpm vm:image; boots the Machine six times)
 import { spawnSync } from 'node:child_process'
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -16,6 +18,10 @@ const recorder = join(here, 'record.ts')
 const fixture = new Uint8Array(readFileSync(join(repo, 'packages/fixtures/out/ct-explicit-le.dcm')))
 const MISSION = 'the-transfer-syntax'
 const STORY = '1-the-first-file/01-the-transfer-syntax/story.md'
+const SECOND_MISSION = 'explicit-and-implicit'
+const SECOND_STORY = '1-the-first-file/02-explicit-and-implicit/story.md'
+/** Each round of --check builds both labs again and records their first blocks afresh. */
+const CHECK_ROUNDS = 3
 const FENCE = '```'
 const PLACEHOLDER = '(recorded on the Machine)'
 const failures: string[] = []
@@ -62,7 +68,22 @@ ${FENCE}recorded ${LONG}
 ${PLACEHOLDER}
 ${FENCE}
 
+${FENCE}recorded! touch /lab/marker
+${PLACEHOLDER}
+${FENCE}
+
 ${FENCE}recorded go-dicom show /lab/ct.dcm
+${PLACEHOLDER}
+${FENCE}
+`
+
+// The command whose first recording once came back empty, as the second mission's first.
+const FIRST_IN_SECOND = `${FENCE}recorded hexdump -C /lab/ct.dcm | head -n 10
+${PLACEHOLDER}
+${FENCE}
+`
+
+const SILENT = `${FENCE}recorded true
 ${PLACEHOLDER}
 ${FENCE}
 `
@@ -90,12 +111,15 @@ try {
   const storyPath = join(content, STORY)
   const original = readFileSync(storyPath, 'utf8')
   writeFileSync(storyPath, original.replace('\n## Debrief', `\n${ADDED}\n## Debrief`))
+  const secondPath = join(content, SECOND_STORY)
+  const secondOriginal = readFileSync(secondPath, 'utf8')
+  writeFileSync(secondPath, secondOriginal.replace('\n## Scene\n', `\n## Scene\n\n${FIRST_IN_SECOND}`))
 
   console.log(`recording ${content}`)
   const recorded = run(content, [])
   check('the recorder exits 0', recorded.status === 0)
   const story = readFileSync(storyPath, 'utf8')
-  const [hexdump, listing, long, goDicom] = readRecordedStory(story).blocks
+  const [hexdump, listing, long, marker, goDicom] = readRecordedStory(story).blocks
   const wantedHexdump = [hexdumpLine(0), '*', hexdumpLine(0x80)].join('\n')
   check(
     'the hexdump block holds the Machine’s output, equal to the fixture’s bytes',
@@ -117,6 +141,22 @@ try {
     long?.body
   )
   check(
+    'a recorded! block of a command that prints nothing is written empty',
+    marker?.expectsEmpty === true &&
+      marker.body === '' &&
+      story.includes(`${FENCE}recorded! touch /lab/marker\n${FENCE}`),
+    marker?.body
+  )
+  const [first] = readRecordedStory(readFileSync(secondPath, 'utf8')).blocks
+  const wantedFirst = [hexdumpLine(0), '*', ...[8, 9, 10, 11, 12, 13, 14, 15].map((row) => hexdumpLine(row * 16))].join(
+    '\n'
+  )
+  check(
+    'the first command after a lab is built is recorded whole, in the other mission too',
+    first?.body === wantedFirst,
+    `${first?.body}\n--- expected\n${wantedFirst}`
+  )
+  check(
     'each info string is kept, so the story can be recorded again',
     story.includes(`${FENCE}recorded hexdump -C /lab/ct.dcm | head -n 3\n`) &&
       story.includes(`${FENCE}recorded@workstation ls /lab\n`)
@@ -132,22 +172,24 @@ try {
       goDicom?.body
     )
   }
-  check(
-    'a mission with no recorded blocks is passed over',
-    /explicit-and-implicit: no recorded blocks/.test(recorded.out)
-  )
   const logPath = join(repo, 'node_modules/.cache/dicomfall-record', `${MISSION}.log`)
   check(
     'the run log is written',
     existsSync(logPath) && readFileSync(logPath, 'utf8').includes('cp /lab/ct.dcm /lab/copy.dcm')
   )
 
-  console.log('checking the recorded story')
-  const same = run(content, ['--check', MISSION])
-  check(
-    '--check passes on what was just recorded, and writes nothing',
-    same.status === 0 && readFileSync(storyPath, 'utf8') === story
-  )
+  const secondStory = readFileSync(secondPath, 'utf8')
+  for (let round = 1; round <= CHECK_ROUNDS; round++) {
+    console.log(`checking the recorded stories, round ${round} of ${CHECK_ROUNDS}`)
+    const same = run(content, ['--check'])
+    check(
+      `--check round ${round}: both missions match what was recorded, first blocks included, and nothing is written`,
+      same.status === 0 &&
+        /hexdump -C \/lab\/ct\.dcm \| head -n 10: same as the Machine/.test(same.out) &&
+        readFileSync(storyPath, 'utf8') === story &&
+        readFileSync(secondPath, 'utf8') === secondStory
+    )
+  }
 
   console.log('checking a story whose output was typed by hand')
   writeFileSync(storyPath, story.replace('\n*\n', '\n**\n'))
@@ -155,6 +197,17 @@ try {
   check(
     '--check fails on a body that differs from the Machine, and names the line',
     typed.status === 1 && /differs at its line 2/.test(typed.out)
+  )
+
+  console.log('recording a block that prints nothing without saying so')
+  writeFileSync(secondPath, secondStory.replace('\n## Debrief', `\n${SILENT}\n## Debrief`))
+  const silent = run(content, [SECOND_MISSION])
+  const [, silentBlock] = readRecordedStory(readFileSync(secondPath, 'utf8')).blocks
+  check(
+    'an empty recording is tried again, then fails, and the block keeps what it had',
+    silent.status === 1 &&
+      /true: failed \(it printed nothing; write the block as ```recorded!/.test(silent.out) &&
+      silentBlock?.body === PLACEHOLDER
   )
 } catch (error) {
   check(error instanceof Error ? error.message : String(error), false)
