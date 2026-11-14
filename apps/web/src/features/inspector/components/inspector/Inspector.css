@@ -1,0 +1,42 @@
+.inspector {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 12rem;
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.inspector__bar {
+  display: flex;
+  align-items: stretch;
+  /* The same height as every other panel's header, so their rules run as one line. */
+  min-height: var(--panel-head, 2.75rem);
+  border-bottom: var(--rule);
+}
+
+/* The tabs keep their whole names. Only when even they can't share the bar does the tab strip
+   give way, and then it scrolls rather than cut a name short. */
+.inspector__bar .df-tabs {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.inspector__surface {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Over the surface, not instead of it: the tab panel stays in place for what it will hold. */
+.inspector__notice {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1rem;
+  background: var(--sheet);
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}

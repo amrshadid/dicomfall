@@ -1,0 +1,251 @@
+.mission-skip {
+  position: absolute;
+  left: 1.25rem;
+  top: 0.25rem;
+  z-index: 10;
+  padding: 0.25rem 0.75rem;
+  background: var(--ink);
+  color: var(--sheet);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.mission-skip:focus {
+  transform: none;
+}
+
+.mission-work {
+  /* Every panel's header is this tall, so their rules run as one line across the screen. */
+  --panel-head: 2.75rem;
+  /* Defaults per screen width; a size the player dragged to (--guide-w, --lightbox-w) wins over them. */
+  --guide-default: 21.25rem;
+  /* Narrow enough that the console keeps its 90 columns at 1440px. */
+  --lightbox-default: 23rem;
+  /* The containing block for the debrief, placed by grid lines. */
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.mission-work > * {
+  min-height: 0;
+  min-width: 0;
+}
+
+/* The 2px tracks are the dividers: the only rules between panels. */
+.mission-work--with-lightbox {
+  grid-template-columns:
+    max(var(--guide-min, 0rem), var(--guide-w, var(--guide-default))) 2px minmax(0, 1fr) 2px
+    var(--lightbox-w, var(--lightbox-default));
+}
+
+.mission-work--no-lightbox {
+  grid-template-columns: max(var(--guide-min, 0rem), var(--guide-w, var(--guide-default))) 2px minmax(0, 1fr);
+}
+
+.mission-guide {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.mission-guide:focus,
+.mission-bench:focus,
+.mission-bench__inspector:focus,
+.mission-console:focus,
+.mission-lightbox:focus {
+  outline: none;
+}
+
+.mission-bench {
+  position: relative;
+  display: grid;
+  /* Never past the cell: an auto track keeps xterm's opening width and paints it over the Lightbox. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, var(--console-share, 50%)) 2px minmax(0, 1fr);
+  /* Clip, not hidden: a hidden box still scrolls to bring a focused control into view, and shifted
+     the Console and the Inspector off its left edge together. */
+  overflow: clip;
+}
+
+.mission-bench--console-only {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+/* The Inspector never grows past its column: its tab bar scrolls inside it instead. */
+.mission-bench__inspector {
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: clip;
+}
+
+.mission-console {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--panel-head) minmax(0, 1fr);
+  overflow: clip;
+  background: var(--soft);
+  min-height: 0;
+}
+
+.mission-console__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.75rem 0 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--sheet);
+}
+
+.mission-console__head span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* At the smallest type an 80-column console can still be wider than its box: it scrolls sideways
+   there, where the player can scroll it back, and never moves the column around it. */
+.mission-console__slot {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto hidden;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+}
+
+/* xterm paints with its own colours; the slot keeps the console paper around them. */
+.mission-console__slot > div {
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--soft);
+  /* The terminal pads its own text; this keeps it on the header's 1rem margin. */
+  padding: 0;
+}
+
+.mission-console__slot .xterm,
+.mission-console__slot .xterm .xterm-scrollable-element,
+.mission-console__slot .xterm .xterm-viewport,
+.mission-console__slot .xterm .xterm-screen {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  background-color: var(--soft) !important;
+}
+
+.mission-console__slot .xterm .scrollbar .slider {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  background-color: color-mix(in srgb, var(--hatch) 45%, transparent) !important;
+}
+
+.mission-console__slot .xterm .xterm-rows {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  color: var(--ink) !important;
+}
+
+.mission-console__slot .xterm .xterm-rows .xterm-cursor.xterm-cursor-outline {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  outline-color: var(--ink) !important;
+}
+
+.mission-console__slot .xterm .xterm-rows .xterm-cursor.xterm-cursor-block {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  background-color: var(--ink) !important;
+  /* biome-ignore lint/complexity/noImportantStyles: overrides colours set inline by xterm.js */
+  color: var(--soft) !important;
+}
+
+/* The Lightbox: the preview takes what the others leave, and the timeline scrolls inside its share. */
+.mission-lightbox {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mission-lightbox__preview {
+  flex: 1 1 13rem;
+  min-height: 11rem;
+  display: grid;
+}
+
+/* Between the preview and the timeline, as tall as its own lines. */
+.mission-lightbox__uids {
+  flex: 0 1 auto;
+  display: grid;
+  overflow: hidden;
+}
+
+.mission-lightbox__timeline {
+  flex: 0 1 auto;
+  min-height: 8rem;
+  max-height: 58%;
+  display: grid;
+  overflow: hidden;
+}
+
+/* With no preview above it, the timeline has the Lightbox to itself. */
+.mission-lightbox__timeline:first-child {
+  flex: 1 1 auto;
+  max-height: none;
+}
+
+.mission-lightbox__preview + .mission-lightbox__uids,
+.mission-lightbox__uids + .mission-lightbox__timeline {
+  border-top: var(--rule);
+}
+
+.mission-lightbox > .df-title-block {
+  flex: none;
+}
+
+/* On a short screen the preview needs the height more than its title block, which repeats the top bar. */
+@media (max-height: 50rem) {
+  .mission-lightbox > .df-title-block {
+    display: none;
+  }
+}
+
+/* An absolute grid child: it covers the Bench and Lightbox columns without taking a cell from them. */
+.mission-debrief {
+  position: absolute;
+  inset: 0;
+  grid-column: 3 / -1;
+  grid-row: 1;
+  z-index: 2;
+  display: grid;
+  min-height: 0;
+  background: var(--sheet);
+}
+
+.mission-status__shortcuts {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.mission-status__shortcuts:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 85rem) {
+  .mission-work {
+    --guide-default: 18.75rem;
+    --lightbox-default: 23rem;
+  }
+}
+
+/* Small laptops: the side columns give way so the console keeps its 90 columns as long as it can. */
+@media (max-width: 72rem) {
+  .mission-work {
+    --guide-default: 16.25rem;
+    --lightbox-default: 19.5rem;
+  }
+}

@@ -5,14 +5,14 @@ export type ThemeSetting = 'system' | 'light' | 'dark'
 export type MotionSetting = 'system' | 'reduce'
 
 /** The screens with a guided tour. */
-export type TourScreen = 'title'
+export type TourScreen = 'title' | 'map' | 'mission'
 
-/** The mission screen's resizable panels. */
-export type PanelId = 'guide' | 'network' | 'editor'
+/** The mission screen's resizable panels: the Guide, the Lightbox, and the Bench's split. */
+export type PanelId = 'guide' | 'lightbox' | 'bench'
 
 /**
- * What the player dragged each divider to: the Guide's and the network dock's widths in rem (so they
- * follow the text size), the editor's share of the workspace in percent. Null keeps the screen's own default.
+ * What the player dragged each divider to: the Guide's and the Lightbox's widths in rem (so they
+ * follow the text size), the Console's share of the Bench in percent. Null keeps the screen's own default.
  */
 export type PanelSizes = Readonly<Record<PanelId, number | null>>
 
@@ -23,7 +23,7 @@ export interface Settings {
   readonly uiScale: number
   /** Instead of unlocking panels with the mission. */
   readonly showAllPanels: boolean
-  /** Tour stop ids like `title:start`. */
+  /** Tour stop ids like `mission:console`. */
   readonly toursSeen: readonly string[]
   readonly panelSizes: PanelSizes
   /** Microsoft Clarity loads only when `granted`; `unset` shows the consent notice. */

@@ -26,7 +26,7 @@ export function readPanelSizes(value: unknown): PanelSizes {
     const { min, max } = PANEL_LIMITS[id]
     return typeof size === 'number' && size >= min && size <= max ? size : null
   }
-  return { guide: read('guide'), network: read('network'), editor: read('editor') }
+  return { guide: read('guide'), lightbox: read('lightbox'), bench: read('bench') }
 }
 
 function readToursSeen(value: unknown): readonly string[] {

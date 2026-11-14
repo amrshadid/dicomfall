@@ -1,3 +1,4 @@
+import { MapOverview, type MapOverviewProps } from '@features/map'
 import type { ContinueTarget, FirstMission } from '@features/title/types'
 import { ManHead, ScreenFrame } from '@shared/components/layout'
 import { Dialog } from '@shared/components/modals'
@@ -23,13 +24,15 @@ export interface TitlePresentationProps {
   firstMission: FirstMission
   onNewGame: () => void
   contents: readonly ContentsEntry[]
+  /** Fig. 1: the Archive Map around "you". */
+  figure: MapOverviewProps
   newGame: NewGameDialog
   saveText: string
   onShortcuts: () => void
   privacyHref: string
 }
 
-/** The cover of the manual: the wordmark cut in section, and the contents. */
+/** The cover of the manual: the wordmark cut in section, the contents, and Fig. 1. */
 export function TitlePresentation({
   chrome,
   volume,
@@ -37,6 +40,7 @@ export function TitlePresentation({
   firstMission,
   onNewGame,
   contents,
+  figure,
   newGame,
   saveText,
   onShortcuts,
@@ -114,6 +118,14 @@ export function TitlePresentation({
             )}
             <ContentsList headingId="title-contents" heading="Contents" entries={contents} />
           </nav>
+
+          <figure className="title__drawing">
+            <MapOverview {...figure} />
+            <figcaption>
+              <span>Fig. 1. The Archive Map around you. Select it to open the whole map.</span>
+              <span>Solid: passed. Hatched: ahead. Red: you.</span>
+            </figcaption>
+          </figure>
         </div>
       </main>
 

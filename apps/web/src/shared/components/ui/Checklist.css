@@ -17,6 +17,57 @@
   stroke: var(--sheet);
 }
 
+/* The judged states: a symbol in the box and a word beside the text, so neither rests on colour. */
+.df-mark--met,
+.df-mark--partly,
+.df-mark--open {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.df-mark--met {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--sheet);
+}
+
+.df-mark--partly {
+  border-color: var(--code-pre);
+  color: var(--code-pre);
+}
+
+.df-mark--open {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.df-state {
+  display: inline-block;
+  margin-right: 0.375rem;
+  padding: 0 0.25rem;
+  border: 1px solid currentColor;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.df-state--met {
+  color: var(--green);
+}
+
+.df-state--partly {
+  color: var(--code-pre);
+}
+
+.df-state--open {
+  color: var(--red);
+}
+
 .df-checklist li {
   display: grid;
   grid-template-columns: 1rem 1fr;

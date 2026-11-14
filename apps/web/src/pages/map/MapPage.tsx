@@ -1,5 +1,5 @@
-import { MapPlaceholderContainer } from '@features/content'
+import { JourneyMapContainer } from '@features/map'
 
 export function MapPage() {
-  return <MapPlaceholderContainer />
+  return <JourneyMapContainer />
 }
