@@ -1,0 +1,59 @@
+import type { ContentFiles } from '#types/definitions/content'
+
+const CONTENT_DIR = '/content/'
+
+// Vite inlines every content file at build time, so the game needs no server and works offline.
+// Globs are written relative to this file: import.meta.glob takes paths, not the package's `#`
+// imports, and Vite needs each glob's options written out as a literal. Only the files the game
+// shows are globbed, so a mission's golden runs, kept beside it, stay out of the bundle.
+const chapterFiles = import.meta.glob<string>('../../../content/chapters.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const conceptFiles = import.meta.glob<string>('../../../content/concepts.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const fieldGuideFiles = import.meta.glob<string>('../../../content/field-guide.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const skillFiles = import.meta.glob<string>('../../../content/skills.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const missionFiles = import.meta.glob<string>('../../../content/*/*/mission.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const storyFiles = import.meta.glob<string>('../../../content/*/*/story.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+
+/** `…/content/1-the-first-file/…/mission.yaml` → `1-the-first-file/…/mission.yaml`, whatever form the bundler gives the path. */
+export function relativeToContent<T>(files: Readonly<Record<string, T>>): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(files).map(([path, value]) => {
+      const at = path.indexOf(CONTENT_DIR)
+      return [at === -1 ? path : path.slice(at + CONTENT_DIR.length), value]
+    })
+  )
+}
+
+/** Every content file in the repository, keyed by its path in content/. */
+export const CONTENT_FILES: ContentFiles = {
+  // Empty if it's missing, so the loader reports it.
+  chapters: Object.values(chapterFiles)[0] ?? '',
+  concepts: Object.values(conceptFiles)[0] ?? '',
+  fieldGuide: Object.values(fieldGuideFiles)[0] ?? '',
+  skills: Object.values(skillFiles)[0] ?? '',
+  missions: relativeToContent(missionFiles),
+  stories: relativeToContent(storyFiles),
+}

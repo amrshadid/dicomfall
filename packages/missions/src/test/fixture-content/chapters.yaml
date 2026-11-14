@@ -1,0 +1,21 @@
+# A content folder for the loader's tests: one stage with two missions in one region, and one
+# stage still to come.
+chapters:
+  - id: the-first-file
+    title: The first file
+    summary: Find the four regions of a Part 10 file and what its File Meta Information says.
+    story: A CT file arrived with no viewer to open it.
+    guide: The Preamble
+    standsFor: Part 10, the file format
+    outcomes:
+      - read the Transfer Syntax UID
+    regions:
+      - id: transfer-syntaxes
+        name: The transfer syntax
+        caption: read the Transfer Syntax UID, then tell explicit from implicit VR
+        guide: The Preamble, VR
+        source: filereader/, PS3.10
+        missions: [the-transfer-syntax, explicit-and-implicit]
+  - id: the-elements
+    title: The elements
+    summary: Read tags, VRs and lengths.

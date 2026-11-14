@@ -1,0 +1,43 @@
+# The example mission of @dicomfall/game's tests, as a content file: every field of the schema.
+id: the-transfer-syntax
+version: 1
+title: The Transfer Syntax
+chapter: the-first-file
+objective: Find the Transfer Syntax UID in the File Meta Information and say which encoding it names.
+summary: Read the one element that tells a reader how the rest of the file is encoded.
+minutes: 15
+skills: [read-the-transfer-syntax]
+prerequisites: []
+teaches: [transfer-syntax]
+names: [implicit-vr]
+uses: [file-meta-information]
+objectives:
+  - id: find-the-meta
+    text: Select the File Meta Information of ct.dcm.
+    check: { kind: selected, file: /lab/ct.dcm, region: file-meta-information }
+  - id: name-the-syntax
+    text: Give the Transfer Syntax UID of ct.dcm.
+    check: { kind: answer, file: /lab/ct.dcm, element: "(0002,0010)" }
+  - id: predict-the-offset
+    text: Predict where the Transfer Syntax UID element starts.
+    check: { kind: offset, file: /lab/ct.dcm, element: "(0002,0010)", offset: 228 }
+hints:
+  - text: Everything after the DICM prefix starts with group 0002 for a while.
+  - text: The File Meta Information is always Explicit VR Little Endian, whatever the data set uses.
+  - text: Print the meta elements and look for (0002,0010).
+    command: go-dicom show /lab/ct.dcm
+chips:
+  - command: go-dicom show /lab/ct.dcm
+    explain: print every element of the file, one per line
+codex:
+  - id: transfer-syntax
+    term: Transfer Syntax
+    simple: "The rule for how a data set is written: byte order, explicit or implicit VR, compression."
+    deep: Named by a UID in (0002,0010). The File Meta Information itself is always Explicit VR Little Endian.
+    sources: [filereader/meta.go]
+    docs: https://dicom.nema.org/medical/dicom/current/output/html/part05.html#chapter_10
+    tryIt: go-dicom show /lab/ct.dcm
+story:
+  scene: story.md#scene
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

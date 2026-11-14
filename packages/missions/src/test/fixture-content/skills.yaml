@@ -1,0 +1,8 @@
+skills:
+  - id: read-the-transfer-syntax
+    title: Read a file's Transfer Syntax UID
+    region: transfer-syntaxes
+  - id: tell-explicit-from-implicit
+    title: Tell explicit VR from implicit VR
+    region: transfer-syntaxes
+    prerequisites: [read-the-transfer-syntax]

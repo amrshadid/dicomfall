@@ -1,0 +1,106 @@
+# The curriculum, in play order. A chapter's stage number is its place in this list.
+# A chapter's Codex title page: `story` (the stage in a few lines), `guide` (the character from
+# the standard who guides it), `standsFor` (the part of DICOM it is about) and `outcomes` (the
+# "You can now…" lines shown once every mission of the stage is completed).
+# Its `regions` group its missions in play order, each under its own heading on the map:
+# `caption` (what the missions cover), `guide` (who speaks in them), `source` (where that lives in
+# go-dicom and the standard) and `missions` (their ids, so folders and ids stay as they are).
+#
+# DRAFT: every `story` and `outcomes` below is placeholder text, to be rewritten once the stage's
+# missions are written against real runs.
+#
+# A region lists the missions it holds and the game checks they exist, so no region can be
+# written before its first mission. Each stage's regions from the first draft are kept as a
+# comment under it, and move into `regions:` with their first mission.
+chapters:
+  - id: the-first-file
+    title: The first file
+    summary: What DICOM describes and how Part 10 packages a Data Set.
+    story: A synthetic CT file arrives in the lab with no viewer to open it. Before any image, there are bytes to read.
+    guide: The Preamble
+    standsFor: Part 10, the file format
+    outcomes:
+      - find the preamble, the DICM prefix, the File Meta Information and the Data Set of a file
+      - read the Transfer Syntax UID and say what it tells the reader
+    # Regions, first draft, all guided by The Preamble (filereader/, PS3.10):
+    #   open-the-file          Open the file
+    #   the-four-regions       The four regions
+    #   the-transfer-syntax    The transfer syntax
+  - id: the-elements
+    title: The elements
+    summary: Tags, Value Representation, value length and multiplicity, explicit and implicit VR, and sequences.
+    story: The Data Set is a run of elements, each a tag, a VR, a length and a value. The same object can be written two ways.
+    guide: VR
+    standsFor: Part 5, data structures and encoding
+    outcomes:
+      - find one element in the hex and predict where the next one starts
+      - compare the same object in explicit and implicit VR
+    # Regions, first draft, all guided by VR (filereader/, PS3.5):
+    #   tag-vr-length              Tag, VR, length
+    #   explicit-and-implicit      Explicit and implicit
+    #   sequences                  Sequences
+  - id: the-object
+    title: The object
+    summary: Study, Series and SOP Instance UIDs, SOP Classes, and the pixel attributes.
+    story: Every file belongs to a series and a study, and says what kind of object it is. Its pixel attributes describe the image.
+    guide: The Instance UID
+    standsFor: Part 3's information model and Part 4's storage SOP Classes
+    outcomes:
+      - sort files into studies and series by their UIDs
+      - tell an instance's identity from its storage class
+      - read how Rows, Columns and the pixel encoding describe an image
+    # Regions, first draft, all guided by The Instance UID (PS3.3, PS3.4):
+    #   study-series-instance      Study, Series, Instance
+    #   sop-class-and-instance     SOP Class and instance
+    #   the-pixel-attributes       The pixel attributes
+  - id: the-bridge
+    title: Bridge
+    summary: The same SOP Instance UID on disk and on the wire.
+    story: The CT is about to leave the disk. The object stays the same; what wraps it changes.
+    guide: The Instance UID
+    standsFor: Part 10's File Meta Information beside Part 7's Command Set
+    outcomes:
+      - tell the File Meta Information from the DIMSE Command Set
+      - say how the negotiated transfer syntax decides how a sent Data Set is encoded
+    # Regions, first draft, guided by The Instance UID (PS3.10, PS3.7):
+    #   on-disk-and-on-the-wire    On disk and on the wire
+  - id: the-association
+    title: The association
+    summary: Application entities, AE titles, SCU and SCP roles, and presentation contexts.
+    story: Two AEs have to agree before anything is sent. The receiving desk is polite, and strict about what it accepts.
+    guide: The SCP
+    standsFor: Part 8, the network, and Part 7's C-ECHO and C-STORE
+    outcomes:
+      - connect a sender and a receiver and read what they agreed
+      - run C-ECHO, then C-STORE, and prove receipt by UID
+    # Regions, first draft, all guided by The SCP (network/pdu.go, PS3.8, PS3.7):
+    #   ae-titles-and-roles        AE titles and roles
+    #   presentation-contexts      Presentation contexts
+    #   echo-then-store            Echo, then store
+  - id: query-and-retrieve
+    title: Query and retrieve
+    summary: C-FIND, C-GET, C-MOVE, status codes and C-STORE sub-operations.
+    story: The archive has everything, and answers only a proper query. Getting a study back can take a second association.
+    guide: The Archive
+    standsFor: Part 4's Query/Retrieve Service Class and Part 7's C-FIND, C-GET and C-MOVE
+    outcomes:
+      - find a study with C-FIND and retrieve it with C-GET
+      - follow C-MOVE to its destination and diagnose a failed move from the evidence
+    # Regions, first draft, all guided by The Archive (PS3.4, PS3.7):
+    #   ask-the-archive            Ask the archive (C-FIND)
+    #   bring-it-here              Bring it here (C-GET)
+    #   send-it-there              Send it there (C-MOVE)
+    #   status                     Status
+  - id: interoperability
+    title: Interoperability
+    summary: Conformance statements, compressed transfer syntaxes, optional DIMSE-N and DICOMweb.
+    story: Two endpoints say what they can do, and are held to it. A refused context is a clue, not a dead end.
+    guide: The Conformance Statement
+    standsFor: Part 2's conformance statements, Part 5's compressed transfer syntaxes and Part 18, DICOMweb
+    outcomes:
+      - compare what two endpoints can do
+      - explain a rejected presentation context and prove recovery with a successful transfer
+    # Regions, first draft, all guided by The Conformance Statement (PS3.2, PS3.5, PS3.18):
+    #   conformance                Conformance
+    #   compressed-syntaxes        Compressed syntaxes
+    #   beyond-c-store             Beyond C-STORE

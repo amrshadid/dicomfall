@@ -1,0 +1,6 @@
+entries:
+  - name: go-dicom show
+    kind: go-dicom
+    what: print every element of a file, one per line
+    firstMet: the-transfer-syntax
+    deepenedIn: [explicit-and-implicit]

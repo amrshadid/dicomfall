@@ -1,0 +1,30 @@
+# The follow-up mission of @dicomfall/game's tests: it needs the first one's skill, and its card
+# deepens the first one's.
+id: explicit-and-implicit
+version: 1
+title: Explicit and Implicit
+chapter: the-first-file
+objective: Tell an element written with its VR from one written without.
+skills: [tell-explicit-from-implicit]
+prerequisites: [read-the-transfer-syntax]
+teaches: [implicit-vr]
+uses: [transfer-syntax]
+objectives:
+  - id: name-the-syntax
+    text: Give the Transfer Syntax UID of ct.dcm.
+    check: { kind: answer, file: /lab/ct.dcm, element: "(0002,0010)" }
+hints:
+  - text: Everything after the DICM prefix starts with group 0002 for a while.
+  - text: The File Meta Information is always Explicit VR Little Endian, whatever the data set uses.
+  - text: Print the meta elements and look for (0002,0010).
+    command: go-dicom show /lab/ct.dcm
+codex:
+  - id: implicit-vr
+    term: Transfer Syntax, implicit VR
+    simple: "An encoding that leaves out each element’s VR: the reader looks it up in the dictionary."
+    deepens: transfer-syntax
+    sources: [filereader/reader.go]
+story:
+  scene: story.md#scene
+  debrief: story.md#debrief
+  realWorld: story.md#real-world

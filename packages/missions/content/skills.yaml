@@ -1,0 +1,7 @@
+# The skill tree: what the player can do after each mission, in play order. A mission lists
+# the skills it earns (`skills:`) and the skills it needs (`prerequisites:`), and it opens once
+# the missions completed so far have earned every one. A skill's `region` is the region of
+# chapters.yaml whose mission earns it; its `prerequisites` are the skills it builds on.
+# Every skill has to be earned by a mission, so the tree grows with the missions.
+# Entries: { id, title, region, prerequisites: [<skill id>, …] }, in play order.
+skills: []

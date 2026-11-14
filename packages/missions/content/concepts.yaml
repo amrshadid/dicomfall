@@ -1,0 +1,6 @@
+# Every concept a mission may teach, name or use, in play order. A mission's `teaches`, `names`
+# and `uses` point here; `codex` names the card that explains the concept, once a mission adds it.
+# part: foundations | file-format | encoding | information-model | pixel-data | association |
+#       dimse | query-retrieve | interoperability
+# Entries: { id, term, part, codex }.
+concepts: []

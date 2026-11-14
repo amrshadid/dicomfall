@@ -1,0 +1,4 @@
+concepts:
+  - { id: file-meta-information, term: the File Meta Information, part: file-format }
+  - { id: transfer-syntax, term: a transfer syntax, part: encoding, codex: transfer-syntax }
+  - { id: implicit-vr, term: implicit VR, part: encoding, codex: implicit-vr }
