@@ -61,15 +61,15 @@ checksummed downloads. Files are fetched only when Linux opens them.
 
 ## Packages
 
-| Package    | Holds                                                                                    | Depends on    |
-| ---------- | ---------------------------------------------------------------------------------------- | ------------- |
-| `core`     | the event bus, `ServiceResponse` and its error handler, the logger, storage keys         | nothing       |
-| `theme`    | token values: palettes, typography, spacing, motion, colour utils                        | nothing       |
-| `machine`  | the VM: v86 in a Web Worker, the image build, AE sessions, the event pipeline, hooks     | core          |
-| `game`     | a pure engine: mission loop, checks, hints, saves; knows no mission by id                | core, machine |
-| `missions` | the content ([MISSIONS.md](MISSIONS.md)), its loader, the recorder and the golden runs   | game, machine |
-| `fixtures` | the synthetic data generator and its outputs                                             | nothing       |
-| `apps/web` | the game: pages, features, the design system                                             | all           |
+| Package    | Holds                                                                                  | Depends on    |
+| ---------- | -------------------------------------------------------------------------------------- | ------------- |
+| `core`     | the event bus, `ServiceResponse` and its error handler, the logger, storage keys       | nothing       |
+| `theme`    | token values: palettes, typography, spacing, motion, colour utils                      | nothing       |
+| `machine`  | the VM: v86 in a Web Worker, the image build, AE sessions, the event pipeline, hooks   | core          |
+| `game`     | a pure engine: mission loop, checks, hints, saves; knows no mission by id              | core, machine |
+| `missions` | the content ([MISSIONS.md](MISSIONS.md)), its loader, the recorder and the golden runs | game, machine |
+| `fixtures` | the synthetic data generator and its outputs                                           | nothing       |
+| `apps/web` | the game: pages, features, the design system                                           | all           |
 
 Packages hold logic or values, never UI. `lab/` at the repository root runs go-dicom
 against pynetdicom on one host, outside the browser, for cross-checks.
