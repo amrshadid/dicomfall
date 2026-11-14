@@ -26,7 +26,8 @@
   },
   "scripts": {
     "type-check": "tsc --noEmit -p .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "vm:show-json": "node scripts/vm-show-json.ts"
   },
   "dependencies": {
     "@dicomfall/core": "workspace:*",

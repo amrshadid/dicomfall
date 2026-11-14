@@ -1,7 +1,15 @@
 import type { Validated } from '@dicomfall/core/types'
 import { useMemo } from 'react'
-import { readVmFile, restoreVmSlot, runVmControl, saveVmSlot, setVmLinkLoss } from '#services/vm/vm-connection.service'
+import {
+  readVmFile,
+  readVmShow,
+  restoreVmSlot,
+  runVmControl,
+  saveVmSlot,
+  setVmLinkLoss,
+} from '#services/vm/vm-connection.service'
 import type { LinkDefinition } from '#types/definitions/network'
+import type { ShowReading } from '#types/definitions/show'
 import type { ControlReply } from '#types/definitions/vm'
 
 export interface UseMachineControlsResult {
@@ -15,6 +23,8 @@ export interface UseMachineControlsResult {
   readonly run: (line: string, timeoutMs?: number) => Promise<ControlReply | null>
   /** A file's bytes as root reads them: what a file check judges. */
   readonly readFile: (path: string) => Promise<Validated<Uint8Array>>
+  /** go-dicom's reading of a file, as root: what a file check judges it by. */
+  readonly readShow: (path: string, ae?: string | null) => Promise<Validated<ShowReading>>
 }
 
 /** What a mission does to the Machine beside the player's own typing. */
@@ -26,6 +36,7 @@ export function useMachineControls(): UseMachineControlsResult {
       restoreSlot: restoreVmSlot,
       run: runVmControl,
       readFile: readVmFile,
+      readShow: readVmShow,
     }),
     []
   )

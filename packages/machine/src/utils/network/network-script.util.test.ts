@@ -34,6 +34,7 @@ describe('a network’s setup lines', () => {
 
   it('builds namespaces, then cables, then the lab’s files', () => {
     expect(networkSetupLines(TWO_AES)).toEqual([
+      'mkdir -p /lab',
       'ip netns add workstation && ip -n workstation link set lo up',
       'ip netns add archive && ip -n archive link set lo up',
       [
@@ -45,7 +46,7 @@ describe('a network’s setup lines', () => {
         'ip -n workstation route add 10.0.0.2 dev eth0 src 10.0.0.1',
         'ip -n archive route add 10.0.0.1 dev eth0 src 10.0.0.2',
       ].join(' && '),
-      'mkdir -p /lab && cp -a /lab/fixtures/ct-explicit-le.dcm /lab/ct-explicit-le.dcm',
+      'mkdir -p /lab && cp -a /usr/share/dicomfall/fixtures/ct-explicit-le.dcm /lab/ct-explicit-le.dcm',
     ])
   })
 
@@ -55,14 +56,14 @@ describe('a network’s setup lines', () => {
     expect(interfaceName(CHAIN, 'archive', 'viewer')).toBe('eth1')
     expect(interfaceName(CHAIN, 'viewer', 'archive')).toBe('eth0')
     expect(interfaceName(CHAIN, 'modality', 'viewer')).toBeNull()
-    expect(networkSetupLines(CHAIN)[4]).toContain(
+    expect(networkSetupLines(CHAIN)[5]).toContain(
       'ip link add eth1 netns archive type veth peer name eth0 netns viewer'
     )
   })
 
   it('copies a folder of fixtures, making the folders above it', () => {
     expect(labFileLine({ fixture: 'series/', to: '/lab/studies/series/' })).toBe(
-      'mkdir -p /lab/studies && cp -a /lab/fixtures/series /lab/studies/series'
+      'mkdir -p /lab/studies && cp -a /usr/share/dicomfall/fixtures/series /lab/studies/series'
     )
   })
 
@@ -109,7 +110,7 @@ describe('a network’s problems', () => {
       'links[2][0]: "viewer" has a link but no address',
       'links[2]: "viewer" and "archive" already have a link',
       'links[3][1]: no AE named "nowhere"',
-      'files[0].fixture: expected a path under /lab/fixtures/, got "../secret"',
+      'files[0].fixture: expected a path under /usr/share/dicomfall/fixtures/, got "../secret"',
       'files[1].to: expected a path under /lab/, got "/etc/passwd"',
       'files[2].to: expected a path under /lab/, got "/lab/../etc"',
       'files[3].to: expected a path under /lab/, got "/lab/"',

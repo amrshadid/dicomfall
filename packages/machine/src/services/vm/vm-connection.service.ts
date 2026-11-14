@@ -2,8 +2,10 @@ import type { Validated } from '@dicomfall/core/types'
 import { proxy, type Remote, wrap } from 'comlink'
 import { getMachineConfig } from '#config'
 import { readMachineFile } from '#services/vm/vm-read.service'
+import { readMachineShow } from '#services/vm/vm-show.service'
 import type { MachineEndpoint } from '#types/definitions/endpoint'
 import type { LinkDefinition, NetworkDefinition } from '#types/definitions/network'
+import type { ShowReading } from '#types/definitions/show'
 import type { ControlReply, VmEventUpdate, VmSession, VmShellUpdate, VmStatus } from '#types/definitions/vm'
 
 interface VmConnection {
@@ -137,6 +139,16 @@ export async function readVmFile(path: string): Promise<Validated<Uint8Array>> {
     return { ok: false, errors: [NOT_RUNNING_ERROR] }
   }
   return readMachineFile((line, timeoutMs) => running.session.control(line, timeoutMs), path)
+}
+
+/** go-dicom's reading of a file, with every element's byte range, for the inspector and the checks. */
+export async function readVmShow(path: string, ae?: string | null): Promise<Validated<ShowReading>> {
+  const running = connection
+  if (!running) {
+    return { ok: false, errors: [NOT_RUNNING_ERROR] }
+  }
+  const control = (line: string, timeoutMs?: number) => running.session.control(line, timeoutMs)
+  return ae === undefined ? readMachineShow(control, path) : readMachineShow(control, path, ae)
 }
 
 /** Starts losing a share of a link's packets, or stops at 0; false when it could not. */

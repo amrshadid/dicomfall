@@ -12,6 +12,7 @@ import { readMachineFile } from '#services/vm/vm-read.service'
 import { createVmSession } from '#services/vm/vm-session.service'
 import { TWO_AES, TWO_AES_LINK } from '#test/lab'
 import type { StampedMachineEvent } from '#types/definitions/event'
+import { FIXTURES_DIR } from '#types/definitions/network'
 import { VM_GO_DICOM, type VmManifest, type VmPhase } from '#types/definitions/vm'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -104,7 +105,7 @@ async function type(line: string, prompt: string): Promise<string> {
 async function labIntact(fixture: Uint8Array): Promise<string> {
   const namespaces = await root('ip netns list')
   const ping = await root('ip netns exec workstation ping -c 2 -W 2 10.0.0.2 | tail -2')
-  const read = await readMachineFile((line, ms) => session.control(line, ms), '/lab/fixtures/ct-explicit-le.dcm')
+  const read = await readMachineFile((line, ms) => session.control(line, ms), '/lab/ct-explicit-le.dcm')
   const problems = [
     ...(/workstation/.test(namespaces) && /archive/.test(namespaces) ? [] : [`namespaces: ${namespaces}`]),
     ...(/2 packets received/.test(ping) ? [] : [`ping: ${ping}`]),
@@ -179,27 +180,28 @@ async function main() {
   check('workstation pings archive across the link', /3 packets received/.test(ping), ping)
 
   await timed('console moved into workstation', () => session.selectAe('workstation'))
-  const listed = await type('ls -l /lab/fixtures', 'workstation:~#')
+  const listed = await type('ls -A /lab', 'workstation:~#')
   console.log(listed.trimEnd())
   check(
-    'the console is in workstation and lists the fixtures',
-    /ct-explicit-le\.dcm/.test(listed) && /series/.test(listed),
+    'the console is in workstation, and /lab holds only the file the lab copied',
+    listed.replaceAll('\r', '').split('\n').slice(1, -1).join('\n').trim() === 'ct-explicit-le.dcm',
     listed
   )
-  const dumped = await type('hexdump -C /lab/fixtures/ct-explicit-le.dcm | head', 'workstation:~#')
+  const dumped = await type('hexdump -C /lab/ct-explicit-le.dcm | head', 'workstation:~#')
   console.log(dumped.trimEnd())
   check('hexdump shows DICM at offset 128', /00000080 {2}44 49 43 4d/.test(dumped), dumped)
   check(
     'the console reports both commands finished, with their lines',
-    commandLines.join('\n') ===
-      'workstation:~# ls -l /lab/fixtures\nworkstation:~# hexdump -C /lab/fixtures/ct-explicit-le.dcm | head',
+    commandLines.join('\n') === 'workstation:~# ls -A /lab\nworkstation:~# hexdump -C /lab/ct-explicit-le.dcm | head',
     JSON.stringify(commandLines)
   )
   commandLines = []
 
   const read = await timed('root reads the fixture (9.6 kB as base64)', () =>
-    readMachineFile((line, ms) => session.control(line, ms), '/lab/fixtures/ct-explicit-le.dcm')
+    readMachineFile((line, ms) => session.control(line, ms), `${FIXTURES_DIR}/ct-explicit-le.dcm`)
   )
+  const stored = await root(`ls ${FIXTURES_DIR} ${FIXTURES_DIR}/series | wc -l`)
+  check(`the image keeps every fixture in ${FIXTURES_DIR}`, Number(stored) > 3, stored)
   check(
     'root’s read gives the fixture’s bytes, equal to the file on the host',
     read.ok && equalBytes(read.value, fixture),

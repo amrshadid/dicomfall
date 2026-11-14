@@ -2,8 +2,8 @@ import {
   AE_NAME,
   AE_TITLE,
   FIXTURE_PATH,
+  FIXTURES_DIR,
   IPV4_WITH_PREFIX,
-  LAB_FIXTURES_DIR,
   LAB_PATH,
   type LabFileDefinition,
   LINK_LOSS_PERCENT,
@@ -83,7 +83,7 @@ export function networkProblems(network: NetworkDefinition): string[] {
   })
   ;(network.files ?? []).forEach((file, at) => {
     if (!FIXTURE_PATH.test(file.fixture)) {
-      problems.push(`files[${at}].fixture: expected a path under ${LAB_FIXTURES_DIR}/, got "${file.fixture}"`)
+      problems.push(`files[${at}].fixture: expected a path under ${FIXTURES_DIR}/, got "${file.fixture}"`)
     }
     if (!LAB_PATH.test(file.to) || file.to.replace(/\/+$/, '') === '/lab') {
       problems.push(`files[${at}].to: expected a path under /lab/, got "${file.to}"`)
@@ -128,15 +128,17 @@ const withoutTrailingSlash = (path: string): string => path.replace(/\/+$/, '')
 export function labFileLine({ fixture, to }: LabFileDefinition): string {
   const target = withoutTrailingSlash(to)
   const parent = target.slice(0, target.lastIndexOf('/'))
-  return `mkdir -p ${parent} && cp -a ${LAB_FIXTURES_DIR}/${withoutTrailingSlash(fixture)} ${target}`
+  return `mkdir -p ${parent} && cp -a ${FIXTURES_DIR}/${withoutTrailingSlash(fixture)} ${target}`
 }
 
 /**
- * Root's lines that build the network on a clean Machine, in order: namespaces, cables, then the
- * lab's files. Check `networkProblems` first.
+ * Root's lines that build the network on a clean Machine, in order: the empty `/lab` (the image
+ * keeps its fixtures elsewhere, so a lab with no files still has the folder to list), namespaces,
+ * cables, then the lab's files. Check `networkProblems` first.
  */
 export function networkSetupLines(network: NetworkDefinition): string[] {
   return [
+    'mkdir -p /lab',
     ...network.aes.map((ae) => namespaceLine(ae.name)),
     ...network.links.map((link) => linkLine(network, link)),
     ...(network.files ?? []).map(labFileLine),

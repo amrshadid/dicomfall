@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, w
 import { dirname, join, relative, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { gunzipSync } from 'node:zlib'
-import { LAB_FIXTURES_DIR } from '#types/definitions/network'
+import { FIXTURES_DIR } from '#types/definitions/network'
 import { VM_BASHRC, VM_CMDLINE, VM_GO_DICOM, VM_HOSTNAME, VM_SHELL, type VmManifest } from '#types/definitions/vm'
 import { indexFromApkIndex, installedNames, type PackageIndex, parseIndex, resolve, sha256 } from '#vm-image/alpine'
 import { type ArchiveEntry, readTarGz, writeCpioGz } from '#vm-image/archive'
@@ -83,14 +83,14 @@ function pinned(what: string, data: Uint8Array, expected: string | undefined, re
 /** Every file under the fixtures' output, as it is on disk now: never a committed copy. */
 function fixtureFiles(): ArchiveEntry[] {
   if (!existsSync(fixtures)) {
-    throw new Error(`${fixtures} is missing: the image carries every fixture under ${LAB_FIXTURES_DIR}/`)
+    throw new Error(`${fixtures} is missing: the image carries every fixture under ${FIXTURES_DIR}/`)
   }
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
       entry.isDirectory() ? walk(join(dir, entry.name)) : entry.isFile() ? [join(dir, entry.name)] : []
     )
   return walk(fixtures).map((path) =>
-    guestFile(`${LAB_FIXTURES_DIR.slice(1)}/${relative(fixtures, path).split('\\').join('/')}`, readFileSync(path))
+    guestFile(`${FIXTURES_DIR.slice(1)}/${relative(fixtures, path).split('\\').join('/')}`, readFileSync(path))
   )
 }
 
@@ -250,7 +250,7 @@ async function main() {
     console.log(`mirror: ${downloads.size} files and SHA256SUMS in ${mirrorOut}`)
   }
   console.log(
-    `image ${version}: kernel ${kernelRelease}, go-dicom ${goDicom?.version ?? 'not installed'}, ${labFiles.length} fixtures in ${LAB_FIXTURES_DIR}, ${files} files (${(bytes / 1e6).toFixed(0)} MB raw) in ${out}`
+    `image ${version}: kernel ${kernelRelease}, go-dicom ${goDicom?.version ?? 'not installed'}, ${labFiles.length} fixtures in ${FIXTURES_DIR}, ${files} files (${(bytes / 1e6).toFixed(0)} MB raw) in ${out}`
   )
 }
 

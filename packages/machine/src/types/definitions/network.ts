@@ -13,7 +13,7 @@ export type LinkDefinition = readonly [string, string]
 
 /** A fixture from `packages/fixtures/out/`, copied into the lab before the mission starts. */
 export interface LabFileDefinition {
-  /** Its path under `/lab/fixtures/` in the image: `ct-explicit-le.dcm`, or `series/` for a folder. */
+  /** Its path under FIXTURES_DIR in the image: `ct-explicit-le.dcm`, or `series/` for a folder. */
   readonly fixture: string
   /** Where it lands, always under `/lab/`. */
   readonly to: string
@@ -41,8 +41,8 @@ export const IPV4 = /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3
 
 export const IPV4_WITH_PREFIX = /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}\/(3[0-2]|[12]?\d)$/
 
-/** Where the image keeps every fixture, read-only by convention: a mission copies from here. */
-export const LAB_FIXTURES_DIR = '/lab/fixtures'
+/** Where the image keeps every fixture, outside `/lab`, so the lab holds only what a mission puts there: a mission copies from here. */
+export const FIXTURES_DIR = '/usr/share/dicomfall/fixtures'
 
 /** A path the Machine writes into a shell line: plain characters only, never `..`. */
 export const LAB_PATH = /^(?!.*\/\.\.(\/|$))\/lab\/[A-Za-z0-9._/-]*$/
